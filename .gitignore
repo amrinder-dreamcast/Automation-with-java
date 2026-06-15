@@ -1,0 +1,20 @@
+# Maven
+target/
+*.class
+
+# Screenshots and debug files
+*.png
+*.txt
+
+# IDEs
+.classpath
+.project
+.settings/
+.idea/
+*.iml
+*.iws
+.vscode/
+
+# OS files
+Thumbs.db
+desktop.ini
