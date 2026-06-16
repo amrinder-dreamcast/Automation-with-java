@@ -128,9 +128,9 @@ public class sr {
 
 		// Fill the Email
 		emailInput.clear();
-		String uniqueEmail = "amrinder+" + System.currentTimeMillis() + "@dreamcast.co";
+		String uniqueEmail = "amrinder+1@dreamcast.co";
 		emailInput.sendKeys(uniqueEmail);
-		System.out.println("Attendee Email filled successfully: " + uniqueEmail);
+		System.out.println("Attendee Email filled successfully: " );
 
 		// Locate the WhatsApp/Phone input dynamically
 		WebElement phoneInput = wait2.until(
@@ -310,8 +310,8 @@ public class sr {
 
 		// Fill the promo code
 		promoInput.clear();
-		promoInput.sendKeys("fof1");
-		System.out.println("Promo code fof1 entered.");
+		promoInput.sendKeys("sr");
+		System.out.println("Promo code sr entered.");
 
 		// Locate the Apply button
 		WebElement applyBtn = wait2.until(

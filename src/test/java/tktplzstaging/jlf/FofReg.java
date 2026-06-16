@@ -329,7 +329,8 @@ public class FofReg {
 		}
 		System.out.println("Crop button clicked successfully.");
 
-		// Wait for the preview image to be displayed (indicating AJAX upload finished after cropping)
+		// Wait for the preview image to be displayed (indicating AJAX upload finished
+		// after cropping)
 		try {
 			WebElement previewDiv = wait2.until(
 					ExpectedConditions.visibilityOfElementLocated(
@@ -341,8 +342,10 @@ public class FofReg {
 			// Print browser console logs for debugging
 			try {
 				System.out.println("--- Browser Console Logs Start ---");
-				for (org.openqa.selenium.logging.LogEntry entry : driver.manage().logs().get(org.openqa.selenium.logging.LogType.BROWSER)) {
-					System.out.println(new java.util.Date(entry.getTimestamp()) + " " + entry.getLevel() + " " + entry.getMessage());
+				for (org.openqa.selenium.logging.LogEntry entry : driver.manage().logs()
+						.get(org.openqa.selenium.logging.LogType.BROWSER)) {
+					System.out.println(new java.util.Date(entry.getTimestamp()) + " " + entry.getLevel() + " "
+							+ entry.getMessage());
 				}
 				System.out.println("--- Browser Console Logs End ---");
 			} catch (Exception le) {
@@ -377,8 +380,10 @@ public class FofReg {
 		// Print browser console logs unconditionally for debugging
 		try {
 			System.out.println("--- Browser Console Logs Start ---");
-			for (org.openqa.selenium.logging.LogEntry entry : driver.manage().logs().get(org.openqa.selenium.logging.LogType.BROWSER)) {
-				System.out.println(new java.util.Date(entry.getTimestamp()) + " " + entry.getLevel() + " " + entry.getMessage());
+			for (org.openqa.selenium.logging.LogEntry entry : driver.manage().logs()
+					.get(org.openqa.selenium.logging.LogType.BROWSER)) {
+				System.out.println(
+						new java.util.Date(entry.getTimestamp()) + " " + entry.getLevel() + " " + entry.getMessage());
 			}
 			System.out.println("--- Browser Console Logs End ---");
 		} catch (Exception le) {
