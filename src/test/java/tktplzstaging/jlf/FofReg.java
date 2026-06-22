@@ -254,22 +254,7 @@ public class FofReg {
 		js.executeScript("$(arguments[0]).val('Male').trigger('change');", genderSelect);
 		System.out.println("Gender selected as Male programmatically.");
 
-		// Locate the Organisation input dynamically (avoiding dynamic ID by matching
-		// name start/end patterns)
-		WebElement orgInput = wait2.until(
-				ExpectedConditions.visibilityOfElementLocated(
-						By.cssSelector("input[name^='attendee['][name$='[organization]']")));
-
-		// Scroll to it
-		js.executeScript("arguments[0].scrollIntoView({block:'center'});", orgInput);
-
-		// Fill the Organisation
-		orgInput.clear();
-		orgInput.sendKeys("dreamcast");
-		System.out.println("Attendee Organisation filled successfully.");
-
-		// Locate the Designation input dynamically (avoiding dynamic ID by matching
-		// name start/end patterns)
+		// Locate the Designation input dynamically (which represents the Occupation field after Organisation was removed)
 		WebElement designationInput = wait2.until(
 				ExpectedConditions.visibilityOfElementLocated(
 						By.cssSelector("input[name^='attendee['][name$='[designation]']")));
@@ -277,10 +262,10 @@ public class FofReg {
 		// Scroll to it
 		js.executeScript("arguments[0].scrollIntoView({block:'center'});", designationInput);
 
-		// Fill the Designation
+		// Fill the Designation (Occupation)
 		designationInput.clear();
 		designationInput.sendKeys("qa");
-		System.out.println("Attendee Designation filled successfully.");
+		System.out.println("Attendee Designation (Occupation) filled successfully.");
 
 		// Select How did you hear about us (Instagram) programmatically using Select2's
 		// jQuery trigger
