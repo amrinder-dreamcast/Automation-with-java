@@ -1,0 +1,7 @@
+target/
+*.class
+.settings/
+.classpath
+.project
+*.png
+run_count.txt
