@@ -5,3 +5,4 @@ target/
 .project
 *.png
 run_count.txt
+*.log
