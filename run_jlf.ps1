@@ -61,6 +61,10 @@ Add-Content -Path $logFile -Value "Running grwithhotel (General Registration wit
 Add-Content -Path $logFile -Value "Running bookfestivehotel (Book Festival Hotel Only)..."
 & mvn exec:java "-Dexec.classpathScope=test" "-Dexec.mainClass=tktplzstaging.jlf.bookfestivehotel" 2>&1 | Tee-Object -FilePath $logFile -Append
 
+# Run bookfestivehotelwithfof class
+Add-Content -Path $logFile -Value "Running bookfestivehotelwithfof (Book Festival Hotel with FOF Ticket)..."
+& mvn exec:java "-Dexec.classpathScope=test" "-Dexec.mainClass=tktplzstaging.jlf.bookfestivehotelwithfof" 2>&1 | Tee-Object -FilePath $logFile -Append
+
 # Run sr class
 Add-Content -Path $logFile -Value "Running sr (Student Registration)..."
 & mvn exec:java "-Dexec.classpathScope=test" "-Dexec.mainClass=tktplzstaging.jlf.sr" 2>&1 | Tee-Object -FilePath $logFile -Append
