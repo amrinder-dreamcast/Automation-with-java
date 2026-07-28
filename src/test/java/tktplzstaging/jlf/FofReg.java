@@ -254,18 +254,17 @@ public class FofReg {
 		js.executeScript("$(arguments[0]).val('Male').trigger('change');", genderSelect);
 		System.out.println("Gender selected as Male programmatically.");
 
-		// Locate the Designation input dynamically (which represents the Occupation field after Organisation was removed)
-		WebElement designationInput = wait2.until(
-				ExpectedConditions.visibilityOfElementLocated(
-						By.cssSelector("input[name^='attendee['][name$='[designation]']")));
+		// Locate the Occupation (Designation) select dropdown dynamically
+		WebElement designationSelect = wait2.until(
+				ExpectedConditions.presenceOfElementLocated(
+						By.cssSelector("select[name^='attendee['][name$='[designation]']")));
 
 		// Scroll to it
-		js.executeScript("arguments[0].scrollIntoView({block:'center'});", designationInput);
+		js.executeScript("arguments[0].scrollIntoView({block:'center'});", designationSelect);
 
-		// Fill the Designation (Occupation)
-		designationInput.clear();
-		designationInput.sendKeys("qa");
-		System.out.println("Attendee Designation (Occupation) filled successfully.");
+		// Select Occupation programmatically using Select2's jQuery trigger
+		js.executeScript("$(arguments[0]).val('Self-Employed Professional').trigger('change');", designationSelect);
+		System.out.println("Occupation (Designation) selected as Self-Employed Professional programmatically.");
 
 		// Select How did you hear about us (Instagram) programmatically using Select2's
 		// jQuery trigger
