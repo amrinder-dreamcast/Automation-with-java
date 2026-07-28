@@ -45,6 +45,10 @@ Add-Content -Path $logFile -Value "Compiling project..."
 Add-Content -Path $logFile -Value "Running FofReg..."
 & mvn exec:java "-Dexec.classpathScope=test" "-Dexec.mainClass=tktplzstaging.jlf.FofReg" 2>&1 | Tee-Object -FilePath $logFile -Append
 
+# Run fofRegwithhotel class
+Add-Content -Path $logFile -Value "Running fofRegwithhotel (Friend of the Festival with Hotel)..."
+& mvn exec:java "-Dexec.classpathScope=test" "-Dexec.mainClass=tktplzstaging.jlf.fofRegwithhotel" 2>&1 | Tee-Object -FilePath $logFile -Append
+
 # Run gr class
 Add-Content -Path $logFile -Value "Running gr (General Registration)..."
 & mvn exec:java "-Dexec.classpathScope=test" "-Dexec.mainClass=tktplzstaging.jlf.gr" 2>&1 | Tee-Object -FilePath $logFile -Append
