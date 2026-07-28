@@ -155,12 +155,9 @@ public class fofRegwithhotel {
 			// Scroll to it
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", phoneInput);
 
-			// Fill the Phone number (generate unique 10-digit number to bypass duplicates)
+			// Fill the Phone number
 			phoneInput.clear();
-			String uniquePhone = "6" + (System.currentTimeMillis() % 1000000000L);
-			while(uniquePhone.length() < 10) {
-				uniquePhone += "0";
-			}
+			String uniquePhone = "6350415261";
 			phoneInput.sendKeys(uniquePhone);
 			System.out.println("Attendee Phone number filled successfully: " + uniquePhone);
 

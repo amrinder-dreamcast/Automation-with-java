@@ -70,14 +70,11 @@ public class bookfestivehotelwithfof {
 			emailInput.sendKeys(uniqueEmail);
 			System.out.println("Email filled successfully: " + uniqueEmail);
 
-			// Fill Phone (generate unique 10-digit number to bypass duplicates)
+			// Fill Phone
 			WebElement phoneInput = wait.until(
 					ExpectedConditions.visibilityOfElementLocated(By.name("phone")));
 			phoneInput.clear();
-			String uniquePhone = "6" + (System.currentTimeMillis() % 1000000000L);
-			while(uniquePhone.length() < 10) {
-				uniquePhone += "0";
-			}
+			String uniquePhone = "6350415261";
 			phoneInput.sendKeys(uniquePhone);
 			System.out.println("Phone number filled successfully: " + uniquePhone);
 

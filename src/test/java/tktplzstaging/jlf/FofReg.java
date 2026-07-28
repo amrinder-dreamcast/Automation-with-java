@@ -165,10 +165,7 @@ public class FofReg {
 
 		// Fill the Phone number
 		phoneInput.clear();
-		String uniquePhone = "6" + (System.currentTimeMillis() % 1000000000L);
-		while(uniquePhone.length() < 10) {
-			uniquePhone += "0";
-		}
+		String uniquePhone = "6350415261";
 		phoneInput.sendKeys(uniquePhone);
 		System.out.println("Attendee Phone number filled successfully: " + uniquePhone);
 

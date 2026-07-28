@@ -121,16 +121,13 @@ public class grwithhotel {
 			emailInput.sendKeys(uniqueEmail);
 			System.out.println("Attendee Email filled successfully: " + uniqueEmail);
 
-			// Locate and fill the Phone number (generate unique 10-digit number to bypass duplicates)
+			// Locate and fill the Phone number
 			WebElement phoneInput = wait.until(
 					ExpectedConditions.visibilityOfElementLocated(
 							By.cssSelector("input[name^='attendee['][name$='[phone]']")));
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", phoneInput);
 			phoneInput.clear();
-			String uniquePhone = "6" + (System.currentTimeMillis() % 1000000000L);
-			while(uniquePhone.length() < 10) {
-				uniquePhone += "0";
-			}
+			String uniquePhone = "6350415261";
 			phoneInput.sendKeys(uniquePhone);
 			System.out.println("Attendee Phone number filled successfully: " + uniquePhone);
 
