@@ -18,3 +18,5 @@ target/
 # OS files
 Thumbs.db
 desktop.ini
+*.log
+.playwright-mcp/
