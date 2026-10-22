@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TestPilot AI | Enterprise AI-Powered Website Testing Platform</title>
+  <meta name="description" content="Autonomous, production-grade website exploration, accessibility, performance, and defect triaging platform.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('testpilot_theme');
+        var theme = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="top-nav">
+    <div class="nav-brand">
+      <div class="brand-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+          <polyline points="2 17 12 22 22 17"></polyline>
+          <polyline points="2 12 12 17 22 12"></polyline>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">TestPilot <span class="brand-accent">AI</span></span>
+        <span class="brand-badge">ENTERPRISE CORE</span>
+      </div>
+    </div>
+
+    <div class="nav-center">
+      <div class="status-indicator" id="system-status-indicator">
+        <span class="status-dot"></span>
+        <span class="status-text" id="system-status-text">Connecting to Platform...</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <!-- Interactive Light / Dark Mode Toggle Button (Icon Only: Sun & Moon) -->
+      <button class="theme-switcher" id="btn-theme-toggle" type="button" title="Switch between Light and Dark mode" aria-label="Toggle Light and Dark Mode">
+        <span class="theme-option theme-light active" id="theme-opt-light" title="Light mode">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </span>
+        <span class="theme-option theme-dark" id="theme-opt-dark" title="Dark mode">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </span>
+        <!-- Compatibility elements for existing DOM selectors -->
+        <svg id="theme-icon-sun" class="hidden" width="0" height="0" aria-hidden="true"></svg>
+        <svg id="theme-icon-moon" class="hidden" width="0" height="0" aria-hidden="true"></svg>
+        <span id="theme-text" class="hidden">Light Theme</span>
+      </button>
+      <button class="btn btn-outline-danger" id="btn-clear-all-data" title="Clear all previous test runs, defects, and reset workspace for testing new URLs">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+        Clear All Test Data
+      </button>
+      <button class="btn btn-secondary" id="btn-quick-fixture" title="Run test cycle on local fixture website">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="10 8 16 12 10 16 10 8"></polygon>
+        </svg>
+        Quick Fixture Test
+      </button>
+      <button class="btn btn-primary" id="btn-new-run">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        New Test Run
+      </button>
+
+      <!-- User Profile / Session Menu -->
+      <div class="user-session-wrapper" id="wrap-user-session">
+        <button class="user-profile-btn" id="btn-user-profile" type="button" aria-haspopup="true" aria-expanded="false" title="User Account Settings">
+          <div class="user-avatar" id="header-user-avatar">AU</div>
+          <div class="user-info-text">
+            <span class="user-name" id="header-user-name">Admin User</span>
+            <span class="user-role" id="header-user-role">Enterprise QA</span>
+          </div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div class="user-profile-menu hidden" id="menu-user-profile">
+          <div class="user-menu-header">
+            <div class="user-menu-name" id="menu-user-name">Admin User</div>
+            <div class="user-menu-email" id="menu-user-email">admin@testpilot.ai</div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item" id="item-switch-account" type="button">
+            <span class="dropdown-item-icon" style="background:rgba(56,189,248,0.15); color:var(--accent-cyan);">🔄</span>
+            <div class="dropdown-item-content">
+              <div class="dropdown-item-title">Switch Account</div>
+              <div class="dropdown-item-desc">Sign in with different credentials</div>
+            </div>
+          </button>
+          <button class="dropdown-item text-danger" id="item-logout-btn" type="button">
+            <span class="dropdown-item-icon" style="background:rgba(239,68,68,0.15); color:var(--accent-rose);">🚪</span>
+            <div class="dropdown-item-content">
+              <div class="dropdown-item-title" style="color:var(--accent-rose);">Sign Out</div>
+              <div class="dropdown-item-desc">End your active session</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <button class="nav-tab active" data-tab="tab-overview" id="tab-btn-overview">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Dashboard Overview
+        </button>
+        <button class="nav-tab" data-tab="tab-url-history" id="tab-btn-url-history">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Tested URLs History
+          <span class="badge badge-info" id="badge-url-history-count" style="margin-left:auto;font-size:10px;">0</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-crawler" id="tab-btn-crawler">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          Crawler & Discovery
+        </button>
+        <button class="nav-tab" data-tab="tab-runs" id="tab-btn-runs">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          Test Runs & History
+        </button>
+        <button class="nav-tab" data-tab="tab-defects" id="tab-btn-defects">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          Defect Triage
+          <span class="badge badge-danger" id="badge-defect-count">0</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-audit" id="tab-btn-audit">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          Audit Log
+        </button>
+        <button class="nav-tab" data-tab="tab-performance" id="tab-btn-performance">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          Performance & Visual
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="target-card" id="sidebar-target-card" title="Click to open target application in new tab">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="target-title">Target Application</div>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <button class="btn-reset-chip" id="btn-reset-target" title="Reset active target and clear tested data">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                Reset
+              </button>
+              <a id="sidebar-open-link" href="#" target="_blank" rel="noopener noreferrer" style="display:none; color:var(--accent-cyan); font-size:11px; text-decoration:none;" title="Open site in new tab">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </a>
+            </div>
+          </div>
+          <div class="target-url" id="sidebar-target-url">None configured</div>
+          <div class="target-badge" id="sidebar-target-badge">Awaiting target URL</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content-area">
+      <!-- Live Running Banner (Appears when active test is in progress) -->
+      <section class="live-banner hidden" id="live-banner">
+        <div class="live-banner-content">
+          <div class="live-pulse"></div>
+          <div class="live-details">
+            <div class="live-stage" id="live-stage-text">CRAWLING PAGES</div>
+            <div class="live-message" id="live-message-text">Analyzing page topography...</div>
+          </div>
+          <div class="live-progress-container">
+            <div class="live-progress-bar" id="live-progress-bar" style="width: 15%"></div>
+          </div>
+          <span class="live-percent" id="live-percent-text">15%</span>
+        </div>
+      </section>
+
+      <!-- TAB 1: OVERVIEW -->
+      <section class="tab-pane active" id="tab-overview">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Executive Testing Overview</h1>
+            <p class="page-subtitle">Unified ground-truth test automation, accessibility validation, and defect analysis.</p>
+          </div>
+          <div class="header-stat-pills">
+            <span class="stat-pill"><strong id="stat-project-count">1</strong> Project Active</span>
+            <span class="stat-pill"><strong id="stat-env">Development</strong> Mode</span>
+          </div>
+        </div>
+
+        <!-- Metric Cards Grid (Interactive Dashboard Buttons) -->
+        <div class="metrics-grid">
+          <div class="metric-card metric-card-interactive" id="card-metric-runs" role="button" tabindex="0" title="Click to view all Test Runs &amp; History" aria-label="View all Test Runs">
+            <div class="metric-icon icon-blue">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">Total Test Runs</div>
+              <div class="metric-value" id="metric-total-runs">0</div>
+              <div class="metric-sub" id="metric-pass-rate">Ready for initial run</div>
+            </div>
+            <div class="metric-card-arrow" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <div class="metric-card metric-card-interactive" id="card-metric-defects" role="button" tabindex="0" title="Click to inspect and triage Active Defects" aria-label="View Active Defects">
+            <div class="metric-icon icon-rose">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">Active Defects</div>
+              <div class="metric-value" id="metric-active-defects">0</div>
+              <div class="metric-sub text-rose" id="metric-p1-p2">0 Critical (P1/P2)</div>
+            </div>
+            <div class="metric-card-arrow" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <div class="metric-card metric-card-interactive" id="card-metric-pages" role="button" tabindex="0" title="Click to view Discovered Pages &amp; Crawler Results" aria-label="View Discovered Pages">
+            <div class="metric-icon icon-indigo">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">Discovered Pages</div>
+              <div class="metric-value" id="metric-discovered-pages">0</div>
+              <div class="metric-sub" id="metric-broken-links">0 broken links detected</div>
+            </div>
+            <div class="metric-card-arrow" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <div class="metric-card metric-card-interactive" id="card-metric-security" role="button" tabindex="0" title="Click to view Security &amp; Accessibility Violations" aria-label="View Security and Accessibility Violations">
+            <div class="metric-icon icon-emerald">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">Security & A11y Posture</div>
+              <div class="metric-value" id="metric-security-score">Optimal</div>
+              <div class="metric-sub" id="metric-a11y-summary">WCAG 2.1 AA Enforced</div>
+            </div>
+            <div class="metric-card-arrow" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Engines & Architecture Status Grid -->
+        <div class="dashboard-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Integrated Testing Engines</h2>
+              <span class="badge badge-success" id="engines-ready-badge">5 ENGINES READY</span>
+            </div>
+            <div class="engine-list">
+              <div class="engine-item">
+                <div class="engine-icon bg-blue">AI</div>
+                <div class="engine-meta">
+                  <div class="engine-name">Autonomous Exploratory Agent</div>
+                  <div class="engine-desc">Synthesizes user journeys, tests form boundaries, navigates state changes.</div>
+                </div>
+                <span class="engine-badge active">ONLINE</span>
+              </div>
+              <div class="engine-item">
+                <div class="engine-icon bg-indigo">A11y</div>
+                <div class="engine-meta">
+                  <div class="engine-name">Accessibility Engine (axe-core)</div>
+                  <div class="engine-desc">Automated WCAG 2.1 Level A & AA compliance violation audits.</div>
+                </div>
+                <span class="engine-badge active">ONLINE</span>
+              </div>
+              <div class="engine-item">
+                <div class="engine-icon bg-rose">Sec</div>
+                <div class="engine-meta">
+                  <div class="engine-name">Passive Security Engine</div>
+                  <div class="engine-desc">CSP, HSTS, X-Frame-Options, HttpOnly cookies, and mixed content audits.</div>
+                </div>
+                <span class="engine-badge active">ONLINE</span>
+              </div>
+              <div class="engine-item">
+                <div class="engine-icon bg-amber">Perf</div>
+                <div class="engine-meta">
+                  <div class="engine-name">Performance Diagnostic Engine</div>
+                  <div class="engine-desc">FCP, LCP, Navigation timing, and DOM Content Loaded profiling.</div>
+                </div>
+                <span class="engine-badge active">ONLINE</span>
+              </div>
+              <div class="engine-item">
+                <div class="engine-icon bg-emerald">Vis</div>
+                <div class="engine-meta">
+                  <div class="engine-name">Visual Regression Engine (Pixelmatch)</div>
+                  <div class="engine-desc">Pixel-perfect screenshot differential analysis with artifact isolation.</div>
+                </div>
+                <span class="engine-badge active">ONLINE</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Recent Defect Stream</h2>
+              <button class="btn btn-sm btn-outline" id="btn-view-all-defects">View All</button>
+            </div>
+            <div class="defect-stream" id="overview-defect-stream">
+              <div class="empty-state">
+                <div class="empty-icon">✓</div>
+                <p>No defects recorded yet. Launch a test run to inspect the ground-truth application.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: TESTED URLS HISTORY -->
+      <section class="tab-pane" id="tab-url-history">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Tested URLs History & Data Vault</h1>
+            <p class="page-subtitle">Inspect historical test executions, defect discoveries, performance audits, and crawl data for each tested URL.</p>
+          </div>
+          <div class="header-actions-wrap" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <div class="header-stat-pills">
+              <span class="stat-pill"><strong id="stat-history-url-count">0</strong> Tested URLs Indexed</span>
+              <span class="stat-pill"><strong id="stat-history-runs-count">0</strong> Test Cycles Run</span>
+            </div>
+            <!-- Export Sheet Dropdown Button -->
+            <div class="export-dropdown-wrapper" id="wrap-export-tested-urls">
+              <button class="btn btn-primary" id="btn-export-sheet-dropdown" type="button" aria-haspopup="true" aria-expanded="false" title="Export all tested URL data to Excel or CSV spreadsheet">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="8" y1="13" x2="16" y2="13"></line>
+                  <line x1="8" y1="17" x2="16" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <span>Export Sheet</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:2px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="export-dropdown-menu hidden" id="menu-export-sheet">
+                <div class="dropdown-header">Export Tested Data Spreadsheets</div>
+                <button class="dropdown-item" id="item-export-excel" type="button">
+                  <span class="dropdown-item-icon" style="background:rgba(16,185,129,0.15); color:var(--accent-emerald);">📊</span>
+                  <div class="dropdown-item-content">
+                    <div class="dropdown-item-title">Excel Multi-Sheet Workbook (.xlsx)</div>
+                    <div class="dropdown-item-desc">Complete 4-sheet workbook: URLs Summary, Defects, CWV &amp; Endpoints</div>
+                  </div>
+                </button>
+                <button class="dropdown-item" id="item-export-summary-csv" type="button">
+                  <span class="dropdown-item-icon" style="background:rgba(56,189,248,0.15); color:var(--accent-cyan);">📄</span>
+                  <div class="dropdown-item-content">
+                    <div class="dropdown-item-title">Tested URLs Summary Sheet (.csv)</div>
+                    <div class="dropdown-item-desc">Master table with metrics, health &amp; defects aligned per URL</div>
+                  </div>
+                </button>
+                <button class="dropdown-item" id="item-export-defects-csv" type="button">
+                  <span class="dropdown-item-icon" style="background:rgba(244,63,94,0.15); color:var(--accent-rose);">🐛</span>
+                  <div class="dropdown-item-content">
+                    <div class="dropdown-item-title">Defects Aligned By Tested URL (.csv)</div>
+                    <div class="dropdown-item-desc">Discovered defects anchored to their affected URL</div>
+                  </div>
+                </button>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item" id="item-export-custom-modal" type="button">
+                  <span class="dropdown-item-icon" style="background:rgba(99,102,241,0.15); color:var(--accent-indigo);">⚙️</span>
+                  <div class="dropdown-item-content">
+                    <div class="dropdown-item-title">Custom Export &amp; Preview...</div>
+                    <div class="dropdown-item-desc">Configure scope, inspect aligned data preview, and download</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="url-history-toolbar">
+          <div class="url-search-wrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" class="input-search" id="input-url-history-search" placeholder="Search by URL path, domain, or title...">
+          </div>
+          <div class="url-filter-wrap">
+            <select class="select-input" id="select-url-history-scope">
+              <option value="ALL">All Tested Targets & Subpages</option>
+              <option value="PRIMARY">Primary Targets Only</option>
+              <option value="DEFECTIVE">Targets with Defects Only</option>
+            </select>
+          </div>
+          <div class="url-history-toolbar-actions" style="display:flex; align-items:center; gap:8px; margin-left:auto;">
+            <button class="btn btn-secondary btn-sm" id="btn-quick-export-csv" type="button" title="Instantly download Tested URLs Summary CSV sheet">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Quick CSV
+            </button>
+            <button class="btn btn-secondary btn-sm" id="btn-quick-export-excel" type="button" title="Instantly download Excel Workbook (.xls)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+              Quick Excel
+            </button>
+          </div>
+        </div>
+
+        <!-- Master-Detail Split View -->
+        <div class="url-history-container">
+          <!-- Left Panel: URLs List -->
+          <div class="url-history-sidebar">
+            <div class="url-history-list-header">
+              <span class="list-heading">Tested Targets</span>
+              <span class="badge badge-info" id="url-history-list-badge">0 URLs</span>
+            </div>
+            <div class="url-history-cards-list" id="url-history-cards-list">
+              <!-- Rendered via app.js -->
+            </div>
+          </div>
+
+          <!-- Right Panel: Particular URL Detailed Testing Dossier -->
+          <div class="url-history-main" id="url-history-main">
+            <!-- Default / Empty State -->
+            <div class="url-history-empty-state" id="url-history-empty">
+              <div class="empty-icon-lg">
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+              </div>
+              <h3 style="margin-top:12px; font-size:18px;">Select a Tested URL</h3>
+              <p style="color:var(--text-secondary); max-width:440px; margin:8px auto 0;">Click any tested URL from the list on the left to see all its historical test runs, defect logs, performance metrics, and crawl results.</p>
+            </div>
+
+            <!-- Active Dossier Content -->
+            <div class="url-dossier hidden" id="url-dossier">
+              <!-- Dossier Top Hero Banner -->
+              <div class="dossier-hero">
+                <div class="dossier-hero-left">
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                    <span class="badge badge-info" id="dossier-type-badge">PRIMARY TARGET</span>
+                    <span class="badge" id="dossier-health-badge">HEALTHY</span>
+                  </div>
+                  <h2 class="dossier-url-title" id="dossier-url-title">http://localhost:4000</h2>
+                  <div class="dossier-meta-subtitle" id="dossier-meta-subtitle">First tested on: —</div>
+                </div>
+                <div class="dossier-hero-actions">
+                  <button class="btn btn-secondary" id="btn-dossier-export-sheet" title="Export this URL tested data and findings to a sheet">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+                    Export URL Sheet
+                  </button>
+                  <button class="btn btn-primary" id="btn-dossier-retest" title="Launch a new automated test cycle on this URL">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                    Test This URL
+                  </button>
+                  <a class="btn btn-secondary" id="btn-dossier-visit" href="#" target="_blank" rel="noopener noreferrer">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    Open URL
+                  </a>
+                </div>
+              </div>
+
+              <!-- Dossier Metrics 4-Pack -->
+              <div class="dossier-metrics-grid">
+                <div class="dossier-metric-card">
+                  <div class="dossier-metric-val" id="dossier-stat-runs">0</div>
+                  <div class="dossier-metric-lbl">Total Test Runs</div>
+                  <div class="dossier-metric-sub" id="dossier-stat-runs-sub">All test cycles</div>
+                </div>
+                <div class="dossier-metric-card">
+                  <div class="dossier-metric-val text-rose" id="dossier-stat-defects">0</div>
+                  <div class="dossier-metric-lbl">Defects Logged</div>
+                  <div class="dossier-metric-sub text-rose" id="dossier-stat-defects-sub">0 Critical P1</div>
+                </div>
+                <div class="dossier-metric-card">
+                  <div class="dossier-metric-val" id="dossier-stat-pass-rate">0%</div>
+                  <div class="dossier-metric-lbl">Overall Pass Rate</div>
+                  <div class="dossier-metric-sub" id="dossier-stat-pass-sub">Journeys passed</div>
+                </div>
+                <div class="dossier-metric-card">
+                  <div class="dossier-metric-val" id="dossier-stat-avg-speed">—</div>
+                  <div class="dossier-metric-lbl">Avg Response Latency</div>
+                  <div class="dossier-metric-sub" id="dossier-stat-speed-sub">Core Web Vitals</div>
+                </div>
+              </div>
+
+              <!-- Dossier Subtabs Navigation -->
+              <div class="dossier-subtabs">
+                <button class="dossier-tab-btn active" data-dossier-tab="dossier-tab-runs">
+                  Test Runs (<span id="dossier-count-runs">0</span>)
+                </button>
+                <button class="dossier-tab-btn" data-dossier-tab="dossier-tab-defects">
+                  Defects & Findings (<span id="dossier-count-defects">0</span>)
+                </button>
+                <button class="dossier-tab-btn" data-dossier-tab="dossier-tab-pages">
+                  Discovered Pages (<span id="dossier-count-pages">0</span>)
+                </button>
+                <button class="dossier-tab-btn" data-dossier-tab="dossier-tab-perf">
+                  Performance & CWV
+                </button>
+                <button class="dossier-tab-btn" data-dossier-tab="dossier-tab-visual">
+                  Visual Regression (<span id="dossier-count-visual">0</span>)
+                </button>
+              </div>
+
+              <!-- Dossier Subtab Content: Test Runs -->
+              <div class="dossier-tab-pane active" id="dossier-tab-runs">
+                <div class="table-container">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Run ID</th>
+                        <th>Status</th>
+                        <th>Started</th>
+                        <th>Duration</th>
+                        <th>Tests (Pass/Fail)</th>
+                        <th>Defects</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dossier-runs-tbody">
+                      <!-- Rendered via JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Dossier Subtab Content: Defects -->
+              <div class="dossier-tab-pane" id="dossier-tab-defects">
+                <div class="defect-cards-grid" id="dossier-defects-grid" style="padding: 12px 0;">
+                  <!-- Rendered via JS -->
+                </div>
+              </div>
+
+              <!-- Dossier Subtab Content: Discovered Pages -->
+              <div class="dossier-tab-pane" id="dossier-tab-pages">
+                <div class="table-container">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Status</th>
+                        <th>Path / URL</th>
+                        <th>Title</th>
+                        <th>Interactive Elements</th>
+                        <th>Forms</th>
+                        <th>Latency</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dossier-pages-tbody">
+                      <!-- Rendered via JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Dossier Subtab Content: Performance -->
+              <div class="dossier-tab-pane" id="dossier-tab-perf">
+                <div class="table-container">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Run ID</th>
+                        <th>Timestamp</th>
+                        <th>Navigation</th>
+                        <th>First Contentful Paint</th>
+                        <th>Largest Contentful Paint</th>
+                        <th>TTFB</th>
+                        <th>CLS</th>
+                        <th>Requests</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dossier-perf-tbody">
+                      <!-- Rendered via JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Dossier Subtab Content: Visual Regression -->
+              <div class="dossier-tab-pane" id="dossier-tab-visual">
+                <div class="visual-grid" id="dossier-visual-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px; padding:12px 0;">
+                  <!-- Rendered via JS -->
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: CRAWLER -->
+      <section class="tab-pane" id="tab-crawler">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Crawler & Attack Surface Discovery</h1>
+            <p class="page-subtitle">High-speed BFS crawler with enterprise SSRF loop prevention and interactive element extraction.</p>
+          </div>
+          <button class="btn btn-primary" id="btn-start-crawl-only">Start Discovery Crawl</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Discovered Pages & Interactive Elements</h2>
+            <div class="filter-controls">
+              <input type="text" class="input-search" id="crawler-search" placeholder="Filter pages by URL or title...">
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table" id="table-pages">
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Page URL</th>
+                  <th>Depth</th>
+                  <th>Latency</th>
+                  <th>Interactive Elements</th>
+                  <th>Forms</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="crawler-pages-tbody">
+                <tr>
+                  <td colspan="7" class="text-center text-muted py-4">No crawl session executed yet. Click 'Start Discovery Crawl' to begin.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: RUNS -->
+      <section class="tab-pane" id="tab-runs">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Automated Test Runs & History</h1>
+            <p class="page-subtitle">Complete chronological trace of all executed test runs, pass/fail ratios, and execution artifacts.</p>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <button class="btn btn-secondary" id="btn-runs-export-sheet" title="Export all tested data and runs to spreadsheet">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+              Export Sheet
+            </button>
+            <button class="btn btn-primary" id="btn-trigger-run-runs-tab">Execute New Run</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Executed Test Sessions</h2>
+          </div>
+          <div class="table-container">
+            <table class="data-table" id="table-test-runs">
+              <thead>
+                <tr>
+                  <th>Run ID</th>
+                  <th>Target URL</th>
+                  <th>Status</th>
+                  <th>Total Tests</th>
+                  <th>Passed / Failed</th>
+                  <th>Defects</th>
+                  <th>Started At</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="runs-tbody">
+                <tr>
+                  <td colspan="8" class="text-center text-muted py-4">Loading test runs...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Selected Run Detail Drawer -->
+        <div class="run-detail-container hidden" id="run-detail-container">
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title" id="run-detail-title">Test Run Details</h2>
+              <button class="btn btn-sm btn-outline" id="btn-close-run-detail">Close</button>
+            </div>
+            <div class="run-detail-body" id="run-detail-body">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: DEFECT TRIAGE -->
+      <section class="tab-pane" id="tab-defects">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Defect Triage & Root Cause Intelligence</h1>
+            <p class="page-subtitle">Automatic classification, severity scoring (P1-P4), fingerprint deduplication, and controlled reproduction.</p>
+          </div>
+          <div class="triage-filters">
+            <select class="select-input" id="filter-severity">
+              <option value="ALL">All Severities</option>
+              <option value="P1">P1 - Critical</option>
+              <option value="P2">P2 - High</option>
+              <option value="P3">P3 - Medium</option>
+              <option value="P4">P4 - Low</option>
+            </select>
+            <select class="select-input" id="filter-category">
+              <option value="ALL">All Categories</option>
+              <option value="FUNCTIONAL">Functional</option>
+              <option value="ACCESSIBILITY">Accessibility</option>
+              <option value="SECURITY">Security</option>
+              <option value="VISUAL">Visual</option>
+              <option value="PERFORMANCE">Performance</option>
+            </select>
+            <button class="btn btn-secondary btn-sm" id="btn-defects-export-sheet" title="Export defects sheet aligned by tested URL" style="white-space:nowrap;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+              Export Sheet
+            </button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header" style="flex-wrap: wrap; gap: 12px;">
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+              <h2 class="panel-title">Classified Defects</h2>
+              <span class="badge badge-info" id="triage-badge-filtered">Showing 0 defects</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; margin-left:auto; flex-wrap:wrap;">
+              <div class="filter-sort-wrapper">
+                <label for="filter-status" class="filter-inline-label">Status:</label>
+                <select class="select-input select-sm" id="filter-status">
+                  <option value="ALL" selected>All Status</option>
+                  <option value="OPEN">Open Only</option>
+                  <option value="RESOLVED">Resolved Only</option>
+                </select>
+              </div>
+              <div class="filter-sort-wrapper">
+                <label for="filter-sort" class="filter-inline-label">Sort:</label>
+                <select class="select-input select-sm" id="filter-sort">
+                  <option value="SEVERITY_DESC">Severity (P1 → P4)</option>
+                  <option value="SEVERITY_ASC">Severity (P4 → P1)</option>
+                  <option value="NEWEST">Newest First</option>
+                  <option value="CATEGORY">Category</option>
+                </select>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline hidden" id="btn-reset-filters" title="Reset all search and filter criteria">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                  <path d="M3 3v5h5"></path>
+                </svg>
+                Reset Filters
+              </button>
+            </div>
+          </div>
+
+          <!-- Interactive Filter & Search Toolbar -->
+          <div class="triage-toolbar">
+            <!-- Search Box -->
+            <div class="defect-search-box">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="defect-search-icon">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" class="form-input defect-search-input" id="input-defect-search" placeholder="Search defects by title, description, URL route, or fingerprint..." autocomplete="off">
+              <button type="button" class="search-clear-btn hidden" id="btn-defect-search-clear" title="Clear search">&times;</button>
+            </div>
+
+            <!-- Severity Pills -->
+            <div class="filter-pills-row">
+              <span class="filter-pills-label">Severity:</span>
+              <div class="filter-pills-group" id="group-severity-pills">
+                <button type="button" class="filter-pill active" data-filter="severity" data-value="ALL">
+                  All <span class="pill-count" id="count-pill-sev-all">0</span>
+                </button>
+                <button type="button" class="filter-pill pill-p1" data-filter="severity" data-value="P1">
+                  P1 Critical <span class="pill-count" id="count-pill-sev-p1">0</span>
+                </button>
+                <button type="button" class="filter-pill pill-p2" data-filter="severity" data-value="P2">
+                  P2 High <span class="pill-count" id="count-pill-sev-p2">0</span>
+                </button>
+                <button type="button" class="filter-pill pill-p3" data-filter="severity" data-value="P3">
+                  P3 Medium <span class="pill-count" id="count-pill-sev-p3">0</span>
+                </button>
+                <button type="button" class="filter-pill pill-p4" data-filter="severity" data-value="P4">
+                  P4 Low <span class="pill-count" id="count-pill-sev-p4">0</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Category Pills -->
+            <div class="filter-pills-row">
+              <span class="filter-pills-label">Category:</span>
+              <div class="filter-pills-group" id="group-category-pills">
+                <button type="button" class="filter-pill active" data-filter="category" data-value="ALL">
+                  All Categories <span class="pill-count" id="count-pill-cat-all">0</span>
+                </button>
+                <button type="button" class="filter-pill" data-filter="category" data-value="FUNCTIONAL">
+                  Functional <span class="pill-count" id="count-pill-cat-func">0</span>
+                </button>
+                <button type="button" class="filter-pill" data-filter="category" data-value="ACCESSIBILITY">
+                  Accessibility <span class="pill-count" id="count-pill-cat-a11y">0</span>
+                </button>
+                <button type="button" class="filter-pill" data-filter="category" data-value="SECURITY">
+                  Security <span class="pill-count" id="count-pill-cat-sec">0</span>
+                </button>
+                <button type="button" class="filter-pill" data-filter="category" data-value="PERFORMANCE">
+                  Performance <span class="pill-count" id="count-pill-cat-perf">0</span>
+                </button>
+                <button type="button" class="filter-pill" data-filter="category" data-value="VISUAL">
+                  Visual <span class="pill-count" id="count-pill-cat-vis">0</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="defect-cards-grid" id="defect-cards-container">
+            <div class="empty-state">
+              <p>No defects matching current filter criteria.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: AUDIT LOG -->
+      <section class="tab-pane" id="tab-audit">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Platform Audit Trail</h1>
+            <p class="page-subtitle">Immutable chronological log of all testing runs, scope changes, and triage modifications.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="table-container">
+            <table class="data-table" id="table-audit">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Action</th>
+                  <th>Entity Type</th>
+                  <th>Entity ID</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody id="audit-tbody">
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-4">Loading audit logs...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <!-- TAB 6: PERFORMANCE & VISUAL REGRESSION -->
+      <section class="tab-pane" id="tab-performance">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Performance & Visual Regression</h1>
+            <p class="page-subtitle">Core Web Vitals (FCP, LCP, CLS, TTFB) diagnostics and pixel-level visual diff analysis.</p>
+          </div>
+        </div>
+
+        <!-- Core Web Vitals Summary Cards -->
+        <div class="metrics-grid" id="perf-vitals-grid" style="margin-bottom: 20px;">
+          <div class="metric-card">
+            <div class="metric-icon icon-blue">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">Avg Navigation</div>
+              <div class="metric-value" id="perf-avg-nav">—</div>
+              <div class="metric-sub">Total page load time</div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon icon-indigo">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">Avg FCP</div>
+              <div class="metric-value" id="perf-avg-fcp">—</div>
+              <div class="metric-sub">First Contentful Paint</div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon icon-emerald">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">Avg LCP</div>
+              <div class="metric-value" id="perf-avg-lcp">—</div>
+              <div class="metric-sub">Largest Contentful Paint</div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon icon-rose">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">Avg TTFB</div>
+              <div class="metric-value" id="perf-avg-ttfb">—</div>
+              <div class="metric-sub">Time to First Byte</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Metrics Table -->
+        <div class="panel" style="margin-bottom: 20px;">
+          <div class="panel-header">
+            <h2 class="panel-title">Page-Level Performance Results</h2>
+            <span class="badge badge-info" id="perf-page-count">0 pages profiled</span>
+          </div>
+          <div class="table-container">
+            <table class="data-table" id="table-perf">
+              <thead>
+                <tr>
+                  <th>Page URL</th>
+                  <th>Nav (ms)</th>
+                  <th>FCP (ms)</th>
+                  <th>LCP (ms)</th>
+                  <th>TTFB (ms)</th>
+                  <th>CLS</th>
+                  <th>Requests</th>
+                  <th>Issues</th>
+                </tr>
+              </thead>
+              <tbody id="perf-tbody">
+                <tr><td colspan="8" class="text-center text-muted py-4">No performance data yet. Run a test cycle to collect Core Web Vitals.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Visual Regression Results -->
+        <div class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Visual Regression Snapshots</h2>
+            <span class="badge badge-info" id="visual-snap-count">0 captures</span>
+          </div>
+          <div id="visual-results-grid" style="padding: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;">
+            <div class="empty-state" style="grid-column: 1/-1;">
+              <div class="empty-icon">📸</div>
+              <p>No visual regression captures yet. Run a test cycle to compare pixel-level screenshots.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- TAB 6: PERFORMANCE & VISUAL -->
+  <!-- Note: This is outside .content-area but inside .app-layout via JS tab switching -->
+  <template id="tab-performance-template">
+  </template>
+
+  <!-- Modal: New Test Run Configuration -->
+  <div class="modal-backdrop hidden" id="modal-new-run">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">Configure Automated Test Run</h2>
+        <button class="modal-close" id="modal-close-btn">&times;</button>
+      </div>
+      <form id="form-new-run" class="modal-form">
+        <div class="form-group">
+          <label class="form-label" for="run-target-url">Target Website URL</label>
+          <input type="url" id="run-target-url" class="form-input" required placeholder="https://www.flipkart.com, https://example.com, etc.">
+          <span class="form-hint">Must be HTTP or HTTPS. Localhost allowed when SSRF local targets permitted.</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="run-crawl-depth">Max Crawl Depth</label>
+            <input type="number" id="run-crawl-depth" class="form-input" min="1" max="5" value="3">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="run-max-pages">Max Pages to Crawl</label>
+            <input type="number" id="run-max-pages" class="form-input" min="1" max="50" value="20">
+          </div>
+        </div>
+
+        <div class="form-checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="run-allow-local" checked>
+            <span>Allow Local & Benchmark Fixture Targets (SSRF exception for localhost:4000)</span>
+          </label>
+        </div>
+
+        <div class="form-checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="run-a11y-check" checked>
+            <span>Run Automated Accessibility Audits (axe-core WCAG 2.1)</span>
+          </label>
+        </div>
+
+        <div class="form-checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="run-security-check" checked>
+            <span>Run Passive Security Audits (CSP, HSTS, Cookies, Clickjacking)</span>
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-start-run">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Start Test Cycle
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Defect Details Drawer -->
+  <div class="modal-backdrop hidden" id="modal-defect-detail">
+    <div class="modal-card modal-lg" style="max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="defect-detail-title">Defect Analysis</h2>
+        <button class="modal-close" id="modal-defect-close-btn">&times;</button>
+      </div>
+      <div class="defect-modal-body" id="defect-detail-content">
+        <!-- Dynamically injected -->
+      </div>
+      <div class="defect-modal-footer" id="defect-modal-footer">
+        <!-- Dynamically injected footer -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Reset / Clear All Test Data Confirmation -->
+  <div class="modal-backdrop hidden" id="modal-clear-data">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:38px; height:38px; border-radius:50%; background:rgba(244,63,94,0.15); display:flex; align-items:center; justify-content:center; color:var(--accent-rose); flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </div>
+          <div>
+            <h2 class="modal-title" style="margin:0; font-size:17px;">Clear All Test Data?</h2>
+            <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Reset platform to clean state for new URL testing</div>
+          </div>
+        </div>
+        <button class="modal-close" id="modal-clear-close-btn">&times;</button>
+      </div>
+
+      <div style="padding: 16px 0; color:var(--text-secondary); font-size:13.5px; line-height:1.6;">
+        <p style="margin-bottom: 12px;">This will completely reset and purge all recorded data from previously tested websites:</p>
+        <ul style="padding-left: 20px; margin-bottom: 16px; color:var(--text-main); font-size:13px; line-height:1.8;">
+          <li>All test runs and journey execution steps</li>
+          <li>All discovered defects and security violations</li>
+          <li>All crawled pages and DOM topographical maps</li>
+          <li>Core Web Vitals metrics and visual regression screenshots</li>
+          <li>Active target application configurations</li>
+        </ul>
+        <div style="padding:10px 14px; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.25); border-radius:var(--radius-sm); font-size:12px; color:#fbbf24;">
+          💡 <strong>Tip:</strong> Use this whenever you want to test a completely new website URL without old defect or test run contamination.
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 10px;">
+        <button type="button" class="btn btn-secondary" id="modal-clear-cancel-btn">Cancel</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-clear-data" style="background:var(--accent-rose); border-color:var(--accent-rose); color:#fff; display:inline-flex; align-items:center; gap:6px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Yes, Reset All Data
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Export Sheet Options & Live Preview -->
+  <div class="modal-backdrop hidden" id="modal-export-sheet">
+    <div class="modal-card modal-lg" style="max-width: 860px; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:38px; height:38px; border-radius:8px; background:rgba(56,189,248,0.15); display:flex; align-items:center; justify-content:center; color:var(--accent-cyan); flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="8" y1="13" x2="16" y2="13"></line>
+              <line x1="8" y1="17" x2="16" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <div>
+            <h2 class="modal-title" style="margin:0; font-size:17px;">Export Tested Data Sheet</h2>
+            <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Export all testing data properly aligned according to tested URLs</div>
+          </div>
+        </div>
+        <button class="modal-close" id="modal-export-close-btn">&times;</button>
+      </div>
+
+      <div style="padding: 20px 24px; overflow-y: auto; flex: 1; display:flex; flex-direction:column; gap:18px;">
+        <!-- Format Selection Grid -->
+        <div>
+          <label class="form-label" style="margin-bottom:8px;">Choose Spreadsheet Format:</label>
+          <div class="export-format-grid">
+            <label class="export-format-card active" id="label-format-excel">
+              <input type="radio" name="export-format" value="EXCEL" checked>
+              <div class="format-card-icon excel-bg">📊</div>
+              <div class="format-card-info">
+                <div class="format-card-title">Excel Multi-Sheet Workbook (.xlsx)</div>
+                <div class="format-card-desc">4 organized sheets: Tested URLs Summary, Defects Aligned by URL, Performance CWV, and Discovered Endpoints. Styled headers &amp; column widths.</div>
+              </div>
+            </label>
+            <label class="export-format-card" id="label-format-csv-summary">
+              <input type="radio" name="export-format" value="CSV_SUMMARY">
+              <div class="format-card-icon csv-bg">📄</div>
+              <div class="format-card-info">
+                <div class="format-card-title">Tested URLs Summary Sheet (.csv)</div>
+                <div class="format-card-desc">Universal CSV format (UTF-8 with BOM). Each row is an indexed tested URL with metrics, health verdict, and defect counts cleanly aligned.</div>
+              </div>
+            </label>
+            <label class="export-format-card" id="label-format-csv-defects">
+              <input type="radio" name="export-format" value="CSV_DEFECTS">
+              <div class="format-card-icon defect-bg">🐛</div>
+              <div class="format-card-info">
+                <div class="format-card-title">Defects Aligned by URL (.csv)</div>
+                <div class="format-card-desc">Deep-dive defect inventory where the Tested URL is the primary anchoring column, along with severity, root cause, reproduction steps, and fixes.</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Scope Selection -->
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Data Scope:</label>
+            <select class="select-input" id="select-export-scope" style="width:100%;">
+              <option value="ALL">All Tested Targets &amp; Subpages</option>
+              <option value="PRIMARY">Primary Targets Only</option>
+              <option value="DEFECTIVE">Targets with Defects Only</option>
+              <option value="CURRENT">Currently Filtered URLs Only</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Encoding &amp; Compatibility:</label>
+            <div style="font-size:12.5px; color:var(--text-secondary); padding:8px 12px; background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--radius-sm);">
+              ✓ UTF-8 BOM • Excel, Google Sheets &amp; Calc Ready
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Aligned Preview Table -->
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <label class="form-label" style="margin-bottom:0;">Live Preview: Data Aligned According to Tested URL</label>
+            <span class="badge badge-info" id="badge-export-preview-count">0 URLs aligned</span>
+          </div>
+          <div class="table-container" style="max-height: 220px; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); overflow-y:auto;">
+            <table class="data-table" style="font-size:12px;">
+              <thead>
+                <tr>
+                  <th style="position:sticky; top:0; z-index:2;">Tested URL</th>
+                  <th style="position:sticky; top:0; z-index:2;">Type</th>
+                  <th style="position:sticky; top:0; z-index:2;">Health Verdict</th>
+                  <th style="position:sticky; top:0; z-index:2;">Runs</th>
+                  <th style="position:sticky; top:0; z-index:2;">Pass %</th>
+                  <th style="position:sticky; top:0; z-index:2;">Defects</th>
+                  <th style="position:sticky; top:0; z-index:2;">P1 / P2</th>
+                  <th style="position:sticky; top:0; z-index:2;">Avg Latency</th>
+                </tr>
+              </thead>
+              <tbody id="export-preview-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top:0; padding:16px 24px; background:var(--bg-surface); border-top:1px solid var(--border-subtle);">
+        <button type="button" class="btn btn-secondary" id="modal-export-cancel-btn">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btn-modal-confirm-export" style="display:inline-flex; align-items:center; gap:8px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span id="btn-modal-export-text">Download Excel Sheet (.xlsx)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- Dedicated User Sign In Screen (Visual Spec Aligned)         -->
+  <!-- ========================================================== -->
+  <div class="login-screen-overlay" id="view-login-screen">
+    <div class="login-card-container">
+      <div class="login-brand-header">
+        <div class="login-brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div class="login-brand-title">TestPilot <span class="brand-accent">AI</span></div>
+      </div>
+
+      <!-- CARD 1: SIGN IN -->
+      <div class="login-card" id="card-signin">
+        <h1 class="login-title">Sign in</h1>
+        <p class="login-subtitle">Welcome back! Sign in to access your QA dashboard.</p>
+
+        <div class="login-alert-banner hidden" id="login-alert-banner">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span id="login-alert-text">Please enter valid credentials</span>
+        </div>
+
+        <form id="form-login" class="login-form" novalidate autocomplete="on">
+          <div class="login-field-group">
+            <label class="login-field-label" for="login-input-email">
+              Email address<span class="required-asterisk">*</span>
+            </label>
+            <input
+              type="text"
+              id="login-input-email"
+              class="login-field-input"
+              name="email"
+              placeholder=""
+              autocomplete="username"
+              required
+            />
+          </div>
+
+          <div class="login-field-group">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label class="login-field-label" for="login-input-password" style="margin-bottom:0;">
+                Password<span class="required-asterisk">*</span>
+              </label>
+              <button type="button" class="btn-link-action" id="btn-goto-forgot">Forgot password?</button>
+            </div>
+            <div class="login-password-wrapper" style="margin-top:6px;">
+              <input
+                type="password"
+                id="login-input-password"
+                class="login-field-input login-password-input"
+                name="password"
+                placeholder=""
+                autocomplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                class="btn-toggle-eye"
+                id="btn-toggle-password"
+                title="Toggle password visibility"
+                aria-label="Toggle password visibility"
+              >
+                <svg class="eye-icon-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg class="eye-icon-closed hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="login-remember-row">
+            <label class="login-checkbox-label">
+              <input type="checkbox" id="login-checkbox-remember" class="login-checkbox" checked />
+              <span class="login-checkbox-custom"></span>
+              <span class="login-checkbox-text">Remember me</span>
+            </label>
+          </div>
+
+          <button type="submit" id="btn-login-submit" class="btn-signin-blue">
+            <span class="login-submit-spinner hidden" id="login-submit-spinner"></span>
+            <span id="btn-login-text">Sign in</span>
+          </button>
+
+          <!-- Sign Up Switch Prompt -->
+          <div class="auth-switch-prompt">
+            <span>Don't have an account?</span>
+            <button type="button" class="btn-link-strong" id="btn-goto-signup">Sign up</button>
+          </div>
+
+          <!-- Quick Demo Credentials Helper -->
+          <div class="login-demo-helper">
+            <span class="login-demo-text">Quick Demo: <code>admin@testpilot.ai</code></span>
+            <button type="button" class="btn-autofill-demo" id="btn-autofill-demo">Auto-Fill</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- CARD 2: SIGN UP -->
+      <div class="login-card hidden" id="card-signup">
+        <h1 class="login-title">Create account</h1>
+        <p class="login-subtitle">Join TestPilot AI to start automated testing & QA analysis.</p>
+
+        <div class="login-alert-banner hidden" id="signup-alert-banner">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span id="signup-alert-text">Please fill in all required fields</span>
+        </div>
+
+        <form id="form-signup" class="login-form" novalidate autocomplete="on">
+          <div class="login-field-group">
+            <label class="login-field-label" for="signup-input-name">
+              Full Name<span class="required-asterisk">*</span>
+            </label>
+            <input
+              type="text"
+              id="signup-input-name"
+              class="login-field-input"
+              name="name"
+              placeholder="e.g. Alex Morgan"
+              autocomplete="name"
+              required
+            />
+          </div>
+
+          <div class="login-field-group">
+            <label class="login-field-label" for="signup-input-email">
+              Work Email address<span class="required-asterisk">*</span>
+            </label>
+            <input
+              type="email"
+              id="signup-input-email"
+              class="login-field-input"
+              name="email"
+              placeholder="name@company.com"
+              autocomplete="email"
+              required
+            />
+          </div>
+
+          <div class="login-field-group">
+            <label class="login-field-label" for="signup-input-password">
+              Password<span class="required-asterisk">*</span>
+            </label>
+            <div class="login-password-wrapper">
+              <input
+                type="password"
+                id="signup-input-password"
+                class="login-field-input login-password-input"
+                name="password"
+                placeholder="Minimum 4 characters"
+                autocomplete="new-password"
+                required
+              />
+              <button
+                type="button"
+                class="btn-toggle-eye"
+                id="btn-toggle-signup-password"
+                title="Toggle password visibility"
+                aria-label="Toggle password visibility"
+              >
+                <svg class="eye-icon-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg class="eye-icon-closed hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="login-remember-row">
+            <label class="login-checkbox-label">
+              <input type="checkbox" id="signup-checkbox-terms" class="login-checkbox" checked />
+              <span class="login-checkbox-custom"></span>
+              <span class="login-checkbox-text">I agree to the Terms of Service & Privacy</span>
+            </label>
+          </div>
+
+          <button type="submit" id="btn-signup-submit" class="btn-signin-blue">
+            <span class="login-submit-spinner hidden" id="signup-submit-spinner"></span>
+            <span id="btn-signup-text">Create Account</span>
+          </button>
+
+          <!-- Sign In Switch Link -->
+          <div class="auth-switch-prompt">
+            <span>Already have an account?</span>
+            <button type="button" class="btn-link-strong" id="btn-goto-signin-from-signup">Sign in</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- CARD 3: FORGOT PASSWORD -->
+      <div class="login-card hidden" id="card-forgot">
+        <h1 class="login-title">Reset password</h1>
+        <p class="login-subtitle">Enter your registered email and we'll send you recovery instructions.</p>
+
+        <div class="login-alert-banner hidden" id="forgot-alert-banner">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span id="forgot-alert-text">Please enter a valid email address</span>
+        </div>
+
+        <div class="login-success-banner hidden" id="forgot-success-banner">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <span id="forgot-success-text">Recovery instructions dispatched. Please check your inbox.</span>
+        </div>
+
+        <form id="form-forgot" class="login-form" novalidate autocomplete="on">
+          <div class="login-field-group">
+            <label class="login-field-label" for="forgot-input-email">
+              Email address<span class="required-asterisk">*</span>
+            </label>
+            <input
+              type="email"
+              id="forgot-input-email"
+              class="login-field-input"
+              name="email"
+              placeholder="e.g. admin@testpilot.ai"
+              autocomplete="email"
+              required
+            />
+          </div>
+
+          <button type="submit" id="btn-forgot-submit" class="btn-signin-blue" style="margin-top:8px;">
+            <span class="login-submit-spinner hidden" id="forgot-submit-spinner"></span>
+            <span id="btn-forgot-text">Send Recovery Link</span>
+          </button>
+
+          <!-- Back to Sign In Link -->
+          <div class="auth-switch-prompt">
+            <button type="button" class="btn-link-strong" id="btn-goto-signin-from-forgot">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-right:4px;">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              Back to sign in
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" style="position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:10px; pointer-events:none;"></div>
+
+  <script src="exceljs.min.js"></script>
+  <script src="export-sheet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

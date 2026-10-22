@@ -1,0 +1,22 @@
+{
+  "name": "testpilot-ai-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TestPilot AI - Enterprise AI-Powered Website Testing Platform",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run web:dev",
+    "start": "npm run web:start",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "fixture:start": "npm run start --workspace=@testpilot/fixture-site",
+    "web:dev": "npm run dev --workspace=@testpilot/web",
+    "web:build": "npm run build --workspace=@testpilot/web",
+    "web:start": "npm run start --workspace=@testpilot/web"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

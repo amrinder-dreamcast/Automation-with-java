@@ -1,0 +1,26 @@
+{
+  "name": "@testpilot/web",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/server.js",
+  "scripts": {
+    "build": "tsc -b",
+    "start": "node dist/server.js",
+    "dev": "node dist/server.js",
+    "test": "node --test dist/**/*.test.js"
+  },
+  "dependencies": {
+    "@testpilot/core": "^1.0.0",
+    "@testpilot/crawler": "^1.0.0",
+    "@testpilot/engines": "^1.0.0",
+    "@testpilot/fixture-site": "^1.0.0",
+    "@testpilot/storage": "^1.0.0",
+    "@testpilot/triage": "^1.0.0",
+    "exceljs": "^4.4.0",
+    "playwright": "^1.44.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5"
+  }
+}
