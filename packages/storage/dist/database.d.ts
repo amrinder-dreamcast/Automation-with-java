@@ -1,4 +1,4 @@
-import { Project, TestRun, Defect, CrawlSession } from '@testpilot/core';
+import { Project, TestRun, Defect, CrawlSession, DesignComparisonResult } from '@testpilot/core';
 export interface AuditLogEntry {
     id: string;
     timestamp: string;
@@ -14,6 +14,7 @@ export interface DatabaseState {
     defects: Defect[];
     crawlSessions: CrawlSession[];
     auditLogs: AuditLogEntry[];
+    designComparisons?: DesignComparisonResult[];
 }
 export declare class TestPilotDatabase {
     private filePath;
@@ -41,5 +42,9 @@ export declare class TestPilotDatabase {
     updateDefectStatus(id: string, status: Defect['status']): Promise<Defect | null>;
     getAuditLogs(): Promise<AuditLogEntry[]>;
     logAudit(action: string, entityType: AuditLogEntry['entityType'], entityId: string, details: string): Promise<void>;
+    getDesignComparisons(): Promise<DesignComparisonResult[]>;
+    getDesignComparisonById(id: string): Promise<DesignComparisonResult | null>;
+    saveDesignComparison(comparison: DesignComparisonResult): Promise<DesignComparisonResult>;
+    deleteDesignComparison(id: string): Promise<boolean>;
 }
 //# sourceMappingURL=database.d.ts.map

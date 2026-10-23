@@ -43,6 +43,8 @@ const path = __importStar(require("node:path"));
 const node_url_1 = require("node:url");
 const storage_1 = require("@testpilot/storage");
 const fixture_site_1 = require("@testpilot/fixture-site");
+const engines_1 = require("@testpilot/engines");
+const mcp_suite_1 = require("@testpilot/mcp-suite");
 const runner_js_1 = require("./runner.js");
 const exceljs_1 = __importDefault(require("exceljs"));
 const DEFAULT_PORT = parseInt(process.env.PORT || '3000', 10);
@@ -52,7 +54,47 @@ async function startServer(customPort) {
     const db = new storage_1.TestPilotDatabase();
     const vault = new storage_1.ArtifactVault();
     const runner = new runner_js_1.TestPilotRunner(db, vault);
+    const designComparator = new engines_1.DesignComparator({ vault });
     const activeSessions = new Map();
+    const registeredUsers = new Map();
+    const usersFilePath = path.resolve(process.cwd(), 'data', 'users.json');
+    async function saveUsers() {
+        try {
+            const uniqueUsers = Array.from(new Set(registeredUsers.values()));
+            await fs.mkdir(path.dirname(usersFilePath), { recursive: true });
+            await fs.writeFile(usersFilePath, JSON.stringify(uniqueUsers, null, 2), 'utf-8');
+        }
+        catch (e) {
+            console.warn('[TestPilot Auth] Could not persist users:', e);
+        }
+    }
+    async function loadUsers() {
+        try {
+            const data = await fs.readFile(usersFilePath, 'utf-8');
+            const list = JSON.parse(data);
+            for (const u of list) {
+                registeredUsers.set(u.email.toLowerCase(), u);
+                registeredUsers.set(u.username.toLowerCase(), u);
+            }
+        }
+        catch {
+            // Seed default admin account
+            const defaultAdmin = {
+                id: 'usr_admin',
+                name: 'Admin User',
+                email: 'admin@testpilot.ai',
+                username: 'admin',
+                password: 'pilotPass123!',
+                role: 'Enterprise QA Lead',
+                initials: 'AU',
+                createdAt: new Date().toISOString(),
+            };
+            registeredUsers.set(defaultAdmin.email.toLowerCase(), defaultAdmin);
+            registeredUsers.set(defaultAdmin.username.toLowerCase(), defaultAdmin);
+            await saveUsers();
+        }
+    }
+    await loadUsers();
     // Auto-boot benchmark fixture site on port 4000 for immediate out-of-the-box verification
     let fixtureServer;
     try {
@@ -101,7 +143,7 @@ async function startServer(customPort) {
         // 0. Authentication Routes
         if (pathname === '/api/auth/login' && method === 'POST') {
             const body = await getBody();
-            const identifier = String(body.email || body.username || '').trim();
+            const identifier = String(body.email || body.username || '').trim().toLowerCase();
             const password = String(body.password || '').trim();
             const rememberMe = Boolean(body.rememberMe);
             if (!identifier) {
@@ -110,17 +152,19 @@ async function startServer(customPort) {
             if (!password) {
                 return sendJson(400, { error: 'Password is required' });
             }
-            if (password.length < 3) {
-                return sendJson(400, { error: 'Password must be at least 3 characters long' });
+            const existingUser = registeredUsers.get(identifier);
+            if (!existingUser || existingUser.password !== password) {
+                return sendJson(401, {
+                    error: 'Invalid credentials. Please enter a valid email and password.',
+                });
             }
-            const displayName = identifier.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
             const user = {
-                id: `usr_${identifier.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}`,
-                name: displayName || 'Authenticated User',
-                email: identifier.includes('@') ? identifier : `${identifier}@testpilot.ai`,
-                username: identifier,
-                role: identifier.toLowerCase().includes('admin') ? 'Enterprise QA Lead' : 'Quality Engineer',
-                initials: (displayName || 'AU').split(' ').map((p) => p[0]).join('').substring(0, 2).toUpperCase() || 'AU',
+                id: existingUser.id,
+                name: existingUser.name,
+                email: existingUser.email,
+                username: existingUser.username,
+                role: existingUser.role,
+                initials: existingUser.initials,
                 loggedInAt: new Date().toISOString(),
             };
             const token = `tp_sess_${Math.random().toString(36).substring(2)}_${Date.now()}`;
@@ -147,13 +191,30 @@ async function startServer(customPort) {
             if (!password || password.length < 4) {
                 return sendJson(400, { error: 'Password must be at least 4 characters long' });
             }
-            const user = {
-                id: `usr_${email.replace(/[^a-zA-Z0-9]/g, '_')}`,
+            if (registeredUsers.has(email)) {
+                return sendJson(409, { error: 'An account with this email address already exists. Please sign in.' });
+            }
+            const username = email.split('@')[0];
+            const newUser = {
+                id: `usr_${email.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now().toString(36)}`,
                 name: name,
                 email: email,
-                username: email.split('@')[0],
+                username: username,
+                password: password,
                 role: 'Quality Engineer',
                 initials: name.split(' ').map((p) => p[0]).join('').substring(0, 2).toUpperCase() || 'QE',
+                createdAt: new Date().toISOString(),
+            };
+            registeredUsers.set(email, newUser);
+            registeredUsers.set(username.toLowerCase(), newUser);
+            await saveUsers();
+            const user = {
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email,
+                username: newUser.username,
+                role: newUser.role,
+                initials: newUser.initials,
                 loggedInAt: new Date().toISOString(),
             };
             const token = `tp_sess_${Math.random().toString(36).substring(2)}_${Date.now()}`;
@@ -170,6 +231,9 @@ async function startServer(customPort) {
             const email = String(body.email || '').trim().toLowerCase();
             if (!email || !email.includes('@')) {
                 return sendJson(400, { error: 'Please provide a valid registered email address' });
+            }
+            if (!registeredUsers.has(email)) {
+                return sendJson(404, { error: 'No account registered with this email address. Please sign up.' });
             }
             return sendJson(200, {
                 success: true,
@@ -677,6 +741,128 @@ async function startServer(customPort) {
                 success: true,
                 message: 'All test runs, defects, projects, and artifacts have been completely cleared and reset.',
             });
+        }
+        // 11. Design vs Code Comparison Routes (AI / Figma files & URLs)
+        if (pathname === '/api/design-compare/presets' && method === 'GET') {
+            return sendJson(200, designComparator.getPresets());
+        }
+        if (pathname === '/api/design-compare' && method === 'GET') {
+            const list = await db.getDesignComparisons();
+            return sendJson(200, list);
+        }
+        if (pathname.startsWith('/api/design-compare/') && method === 'GET' && pathname !== '/api/design-compare/presets') {
+            const id = pathname.replace('/api/design-compare/', '');
+            const item = await db.getDesignComparisonById(id);
+            if (!item)
+                return sendJson(404, { error: 'Design comparison not found' });
+            return sendJson(200, item);
+        }
+        if (pathname.startsWith('/api/design-compare/') && method === 'DELETE') {
+            const id = pathname.replace('/api/design-compare/', '');
+            const deleted = await db.deleteDesignComparison(id);
+            return sendJson(200, { success: deleted });
+        }
+        if (pathname === '/api/design-compare' && method === 'POST') {
+            const body = await getBody();
+            const targetUrl = (body.targetUrl || 'http://localhost:4000').trim();
+            let fileBuffer;
+            if (body.fileBase64) {
+                const cleanBase64 = String(body.fileBase64).replace(/^data:[^;]+;base64,/, '');
+                fileBuffer = Buffer.from(cleanBase64, 'base64');
+            }
+            let viewportWidth = 1280;
+            let viewportHeight = 800;
+            let viewportName = 'Desktop (1280x800)';
+            if (body.viewport === 'desktop' || body.viewport === '1440x900') {
+                viewportWidth = 1440;
+                viewportHeight = 900;
+                viewportName = 'Desktop (1440x900)';
+            }
+            else if (body.viewport === 'laptop' || body.viewport === '1280x800') {
+                viewportWidth = 1280;
+                viewportHeight = 800;
+                viewportName = 'Laptop (1280x800)';
+            }
+            else if (body.viewport === 'tablet' || body.viewport === '768x1024') {
+                viewportWidth = 768;
+                viewportHeight = 1024;
+                viewportName = 'Tablet (768x1024)';
+            }
+            else if (body.viewport === 'mobile' || body.viewport === '375x812') {
+                viewportWidth = 375;
+                viewportHeight = 812;
+                viewportName = 'Mobile (375x812)';
+            }
+            try {
+                const result = await designComparator.compare({
+                    targetUrl,
+                    sourceType: body.sourceType,
+                    fileName: body.fileName,
+                    fileBuffer,
+                    figmaUrl: body.figmaUrl,
+                    figmaToken: body.figmaToken,
+                    presetId: body.presetId,
+                    viewportWidth,
+                    viewportHeight,
+                    viewportName,
+                    tolerance: typeof body.tolerance === 'number' ? body.tolerance : undefined,
+                });
+                await db.saveDesignComparison(result);
+                await db.logAudit('DESIGN_COMPARE', 'SYSTEM', result.id, `Executed design comparison on ${targetUrl} (Fidelity: ${result.fidelityScore}%)`);
+                return sendJson(200, result);
+            }
+            catch (err) {
+                console.error('[Design Compare Error]:', err);
+                return sendJson(500, { error: err.message || 'Failed to execute design comparison' });
+            }
+        }
+        // --- MCP Suite API Routes ---
+        if (pathname === '/api/mcp/servers' && method === 'GET') {
+            const servers = mcp_suite_1.ALL_MCP_TOOLSETS.map((ts) => ({
+                id: ts.name,
+                name: ts.title,
+                toolsCount: ts.tools.length,
+                status: 'OPERATIONAL',
+                protocolVersion: '2024-11-05',
+                transport: 'stdio (JSON-RPC 2.0)',
+            }));
+            return sendJson(200, { servers, totalServers: servers.length });
+        }
+        if (pathname === '/api/mcp/tools' && method === 'GET') {
+            const allTools = mcp_suite_1.ALL_MCP_TOOLSETS.flatMap((ts) => ts.tools.map((t) => ({
+                server: ts.name,
+                serverTitle: ts.title,
+                ...t.tool,
+            })));
+            return sendJson(200, { tools: allTools, totalTools: allTools.length });
+        }
+        if (pathname === '/api/mcp/execute' && method === 'POST') {
+            try {
+                const body = await getBody();
+                const { toolName, arguments: toolArgs = {} } = body;
+                if (!toolName) {
+                    return sendJson(400, { error: 'Missing required field: toolName' });
+                }
+                // Find tool across all sets
+                let targetHandler = null;
+                let parentServer = 'unknown';
+                for (const ts of mcp_suite_1.ALL_MCP_TOOLSETS) {
+                    const match = ts.tools.find((t) => t.tool.name === toolName);
+                    if (match) {
+                        targetHandler = match.handler;
+                        parentServer = ts.name;
+                        break;
+                    }
+                }
+                if (!targetHandler) {
+                    return sendJson(404, { error: `Tool '${toolName}' not found in any registered MCP server.` });
+                }
+                const result = await (0, mcp_suite_1.executeResilientTool)(toolName, () => targetHandler(toolArgs), { serverName: parentServer });
+                return sendJson(200, result);
+            }
+            catch (err) {
+                return sendJson(500, { error: err.message || 'Failed to execute MCP tool' });
+            }
         }
         // --- Artifact Asset Serving ---
         if (pathname.startsWith('/api/artifacts/')) {

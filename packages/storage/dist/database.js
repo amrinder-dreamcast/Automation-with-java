@@ -65,6 +65,7 @@ class TestPilotDatabase {
             defects: [],
             crawlSessions: [],
             auditLogs: [],
+            designComparisons: [],
         };
     }
     /**
@@ -206,6 +207,45 @@ class TestPilotDatabase {
             state.auditLogs = state.auditLogs.slice(0, 200);
         }
         await this.persist();
+    }
+    // --- Design Comparison Operations ---
+    async getDesignComparisons() {
+        const state = await this.ensureLoaded();
+        if (!state.designComparisons)
+            state.designComparisons = [];
+        return state.designComparisons;
+    }
+    async getDesignComparisonById(id) {
+        const state = await this.ensureLoaded();
+        if (!state.designComparisons)
+            state.designComparisons = [];
+        return state.designComparisons.find((c) => c.id === id) || null;
+    }
+    async saveDesignComparison(comparison) {
+        const state = await this.ensureLoaded();
+        if (!state.designComparisons)
+            state.designComparisons = [];
+        const idx = state.designComparisons.findIndex((c) => c.id === comparison.id);
+        if (idx >= 0) {
+            state.designComparisons[idx] = comparison;
+        }
+        else {
+            state.designComparisons.unshift(comparison);
+        }
+        await this.persist();
+        return comparison;
+    }
+    async deleteDesignComparison(id) {
+        const state = await this.ensureLoaded();
+        if (!state.designComparisons)
+            return false;
+        const initialLen = state.designComparisons.length;
+        state.designComparisons = state.designComparisons.filter((c) => c.id !== id);
+        if (state.designComparisons.length !== initialLen) {
+            await this.persist();
+            return true;
+        }
+        return false;
     }
 }
 exports.TestPilotDatabase = TestPilotDatabase;

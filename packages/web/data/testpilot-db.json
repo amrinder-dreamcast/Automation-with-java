@@ -27763,6 +27763,78 @@
   ],
   "auditLogs": [
     {
+      "id": "audit-0ymj9j7",
+      "timestamp": "2026-10-23T04:10:13.849Z",
+      "action": "DESIGN_COMPARE",
+      "entityType": "SYSTEM",
+      "entityId": "design-cmp-1792728607429-187il",
+      "details": "Executed design comparison on http://localhost:4000 (Fidelity: 94.9%)"
+    },
+    {
+      "id": "audit-hnolofx",
+      "timestamp": "2026-10-22T11:45:14.332Z",
+      "action": "DESIGN_COMPARE",
+      "entityType": "SYSTEM",
+      "entityId": "design-cmp-1792669507946-kawor",
+      "details": "Executed design comparison on http://localhost:4000 (Fidelity: 94.9%)"
+    },
+    {
+      "id": "audit-3wzi176",
+      "timestamp": "2026-10-22T11:40:35.316Z",
+      "action": "DESIGN_COMPARE",
+      "entityType": "SYSTEM",
+      "entityId": "design-cmp-1792669227418-j8scp",
+      "details": "Executed design comparison on http://localhost:4000 (Fidelity: 94.9%)"
+    },
+    {
+      "id": "audit-yvoplnc",
+      "timestamp": "2026-10-22T11:21:31.565Z",
+      "action": "DESIGN_COMPARE",
+      "entityType": "SYSTEM",
+      "entityId": "design-cmp-1792668084457-xcaui",
+      "details": "Executed design comparison on http://localhost:4000 (Fidelity: 94.9%)"
+    },
+    {
+      "id": "audit-jem8zah",
+      "timestamp": "2026-10-22T11:15:57.735Z",
+      "action": "DESIGN_COMPARE",
+      "entityType": "SYSTEM",
+      "entityId": "design-cmp-1792667749448-xd3r7",
+      "details": "Executed design comparison on http://localhost:4000 (Fidelity: 94.9%)"
+    },
+    {
+      "id": "audit-kygh01d",
+      "timestamp": "2026-10-22T10:35:27.997Z",
+      "action": "DESIGN_COMPARE",
+      "entityType": "SYSTEM",
+      "entityId": "design-cmp-1792665296593-rdwe7",
+      "details": "Executed design comparison on http://localhost:4000 (Fidelity: 94.9%)"
+    },
+    {
+      "id": "audit-3e5kaas",
+      "timestamp": "2026-10-22T10:31:37.731Z",
+      "action": "DESIGN_COMPARE",
+      "entityType": "SYSTEM",
+      "entityId": "design-cmp-1792665092512-pddu6",
+      "details": "Executed design comparison on http://localhost:4000 (Fidelity: 93.6%)"
+    },
+    {
+      "id": "audit-7udzoqn",
+      "timestamp": "2026-10-22T10:29:12.297Z",
+      "action": "DESIGN_COMPARE",
+      "entityType": "SYSTEM",
+      "entityId": "design-cmp-1792664946760-l2ddz",
+      "details": "Executed design comparison on http://localhost:4000 (Fidelity: 94.9%)"
+    },
+    {
+      "id": "audit-daqkbm5",
+      "timestamp": "2026-10-22T10:23:52.250Z",
+      "action": "DESIGN_COMPARE",
+      "entityType": "SYSTEM",
+      "entityId": "design-cmp-1792664624511-gwkkn",
+      "details": "Executed design comparison on http://localhost:4000 (Fidelity: 94.9%)"
+    },
+    {
       "id": "audit-7jlk9nj",
       "timestamp": "2026-10-21T04:08:14.736Z",
       "action": "RUN_COMPLETED",
@@ -27785,6 +27857,682 @@
       "entityType": "PROJECT",
       "entityId": "proj-1792555521882",
       "details": "Auto-created project for target https://www.dreamcast.in/"
+    }
+  ],
+  "designComparisons": [
+    {
+      "id": "design-cmp-1792728607429-187il",
+      "targetUrl": "http://localhost:4000",
+      "sourceType": "BENCHMARK_PRESET",
+      "presetId": "fixture-benchmark-homepage",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "name": "Desktop (1440x900)"
+      },
+      "designSnapshotPath": "/api/artifacts/design-cmp-1792728607429-187il/screenshots/design-reference.png",
+      "liveSnapshotPath": "/api/artifacts/design-cmp-1792728607429-187il/screenshots/live-page.png",
+      "diffOverlayPath": "/api/artifacts/design-cmp-1792728607429-187il/screenshots/visual-diff-overlay.png",
+      "fidelityScore": 94.9,
+      "mismatchPercentage": 4.27,
+      "diffPixelCount": 55282,
+      "totalPixels": 1296000,
+      "issues": [
+        {
+          "id": "issue-design-cmp-1792728607429-187il-pad-btn",
+          "category": "SPACING_PADDING",
+          "severity": "P3",
+          "title": "Button Padding & Touch Target Discrepancy",
+          "description": "The button padding (8px 16px) does not match the design component spec (14px 28px).",
+          "expectedDesign": "padding: 14px 28px",
+          "actualImplementation": "padding: 8px 16px",
+          "selector": "button, .btn-cta",
+          "suggestedCssFix": "button.btn-primary, .btn-cta {\n  padding: 14px 28px !important;\n}",
+          "diffScore": 12,
+          "boundingRect": {
+            "x": 45,
+            "y": 287,
+            "width": 164,
+            "height": 32
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792728607429-187il-layout-nav",
+          "category": "LAYOUT_ALIGNMENT",
+          "severity": "P2",
+          "title": "Navigation Bar Vertical Height Discrepancy",
+          "description": "Navigation header is rendered at 45px height; the design system specifies a 68px sticky header.",
+          "expectedDesign": "height: 68px, display: flex, align-items: center",
+          "actualImplementation": "Computed height: 45px",
+          "selector": "header, nav, .navbar",
+          "suggestedCssFix": "header, .navbar {\n  height: 68px !important;\n  padding: 0 48px;\n  align-items: center;\n}",
+          "diffScore": 22,
+          "boundingRect": {
+            "x": 24,
+            "y": 24,
+            "width": 1392,
+            "height": 45
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792728607429-187il-pixel-drift",
+          "category": "VISUAL_PIXEL_DRIFT",
+          "severity": "P3",
+          "title": "Visual Regression: 4.27% Layout Drift Detected",
+          "description": "Differential pixel analysis identified 55,282 displaced pixels against the design specification reference.",
+          "expectedDesign": "Clean 1:1 design-to-code visual parity (< 2.0% tolerance)",
+          "actualImplementation": "4.27% total visual surface deviation",
+          "suggestedCssFix": "/* Inspect the interactive split-screen diff overlay to align margins, grid containers, and element positioning */",
+          "diffScore": 4.27
+        }
+      ],
+      "metrics": {
+        "colorAccuracyPercent": 100,
+        "typographyAccuracyPercent": 100,
+        "layoutAccuracyPercent": 87,
+        "missingElementsCount": 0
+      },
+      "summary": "Design comparison completed for http://localhost:4000 against Benchmark Homepage Spec (Figma Design System). Overall Design Fidelity: 94.9% (3 UI discrepancies detected: 0 Critical, 1 High, 2 Moderate/Minor).",
+      "timestamp": "2026-10-23T04:10:13.762Z"
+    },
+    {
+      "id": "design-cmp-1792669507946-kawor",
+      "targetUrl": "http://localhost:4000",
+      "sourceType": "BENCHMARK_PRESET",
+      "presetId": "fixture-benchmark-homepage",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "name": "Desktop (1440x900)"
+      },
+      "designSnapshotPath": "/api/artifacts/design-cmp-1792669507946-kawor/screenshots/design-reference.png",
+      "liveSnapshotPath": "/api/artifacts/design-cmp-1792669507946-kawor/screenshots/live-page.png",
+      "diffOverlayPath": "/api/artifacts/design-cmp-1792669507946-kawor/screenshots/visual-diff-overlay.png",
+      "fidelityScore": 94.9,
+      "mismatchPercentage": 4.27,
+      "diffPixelCount": 55282,
+      "totalPixels": 1296000,
+      "issues": [
+        {
+          "id": "issue-design-cmp-1792669507946-kawor-pad-btn",
+          "category": "SPACING_PADDING",
+          "severity": "P3",
+          "title": "Button Padding & Touch Target Discrepancy",
+          "description": "The button padding (8px 16px) does not match the design component spec (14px 28px).",
+          "expectedDesign": "padding: 14px 28px",
+          "actualImplementation": "padding: 8px 16px",
+          "selector": "button, .btn-cta",
+          "suggestedCssFix": "button.btn-primary, .btn-cta {\n  padding: 14px 28px !important;\n}",
+          "diffScore": 12,
+          "boundingRect": {
+            "x": 45,
+            "y": 287,
+            "width": 164,
+            "height": 32
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792669507946-kawor-layout-nav",
+          "category": "LAYOUT_ALIGNMENT",
+          "severity": "P2",
+          "title": "Navigation Bar Vertical Height Discrepancy",
+          "description": "Navigation header is rendered at 45px height; the design system specifies a 68px sticky header.",
+          "expectedDesign": "height: 68px, display: flex, align-items: center",
+          "actualImplementation": "Computed height: 45px",
+          "selector": "header, nav, .navbar",
+          "suggestedCssFix": "header, .navbar {\n  height: 68px !important;\n  padding: 0 48px;\n  align-items: center;\n}",
+          "diffScore": 22,
+          "boundingRect": {
+            "x": 24,
+            "y": 24,
+            "width": 1392,
+            "height": 45
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792669507946-kawor-pixel-drift",
+          "category": "VISUAL_PIXEL_DRIFT",
+          "severity": "P3",
+          "title": "Visual Regression: 4.27% Layout Drift Detected",
+          "description": "Differential pixel analysis identified 55,282 displaced pixels against the design specification reference.",
+          "expectedDesign": "Clean 1:1 design-to-code visual parity (< 2.0% tolerance)",
+          "actualImplementation": "4.27% total visual surface deviation",
+          "suggestedCssFix": "/* Inspect the interactive split-screen diff overlay to align margins, grid containers, and element positioning */",
+          "diffScore": 4.27
+        }
+      ],
+      "metrics": {
+        "colorAccuracyPercent": 100,
+        "typographyAccuracyPercent": 100,
+        "layoutAccuracyPercent": 87,
+        "missingElementsCount": 0
+      },
+      "summary": "Design comparison completed for http://localhost:4000 against Benchmark Homepage Spec (Figma Design System). Overall Design Fidelity: 94.9% (3 UI discrepancies detected: 0 Critical, 1 High, 2 Moderate/Minor).",
+      "timestamp": "2026-10-22T11:45:14.167Z"
+    },
+    {
+      "id": "design-cmp-1792669227418-j8scp",
+      "targetUrl": "http://localhost:4000",
+      "sourceType": "BENCHMARK_PRESET",
+      "presetId": "fixture-benchmark-homepage",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "name": "Desktop (1440x900)"
+      },
+      "designSnapshotPath": "/api/artifacts/design-cmp-1792669227418-j8scp/screenshots/design-reference.png",
+      "liveSnapshotPath": "/api/artifacts/design-cmp-1792669227418-j8scp/screenshots/live-page.png",
+      "diffOverlayPath": "/api/artifacts/design-cmp-1792669227418-j8scp/screenshots/visual-diff-overlay.png",
+      "fidelityScore": 94.9,
+      "mismatchPercentage": 4.27,
+      "diffPixelCount": 55282,
+      "totalPixels": 1296000,
+      "issues": [
+        {
+          "id": "issue-design-cmp-1792669227418-j8scp-pad-btn",
+          "category": "SPACING_PADDING",
+          "severity": "P3",
+          "title": "Button Padding & Touch Target Discrepancy",
+          "description": "The button padding (8px 16px) does not match the design component spec (14px 28px).",
+          "expectedDesign": "padding: 14px 28px",
+          "actualImplementation": "padding: 8px 16px",
+          "selector": "button, .btn-cta",
+          "suggestedCssFix": "button.btn-primary, .btn-cta {\n  padding: 14px 28px !important;\n}",
+          "diffScore": 12,
+          "boundingRect": {
+            "x": 45,
+            "y": 287,
+            "width": 164,
+            "height": 32
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792669227418-j8scp-layout-nav",
+          "category": "LAYOUT_ALIGNMENT",
+          "severity": "P2",
+          "title": "Navigation Bar Vertical Height Discrepancy",
+          "description": "Navigation header is rendered at 45px height; the design system specifies a 68px sticky header.",
+          "expectedDesign": "height: 68px, display: flex, align-items: center",
+          "actualImplementation": "Computed height: 45px",
+          "selector": "header, nav, .navbar",
+          "suggestedCssFix": "header, .navbar {\n  height: 68px !important;\n  padding: 0 48px;\n  align-items: center;\n}",
+          "diffScore": 22,
+          "boundingRect": {
+            "x": 24,
+            "y": 24,
+            "width": 1392,
+            "height": 45
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792669227418-j8scp-pixel-drift",
+          "category": "VISUAL_PIXEL_DRIFT",
+          "severity": "P3",
+          "title": "Visual Regression: 4.27% Layout Drift Detected",
+          "description": "Differential pixel analysis identified 55,282 displaced pixels against the design specification reference.",
+          "expectedDesign": "Clean 1:1 design-to-code visual parity (< 2.0% tolerance)",
+          "actualImplementation": "4.27% total visual surface deviation",
+          "suggestedCssFix": "/* Inspect the interactive split-screen diff overlay to align margins, grid containers, and element positioning */",
+          "diffScore": 4.27
+        }
+      ],
+      "metrics": {
+        "colorAccuracyPercent": 100,
+        "typographyAccuracyPercent": 100,
+        "layoutAccuracyPercent": 87,
+        "missingElementsCount": 0
+      },
+      "summary": "Design comparison completed for http://localhost:4000 against Benchmark Homepage Spec (Figma Design System). Overall Design Fidelity: 94.9% (3 UI discrepancies detected: 0 Critical, 1 High, 2 Moderate/Minor).",
+      "timestamp": "2026-10-22T11:40:35.163Z"
+    },
+    {
+      "id": "design-cmp-1792668084457-xcaui",
+      "targetUrl": "http://localhost:4000",
+      "sourceType": "BENCHMARK_PRESET",
+      "presetId": "fixture-benchmark-homepage",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "name": "Desktop (1440x900)"
+      },
+      "designSnapshotPath": "/api/artifacts/design-cmp-1792668084457-xcaui/screenshots/design-reference.png",
+      "liveSnapshotPath": "/api/artifacts/design-cmp-1792668084457-xcaui/screenshots/live-page.png",
+      "diffOverlayPath": "/api/artifacts/design-cmp-1792668084457-xcaui/screenshots/visual-diff-overlay.png",
+      "fidelityScore": 94.9,
+      "mismatchPercentage": 4.27,
+      "diffPixelCount": 55282,
+      "totalPixels": 1296000,
+      "issues": [
+        {
+          "id": "issue-design-cmp-1792668084457-xcaui-pad-btn",
+          "category": "SPACING_PADDING",
+          "severity": "P3",
+          "title": "Button Padding & Touch Target Discrepancy",
+          "description": "The button padding (8px 16px) does not match the design component spec (14px 28px).",
+          "expectedDesign": "padding: 14px 28px",
+          "actualImplementation": "padding: 8px 16px",
+          "selector": "button, .btn-cta",
+          "suggestedCssFix": "button.btn-primary, .btn-cta {\n  padding: 14px 28px !important;\n}",
+          "diffScore": 12,
+          "boundingRect": {
+            "x": 45,
+            "y": 287,
+            "width": 164,
+            "height": 32
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792668084457-xcaui-layout-nav",
+          "category": "LAYOUT_ALIGNMENT",
+          "severity": "P2",
+          "title": "Navigation Bar Vertical Height Discrepancy",
+          "description": "Navigation header is rendered at 45px height; the design system specifies a 68px sticky header.",
+          "expectedDesign": "height: 68px, display: flex, align-items: center",
+          "actualImplementation": "Computed height: 45px",
+          "selector": "header, nav, .navbar",
+          "suggestedCssFix": "header, .navbar {\n  height: 68px !important;\n  padding: 0 48px;\n  align-items: center;\n}",
+          "diffScore": 22,
+          "boundingRect": {
+            "x": 24,
+            "y": 24,
+            "width": 1392,
+            "height": 45
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792668084457-xcaui-pixel-drift",
+          "category": "VISUAL_PIXEL_DRIFT",
+          "severity": "P3",
+          "title": "Visual Regression: 4.27% Layout Drift Detected",
+          "description": "Differential pixel analysis identified 55,282 displaced pixels against the design specification reference.",
+          "expectedDesign": "Clean 1:1 design-to-code visual parity (< 2.0% tolerance)",
+          "actualImplementation": "4.27% total visual surface deviation",
+          "suggestedCssFix": "/* Inspect the interactive split-screen diff overlay to align margins, grid containers, and element positioning */",
+          "diffScore": 4.27
+        }
+      ],
+      "metrics": {
+        "colorAccuracyPercent": 100,
+        "typographyAccuracyPercent": 100,
+        "layoutAccuracyPercent": 87,
+        "missingElementsCount": 0
+      },
+      "summary": "Design comparison completed for http://localhost:4000 against Benchmark Homepage Spec (Figma Design System). Overall Design Fidelity: 94.9% (3 UI discrepancies detected: 0 Critical, 1 High, 2 Moderate/Minor).",
+      "timestamp": "2026-10-22T11:21:31.466Z"
+    },
+    {
+      "id": "design-cmp-1792667749448-xd3r7",
+      "targetUrl": "http://localhost:4000",
+      "sourceType": "BENCHMARK_PRESET",
+      "presetId": "fixture-benchmark-homepage",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "name": "Desktop (1440x900)"
+      },
+      "designSnapshotPath": "/api/artifacts/design-cmp-1792667749448-xd3r7/screenshots/design-reference.png",
+      "liveSnapshotPath": "/api/artifacts/design-cmp-1792667749448-xd3r7/screenshots/live-page.png",
+      "diffOverlayPath": "/api/artifacts/design-cmp-1792667749448-xd3r7/screenshots/visual-diff-overlay.png",
+      "fidelityScore": 94.9,
+      "mismatchPercentage": 4.27,
+      "diffPixelCount": 55282,
+      "totalPixels": 1296000,
+      "issues": [
+        {
+          "id": "issue-design-cmp-1792667749448-xd3r7-pad-btn",
+          "category": "SPACING_PADDING",
+          "severity": "P3",
+          "title": "Button Padding & Touch Target Discrepancy",
+          "description": "The button padding (8px 16px) does not match the design component spec (14px 28px).",
+          "expectedDesign": "padding: 14px 28px",
+          "actualImplementation": "padding: 8px 16px",
+          "selector": "button, .btn-cta",
+          "suggestedCssFix": "button.btn-primary, .btn-cta {\n  padding: 14px 28px !important;\n}",
+          "diffScore": 12,
+          "boundingRect": {
+            "x": 45,
+            "y": 287,
+            "width": 164,
+            "height": 32
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792667749448-xd3r7-layout-nav",
+          "category": "LAYOUT_ALIGNMENT",
+          "severity": "P2",
+          "title": "Navigation Bar Vertical Height Discrepancy",
+          "description": "Navigation header is rendered at 45px height; the design system specifies a 68px sticky header.",
+          "expectedDesign": "height: 68px, display: flex, align-items: center",
+          "actualImplementation": "Computed height: 45px",
+          "selector": "header, nav, .navbar",
+          "suggestedCssFix": "header, .navbar {\n  height: 68px !important;\n  padding: 0 48px;\n  align-items: center;\n}",
+          "diffScore": 22,
+          "boundingRect": {
+            "x": 24,
+            "y": 24,
+            "width": 1392,
+            "height": 45
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792667749448-xd3r7-pixel-drift",
+          "category": "VISUAL_PIXEL_DRIFT",
+          "severity": "P3",
+          "title": "Visual Regression: 4.27% Layout Drift Detected",
+          "description": "Differential pixel analysis identified 55,282 displaced pixels against the design specification reference.",
+          "expectedDesign": "Clean 1:1 design-to-code visual parity (< 2.0% tolerance)",
+          "actualImplementation": "4.27% total visual surface deviation",
+          "suggestedCssFix": "/* Inspect the interactive split-screen diff overlay to align margins, grid containers, and element positioning */",
+          "diffScore": 4.27
+        }
+      ],
+      "metrics": {
+        "colorAccuracyPercent": 100,
+        "typographyAccuracyPercent": 100,
+        "layoutAccuracyPercent": 87,
+        "missingElementsCount": 0
+      },
+      "summary": "Design comparison completed for http://localhost:4000 against Benchmark Homepage Spec (Figma Design System). Overall Design Fidelity: 94.9% (3 UI discrepancies detected: 0 Critical, 1 High, 2 Moderate/Minor).",
+      "timestamp": "2026-10-22T11:15:57.548Z"
+    },
+    {
+      "id": "design-cmp-1792665296593-rdwe7",
+      "targetUrl": "http://localhost:4000",
+      "sourceType": "BENCHMARK_PRESET",
+      "presetId": "fixture-benchmark-homepage",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "name": "Desktop (1440x900)"
+      },
+      "designSnapshotPath": "/api/artifacts/design-cmp-1792665296593-rdwe7/screenshots/design-reference.png",
+      "liveSnapshotPath": "/api/artifacts/design-cmp-1792665296593-rdwe7/screenshots/live-page.png",
+      "diffOverlayPath": "/api/artifacts/design-cmp-1792665296593-rdwe7/screenshots/visual-diff-overlay.png",
+      "fidelityScore": 94.9,
+      "mismatchPercentage": 4.27,
+      "diffPixelCount": 55282,
+      "totalPixels": 1296000,
+      "issues": [
+        {
+          "id": "issue-design-cmp-1792665296593-rdwe7-pad-btn",
+          "category": "SPACING_PADDING",
+          "severity": "P3",
+          "title": "Button Padding & Touch Target Discrepancy",
+          "description": "The button padding (8px 16px) does not match the design component spec (14px 28px).",
+          "expectedDesign": "padding: 14px 28px",
+          "actualImplementation": "padding: 8px 16px",
+          "selector": "button, .btn-cta",
+          "suggestedCssFix": "button.btn-primary, .btn-cta {\n  padding: 14px 28px !important;\n}",
+          "diffScore": 12,
+          "boundingRect": {
+            "x": 45,
+            "y": 287,
+            "width": 164,
+            "height": 32
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792665296593-rdwe7-layout-nav",
+          "category": "LAYOUT_ALIGNMENT",
+          "severity": "P2",
+          "title": "Navigation Bar Vertical Height Discrepancy",
+          "description": "Navigation header is rendered at 45px height; the design system specifies a 68px sticky header.",
+          "expectedDesign": "height: 68px, display: flex, align-items: center",
+          "actualImplementation": "Computed height: 45px",
+          "selector": "header, nav, .navbar",
+          "suggestedCssFix": "header, .navbar {\n  height: 68px !important;\n  padding: 0 48px;\n  align-items: center;\n}",
+          "diffScore": 22,
+          "boundingRect": {
+            "x": 24,
+            "y": 24,
+            "width": 1392,
+            "height": 45
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792665296593-rdwe7-pixel-drift",
+          "category": "VISUAL_PIXEL_DRIFT",
+          "severity": "P3",
+          "title": "Visual Regression: 4.27% Layout Drift Detected",
+          "description": "Differential pixel analysis identified 55,282 displaced pixels against the design specification reference.",
+          "expectedDesign": "Clean 1:1 design-to-code visual parity (< 2.0% tolerance)",
+          "actualImplementation": "4.27% total visual surface deviation",
+          "suggestedCssFix": "/* Inspect the interactive split-screen diff overlay to align margins, grid containers, and element positioning */",
+          "diffScore": 4.27
+        }
+      ],
+      "metrics": {
+        "colorAccuracyPercent": 100,
+        "typographyAccuracyPercent": 100,
+        "layoutAccuracyPercent": 87,
+        "missingElementsCount": 0
+      },
+      "summary": "Design comparison completed for http://localhost:4000 against Benchmark Homepage Spec (Figma Design System). Overall Design Fidelity: 94.9% (3 UI discrepancies detected: 0 Critical, 1 High, 2 Moderate/Minor).",
+      "timestamp": "2026-10-22T10:35:20.205Z"
+    },
+    {
+      "id": "design-cmp-1792665092512-pddu6",
+      "targetUrl": "http://localhost:4000",
+      "sourceType": "BENCHMARK_PRESET",
+      "viewport": {
+        "width": 1280,
+        "height": 800,
+        "name": "Desktop (1280x800)"
+      },
+      "designSnapshotPath": "/api/artifacts/design-cmp-1792665092512-pddu6/screenshots/design-reference.png",
+      "liveSnapshotPath": "/api/artifacts/design-cmp-1792665092512-pddu6/screenshots/live-page.png",
+      "diffOverlayPath": "/api/artifacts/design-cmp-1792665092512-pddu6/screenshots/visual-diff-overlay.png",
+      "fidelityScore": 93.6,
+      "mismatchPercentage": 5.31,
+      "diffPixelCount": 54344,
+      "totalPixels": 1024000,
+      "issues": [
+        {
+          "id": "issue-design-cmp-1792665092512-pddu6-pad-btn",
+          "category": "SPACING_PADDING",
+          "severity": "P3",
+          "title": "Button Padding & Touch Target Discrepancy",
+          "description": "The button padding (8px 16px) does not match the design component spec (14px 28px).",
+          "expectedDesign": "padding: 14px 28px",
+          "actualImplementation": "padding: 8px 16px",
+          "selector": "button, .btn-cta",
+          "suggestedCssFix": "button.btn-primary, .btn-cta {\n  padding: 14px 28px !important;\n}",
+          "diffScore": 12,
+          "boundingRect": {
+            "x": 45,
+            "y": 308,
+            "width": 164,
+            "height": 32
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792665092512-pddu6-layout-nav",
+          "category": "LAYOUT_ALIGNMENT",
+          "severity": "P2",
+          "title": "Navigation Bar Vertical Height Discrepancy",
+          "description": "Navigation header is rendered at 45px height; the design system specifies a 68px sticky header.",
+          "expectedDesign": "height: 68px, display: flex, align-items: center",
+          "actualImplementation": "Computed height: 45px",
+          "selector": "header, nav, .navbar",
+          "suggestedCssFix": "header, .navbar {\n  height: 68px !important;\n  padding: 0 48px;\n  align-items: center;\n}",
+          "diffScore": 22,
+          "boundingRect": {
+            "x": 24,
+            "y": 24,
+            "width": 1232,
+            "height": 45
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792665092512-pddu6-pixel-drift",
+          "category": "VISUAL_PIXEL_DRIFT",
+          "severity": "P3",
+          "title": "Visual Regression: 5.31% Layout Drift Detected",
+          "description": "Differential pixel analysis identified 54,344 displaced pixels against the design specification reference.",
+          "expectedDesign": "Clean 1:1 design-to-code visual parity (< 2.0% tolerance)",
+          "actualImplementation": "5.31% total visual surface deviation",
+          "suggestedCssFix": "/* Inspect the interactive split-screen diff overlay to align margins, grid containers, and element positioning */",
+          "diffScore": 5.31
+        }
+      ],
+      "metrics": {
+        "colorAccuracyPercent": 100,
+        "typographyAccuracyPercent": 100,
+        "layoutAccuracyPercent": 87,
+        "missingElementsCount": 0
+      },
+      "summary": "Design comparison completed for http://localhost:4000 against Benchmark Homepage Spec (Figma Design System). Overall Design Fidelity: 93.6% (3 UI discrepancies detected: 0 Critical, 1 High, 2 Moderate/Minor).",
+      "timestamp": "2026-10-22T10:31:37.574Z"
+    },
+    {
+      "id": "design-cmp-1792664946760-l2ddz",
+      "targetUrl": "http://localhost:4000",
+      "sourceType": "BENCHMARK_PRESET",
+      "presetId": "fixture-benchmark-homepage",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "name": "Desktop (1440x900)"
+      },
+      "designSnapshotPath": "/api/artifacts/design-cmp-1792664946760-l2ddz/screenshots/design-reference.png",
+      "liveSnapshotPath": "/api/artifacts/design-cmp-1792664946760-l2ddz/screenshots/live-page.png",
+      "diffOverlayPath": "/api/artifacts/design-cmp-1792664946760-l2ddz/screenshots/visual-diff-overlay.png",
+      "fidelityScore": 94.9,
+      "mismatchPercentage": 4.27,
+      "diffPixelCount": 55282,
+      "totalPixels": 1296000,
+      "issues": [
+        {
+          "id": "issue-design-cmp-1792664946760-l2ddz-pad-btn",
+          "category": "SPACING_PADDING",
+          "severity": "P3",
+          "title": "Button Padding & Touch Target Discrepancy",
+          "description": "The button padding (8px 16px) does not match the design component spec (14px 28px).",
+          "expectedDesign": "padding: 14px 28px",
+          "actualImplementation": "padding: 8px 16px",
+          "selector": "button, .btn-cta",
+          "suggestedCssFix": "button.btn-primary, .btn-cta {\n  padding: 14px 28px !important;\n}",
+          "diffScore": 12,
+          "boundingRect": {
+            "x": 45,
+            "y": 287,
+            "width": 164,
+            "height": 32
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792664946760-l2ddz-layout-nav",
+          "category": "LAYOUT_ALIGNMENT",
+          "severity": "P2",
+          "title": "Navigation Bar Vertical Height Discrepancy",
+          "description": "Navigation header is rendered at 45px height; the design system specifies a 68px sticky header.",
+          "expectedDesign": "height: 68px, display: flex, align-items: center",
+          "actualImplementation": "Computed height: 45px",
+          "selector": "header, nav, .navbar",
+          "suggestedCssFix": "header, .navbar {\n  height: 68px !important;\n  padding: 0 48px;\n  align-items: center;\n}",
+          "diffScore": 22,
+          "boundingRect": {
+            "x": 24,
+            "y": 24,
+            "width": 1392,
+            "height": 45
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792664946760-l2ddz-pixel-drift",
+          "category": "VISUAL_PIXEL_DRIFT",
+          "severity": "P3",
+          "title": "Visual Regression: 4.27% Layout Drift Detected",
+          "description": "Differential pixel analysis identified 55,282 displaced pixels against the design specification reference.",
+          "expectedDesign": "Clean 1:1 design-to-code visual parity (< 2.0% tolerance)",
+          "actualImplementation": "4.27% total visual surface deviation",
+          "suggestedCssFix": "/* Inspect the interactive split-screen diff overlay to align margins, grid containers, and element positioning */",
+          "diffScore": 4.27
+        }
+      ],
+      "metrics": {
+        "colorAccuracyPercent": 100,
+        "typographyAccuracyPercent": 100,
+        "layoutAccuracyPercent": 87,
+        "missingElementsCount": 0
+      },
+      "summary": "Design comparison completed for http://localhost:4000 against Benchmark Homepage Spec (Figma Design System). Overall Design Fidelity: 94.9% (3 UI discrepancies detected: 0 Critical, 1 High, 2 Moderate/Minor).",
+      "timestamp": "2026-10-22T10:29:12.155Z"
+    },
+    {
+      "id": "design-cmp-1792664624511-gwkkn",
+      "targetUrl": "http://localhost:4000",
+      "sourceType": "BENCHMARK_PRESET",
+      "presetId": "fixture-benchmark-homepage",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "name": "Desktop (1440x900)"
+      },
+      "designSnapshotPath": "/api/artifacts/design-cmp-1792664624511-gwkkn/screenshots/design-reference.png",
+      "liveSnapshotPath": "/api/artifacts/design-cmp-1792664624511-gwkkn/screenshots/live-page.png",
+      "diffOverlayPath": "/api/artifacts/design-cmp-1792664624511-gwkkn/screenshots/visual-diff-overlay.png",
+      "fidelityScore": 94.9,
+      "mismatchPercentage": 4.27,
+      "diffPixelCount": 55282,
+      "totalPixels": 1296000,
+      "issues": [
+        {
+          "id": "issue-design-cmp-1792664624511-gwkkn-pad-btn",
+          "category": "SPACING_PADDING",
+          "severity": "P3",
+          "title": "Button Padding & Touch Target Discrepancy",
+          "description": "The button padding (8px 16px) does not match the design component spec (14px 28px).",
+          "expectedDesign": "padding: 14px 28px",
+          "actualImplementation": "padding: 8px 16px",
+          "selector": "button, .btn-cta",
+          "suggestedCssFix": "button.btn-primary, .btn-cta {\n  padding: 14px 28px !important;\n}",
+          "diffScore": 12,
+          "boundingRect": {
+            "x": 45,
+            "y": 287,
+            "width": 164,
+            "height": 32
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792664624511-gwkkn-layout-nav",
+          "category": "LAYOUT_ALIGNMENT",
+          "severity": "P2",
+          "title": "Navigation Bar Vertical Height Discrepancy",
+          "description": "Navigation header is rendered at 45px height; the design system specifies a 68px sticky header.",
+          "expectedDesign": "height: 68px, display: flex, align-items: center",
+          "actualImplementation": "Computed height: 45px",
+          "selector": "header, nav, .navbar",
+          "suggestedCssFix": "header, .navbar {\n  height: 68px !important;\n  padding: 0 48px;\n  align-items: center;\n}",
+          "diffScore": 22,
+          "boundingRect": {
+            "x": 24,
+            "y": 24,
+            "width": 1392,
+            "height": 45
+          }
+        },
+        {
+          "id": "issue-design-cmp-1792664624511-gwkkn-pixel-drift",
+          "category": "VISUAL_PIXEL_DRIFT",
+          "severity": "P3",
+          "title": "Visual Regression: 4.27% Layout Drift Detected",
+          "description": "Differential pixel analysis identified 55,282 displaced pixels against the design specification reference.",
+          "expectedDesign": "Clean 1:1 design-to-code visual parity (< 2.0% tolerance)",
+          "actualImplementation": "4.27% total visual surface deviation",
+          "suggestedCssFix": "/* Inspect the interactive split-screen diff overlay to align margins, grid containers, and element positioning */",
+          "diffScore": 4.27
+        }
+      ],
+      "metrics": {
+        "colorAccuracyPercent": 100,
+        "typographyAccuracyPercent": 100,
+        "layoutAccuracyPercent": 87,
+        "missingElementsCount": 0
+      },
+      "summary": "Design comparison completed for http://localhost:4000 against Benchmark Homepage Spec (Figma Design System). Overall Design Fidelity: 94.9% (3 UI discrepancies detected: 0 Critical, 1 High, 2 Moderate/Minor).",
+      "timestamp": "2026-10-22T10:23:52.088Z"
     }
   ]
 }

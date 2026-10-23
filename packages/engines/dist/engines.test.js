@@ -44,12 +44,18 @@ const index_js_1 = require("./index.js");
         const functional = new index_js_1.FunctionalEngine();
         const visual = new index_js_1.VisualRegressionEngine();
         const agent = new index_js_1.AIExploratoryAgent();
+        const comparator = new index_js_1.DesignComparator();
         assert.ok(a11y);
         assert.ok(security);
         assert.ok(performance);
         assert.ok(functional);
         assert.ok(visual);
         assert.ok(agent);
+        assert.ok(comparator);
+        const presets = comparator.getPresets();
+        assert.ok(presets.length >= 3, 'Should provide at least 3 benchmark design presets');
+        assert.ok(presets.some((p) => p.category === 'FIGMA'));
+        assert.ok(presets.some((p) => p.category === 'AI'));
     });
     (0, node_test_1.it)('generates synthetic test cases from discovered pages using AIExploratoryAgent', () => {
         const agent = new index_js_1.AIExploratoryAgent();

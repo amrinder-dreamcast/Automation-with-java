@@ -234,4 +234,53 @@ export interface Project {
     updatedAt: string;
     scope: TargetScope;
 }
+export type DesignSourceType = 'FIGMA_FILE' | 'FIGMA_URL' | 'AI_FILE' | 'IMAGE_UPLOAD' | 'BENCHMARK_PRESET';
+export type DesignUiIssueCategory = 'LAYOUT_ALIGNMENT' | 'COLOR_THEME' | 'TYPOGRAPHY' | 'SPACING_PADDING' | 'MISSING_ELEMENT' | 'EXTRA_ELEMENT' | 'VISUAL_PIXEL_DRIFT';
+export interface DesignUiIssue {
+    id: string;
+    category: DesignUiIssueCategory;
+    severity: Severity;
+    title: string;
+    description: string;
+    expectedDesign: string;
+    actualImplementation: string;
+    selector?: string;
+    suggestedCssFix?: string;
+    diffScore?: number;
+    boundingRect?: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
+}
+export interface DesignComparisonResult {
+    id: string;
+    targetUrl: string;
+    sourceType: DesignSourceType;
+    fileName?: string;
+    figmaUrl?: string;
+    presetId?: string;
+    viewport: {
+        width: number;
+        height: number;
+        name?: string;
+    };
+    designSnapshotPath: string;
+    liveSnapshotPath: string;
+    diffOverlayPath?: string;
+    fidelityScore: number;
+    mismatchPercentage: number;
+    diffPixelCount: number;
+    totalPixels: number;
+    issues: DesignUiIssue[];
+    metrics: {
+        colorAccuracyPercent: number;
+        typographyAccuracyPercent: number;
+        layoutAccuracyPercent: number;
+        missingElementsCount: number;
+    };
+    summary: string;
+    timestamp: string;
+}
 //# sourceMappingURL=types.d.ts.map

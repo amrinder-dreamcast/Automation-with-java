@@ -1,1 +1,1 @@
-{"root":["./src/accessibility.ts","./src/ai-exploratory-agent.ts","./src/engines.test.ts","./src/functional.ts","./src/index.ts","./src/performance.ts","./src/security.ts","./src/visual.ts"],"version":"5.9.3"}
+{"root":["./src/accessibility.ts","./src/ai-exploratory-agent.ts","./src/design-comparator.ts","./src/engines.test.ts","./src/functional.ts","./src/index.ts","./src/performance.ts","./src/security.ts","./src/visual.ts"],"version":"5.9.3"}

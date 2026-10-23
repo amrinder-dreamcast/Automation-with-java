@@ -7,6 +7,7 @@ import {
   FunctionalEngine,
   VisualRegressionEngine,
   AIExploratoryAgent,
+  DesignComparator,
 } from './index.js';
 
 describe('TestPilot Engines Suite', () => {
@@ -17,6 +18,7 @@ describe('TestPilot Engines Suite', () => {
     const functional = new FunctionalEngine();
     const visual = new VisualRegressionEngine();
     const agent = new AIExploratoryAgent();
+    const comparator = new DesignComparator();
 
     assert.ok(a11y);
     assert.ok(security);
@@ -24,6 +26,12 @@ describe('TestPilot Engines Suite', () => {
     assert.ok(functional);
     assert.ok(visual);
     assert.ok(agent);
+    assert.ok(comparator);
+
+    const presets = comparator.getPresets();
+    assert.ok(presets.length >= 3, 'Should provide at least 3 benchmark design presets');
+    assert.ok(presets.some((p) => p.category === 'FIGMA'));
+    assert.ok(presets.some((p) => p.category === 'AI'));
   });
 
   it('generates synthetic test cases from discovered pages using AIExploratoryAgent', () => {

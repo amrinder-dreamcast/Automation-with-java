@@ -1,6 +1,6 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { Project, TestRun, Defect, CrawlSession } from '@testpilot/core';
+import { Project, TestRun, Defect, CrawlSession, DesignComparisonResult } from '@testpilot/core';
 
 export interface AuditLogEntry {
   id: string;
@@ -18,6 +18,7 @@ export interface DatabaseState {
   defects: Defect[];
   crawlSessions: CrawlSession[];
   auditLogs: AuditLogEntry[];
+  designComparisons?: DesignComparisonResult[];
 }
 
 export class TestPilotDatabase {
@@ -51,6 +52,7 @@ export class TestPilotDatabase {
       defects: [],
       crawlSessions: [],
       auditLogs: [],
+      designComparisons: [],
     };
   }
 
@@ -206,5 +208,43 @@ export class TestPilotDatabase {
       state.auditLogs = state.auditLogs.slice(0, 200);
     }
     await this.persist();
+  }
+
+  // --- Design Comparison Operations ---
+  public async getDesignComparisons(): Promise<DesignComparisonResult[]> {
+    const state = await this.ensureLoaded();
+    if (!state.designComparisons) state.designComparisons = [];
+    return state.designComparisons;
+  }
+
+  public async getDesignComparisonById(id: string): Promise<DesignComparisonResult | null> {
+    const state = await this.ensureLoaded();
+    if (!state.designComparisons) state.designComparisons = [];
+    return state.designComparisons.find((c) => c.id === id) || null;
+  }
+
+  public async saveDesignComparison(comparison: DesignComparisonResult): Promise<DesignComparisonResult> {
+    const state = await this.ensureLoaded();
+    if (!state.designComparisons) state.designComparisons = [];
+    const idx = state.designComparisons.findIndex((c) => c.id === comparison.id);
+    if (idx >= 0) {
+      state.designComparisons[idx] = comparison;
+    } else {
+      state.designComparisons.unshift(comparison);
+    }
+    await this.persist();
+    return comparison;
+  }
+
+  public async deleteDesignComparison(id: string): Promise<boolean> {
+    const state = await this.ensureLoaded();
+    if (!state.designComparisons) return false;
+    const initialLen = state.designComparisons.length;
+    state.designComparisons = state.designComparisons.filter((c) => c.id !== id);
+    if (state.designComparisons.length !== initialLen) {
+      await this.persist();
+      return true;
+    }
+    return false;
   }
 }

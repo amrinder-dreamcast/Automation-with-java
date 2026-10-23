@@ -143,7 +143,7 @@ const server_js_1 = require("./server.js");
         assert.strictEqual(data.success, true);
         assert.ok(data.token);
         assert.strictEqual(data.user.email, 'admin@testpilot.ai');
-        assert.strictEqual(data.user.name, 'Admin');
+        assert.strictEqual(data.user.name, 'Admin User');
         // Test session verification
         const sessionRes = await fetch(`${BASE}/api/auth/session`, {
             headers: { Cookie: cookie },
@@ -161,6 +161,27 @@ const server_js_1 = require("./server.js");
         const logoutData = await logoutRes.json();
         assert.strictEqual(logoutData.success, true);
     });
+    (0, node_test_1.it)('rejects login with incorrect password', async () => {
+        const res = await fetch(`${BASE}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: 'admin@testpilot.ai', password: 'wrongPassword123' }),
+        });
+        assert.strictEqual(res.status, 401);
+        const data = await res.json();
+        assert.ok(data.error);
+        assert.ok(data.error.includes('Invalid credentials'));
+    });
+    (0, node_test_1.it)('rejects login for unregistered user', async () => {
+        const res = await fetch(`${BASE}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: 'unregistered@testpilot.ai', password: 'somePassword123' }),
+        });
+        assert.strictEqual(res.status, 401);
+        const data = await res.json();
+        assert.ok(data.error);
+    });
     (0, node_test_1.it)('rejects registration with incomplete details', async () => {
         const res = await fetch(`${BASE}/api/auth/register`, {
             method: 'POST',
@@ -171,13 +192,14 @@ const server_js_1 = require("./server.js");
         const data = await res.json();
         assert.ok(data.error);
     });
-    (0, node_test_1.it)('registers a new user, returning 201 and active session token', async () => {
+    (0, node_test_1.it)('registers a new user, returning 201 and allows login with valid credentials only', async () => {
+        const testEmail = `sarah.connor.${Date.now()}@cyberdyne.ai`;
         const res = await fetch(`${BASE}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 name: 'Sarah Connor',
-                email: 'sarah.connor@cyberdyne.ai',
+                email: testEmail,
                 password: 'securePass123!',
             }),
         });
@@ -187,8 +209,49 @@ const server_js_1 = require("./server.js");
         const data = await res.json();
         assert.strictEqual(data.success, true);
         assert.strictEqual(data.user.name, 'Sarah Connor');
-        assert.strictEqual(data.user.email, 'sarah.connor@cyberdyne.ai');
+        assert.strictEqual(data.user.email, testEmail);
         assert.strictEqual(data.user.initials, 'SC');
+        // Attempt login with incorrect password -> should fail with 401
+        const badLogin = await fetch(`${BASE}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: testEmail,
+                password: 'wrongPassword!',
+            }),
+        });
+        assert.strictEqual(badLogin.status, 401);
+        const badData = await badLogin.json();
+        assert.ok(badData.error);
+        // Attempt login with valid registered credentials -> should succeed with 200
+        const goodLogin = await fetch(`${BASE}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: testEmail,
+                password: 'securePass123!',
+            }),
+        });
+        assert.strictEqual(goodLogin.status, 200);
+        const goodData = await goodLogin.json();
+        assert.strictEqual(goodData.success, true);
+        assert.strictEqual(goodData.user.name, 'Sarah Connor');
+        assert.strictEqual(goodData.user.email, testEmail);
+    });
+    (0, node_test_1.it)('rejects duplicate registration with existing email', async () => {
+        const res = await fetch(`${BASE}/api/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: 'Imposter',
+                email: 'admin@testpilot.ai',
+                password: 'anotherPassword123!',
+            }),
+        });
+        assert.strictEqual(res.status, 409);
+        const data = await res.json();
+        assert.ok(data.error);
+        assert.ok(data.error.includes('already exists'));
     });
     (0, node_test_1.it)('handles forgot password requests cleanly', async () => {
         // Missing email
@@ -208,6 +271,84 @@ const server_js_1 = require("./server.js");
         const data = await goodRes.json();
         assert.strictEqual(data.success, true);
         assert.ok(data.message.includes('Recovery instructions'));
+    });
+    (0, node_test_1.it)('serves design compare presets including Figma and Illustrator AI specs', async () => {
+        const res = await fetch(`${BASE}/api/design-compare/presets`);
+        assert.strictEqual(res.status, 200);
+        const presets = await res.json();
+        assert.ok(Array.isArray(presets));
+        assert.ok(presets.length >= 2);
+        assert.ok(presets.some((p) => p.category === 'FIGMA'));
+        assert.ok(presets.some((p) => p.category === 'AI'));
+    });
+    (0, node_test_1.it)('executes design vs code comparison on given URL and returns UI issues, snapshots and fidelity score', async () => {
+        const res = await fetch(`${BASE}/api/design-compare`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUrl: 'http://localhost:4000',
+                presetId: 'fixture-benchmark-homepage',
+                viewport: 'desktop',
+            }),
+        });
+        assert.strictEqual(res.status, 200);
+        const data = await res.json();
+        assert.ok(data.id);
+        assert.strictEqual(data.targetUrl, 'http://localhost:4000');
+        assert.ok(typeof data.fidelityScore === 'number');
+        assert.ok(Array.isArray(data.issues));
+        assert.ok(data.designSnapshotPath);
+        assert.ok(data.liveSnapshotPath);
+        assert.ok(data.diffOverlayPath);
+        assert.ok(data.metrics.colorAccuracyPercent > 0);
+        // Verify it is saved in history
+        const listRes = await fetch(`${BASE}/api/design-compare`);
+        assert.strictEqual(listRes.status, 200);
+        const list = await listRes.json();
+        assert.ok(list.some((item) => item.id === data.id));
+    });
+    (0, node_test_1.it)('serves /api/mcp/servers listing all 10 MCP integrations', async () => {
+        const res = await fetch(`${BASE}/api/mcp/servers`);
+        assert.strictEqual(res.status, 200);
+        const data = await res.json();
+        assert.ok(data.servers.length >= 10);
+        const serverIds = data.servers.map((s) => s.id);
+        assert.ok(serverIds.includes('playwright'));
+        assert.ok(serverIds.includes('maestro'));
+        assert.ok(serverIds.includes('cypress'));
+        assert.ok(serverIds.includes('browserstack'));
+        assert.ok(serverIds.includes('k6'));
+        assert.ok(serverIds.includes('reportportal'));
+        assert.ok(serverIds.includes('vibium'));
+        assert.ok(serverIds.includes('thunder'));
+        assert.ok(serverIds.includes('accessibility'));
+        assert.ok(serverIds.includes('testguild'));
+    });
+    (0, node_test_1.it)('serves /api/mcp/tools listing all registered tool schemas', async () => {
+        const res = await fetch(`${BASE}/api/mcp/tools`);
+        assert.strictEqual(res.status, 200);
+        const data = await res.json();
+        assert.ok(data.tools.length >= 20);
+        assert.ok(data.tools.some((t) => t.name === 'playwright_inspect_dom'));
+        assert.ok(data.tools.some((t) => t.name === 'k6_run_load_test'));
+        assert.ok(data.tools.some((t) => t.name === 'axe_check_contrast'));
+    });
+    (0, node_test_1.it)('executes an MCP tool via POST /api/mcp/execute', async () => {
+        const res = await fetch(`${BASE}/api/mcp/execute`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                toolName: 'axe_check_contrast',
+                arguments: {
+                    foregroundHex: '#111827',
+                    backgroundHex: '#FFFFFF',
+                },
+            }),
+        });
+        assert.strictEqual(res.status, 200);
+        const result = await res.json();
+        assert.ok(!result.isError);
+        assert.ok(result.content[0].text.includes('COMPLIANT'));
     });
 });
 //# sourceMappingURL=server.test.js.map

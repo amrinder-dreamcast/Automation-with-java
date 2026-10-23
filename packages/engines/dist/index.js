@@ -20,4 +20,5 @@ __exportStar(require("./performance.js"), exports);
 __exportStar(require("./visual.js"), exports);
 __exportStar(require("./security.js"), exports);
 __exportStar(require("./ai-exploratory-agent.js"), exports);
+__exportStar(require("./design-comparator.js"), exports);
 //# sourceMappingURL=index.js.map

@@ -1,0 +1,88 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "node",
+      "args": ["packages/mcp-suite/dist/servers/playwright.js"],
+      "env": {
+        "HEADLESS": "true",
+        "PLAYWRIGHT_BROWSERS_PATH": "0"
+      }
+    },
+    "maestro": {
+      "command": "node",
+      "args": ["packages/mcp-suite/dist/servers/maestro.js"],
+      "env": {
+        "MAESTRO_PLATFORM": "android"
+      }
+    },
+    "cypress-cloud": {
+      "command": "node",
+      "args": ["packages/mcp-suite/dist/servers/cypress-cloud.js"],
+      "env": {
+        "CYPRESS_RECORD_KEY": "",
+        "CYPRESS_PROJECT_ID": "testpilot-enterprise"
+      }
+    },
+    "browserstack": {
+      "command": "node",
+      "args": ["packages/mcp-suite/dist/servers/browserstack.js"],
+      "env": {
+        "BROWSERSTACK_USERNAME": "",
+        "BROWSERSTACK_ACCESS_KEY": "",
+        "KOBITON_API_KEY": ""
+      }
+    },
+    "grafana-k6": {
+      "command": "node",
+      "args": ["packages/mcp-suite/dist/servers/grafana-k6.js"],
+      "env": {
+        "K6_OUT": "json",
+        "K6_INSECURE_SKIP_TLS_VERIFY": "true"
+      }
+    },
+    "reportportal": {
+      "command": "node",
+      "args": ["packages/mcp-suite/dist/servers/reportportal.js"],
+      "env": {
+        "REPORTPORTAL_ENDPOINT": "http://localhost:8080/api/v1",
+        "REPORTPORTAL_API_KEY": "",
+        "REPORTPORTAL_PROJECT": "testpilot_enterprise"
+      }
+    },
+    "vibium": {
+      "command": "node",
+      "args": ["packages/mcp-suite/dist/servers/vibium.js"],
+      "env": {
+        "VIBIUM_BIDI_PORT": "9222"
+      }
+    },
+    "thunder": {
+      "command": "node",
+      "args": ["packages/mcp-suite/dist/servers/thunder.js"],
+      "env": {
+        "THUNDER_MODE": "intent-autonomous"
+      }
+    },
+    "accessibility-scanner": {
+      "command": "node",
+      "args": ["packages/mcp-suite/dist/servers/accessibility.js"],
+      "env": {
+        "AXE_STANDARD": "wcag21aa"
+      }
+    },
+    "testguild-tool-matcher": {
+      "command": "node",
+      "args": ["packages/mcp-suite/dist/servers/testguild.js"],
+      "env": {
+        "TESTGUILD_CACHE_TTL": "86400"
+      }
+    },
+    "testpilot-unified-hub": {
+      "command": "node",
+      "args": ["packages/mcp-suite/dist/servers/unified.js"],
+      "env": {
+        "TESTPILOT_SUITE_MODE": "full"
+      }
+    }
+  }
+}

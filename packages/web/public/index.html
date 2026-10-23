@@ -39,61 +39,80 @@
     </div>
 
     <div class="nav-center">
-      <div class="status-indicator" id="system-status-indicator">
+      <div class="status-indicator" id="system-status-indicator" title="Autonomous Test Engine & Benchmark Environment Status">
         <span class="status-dot"></span>
         <span class="status-text" id="system-status-text">Connecting to Platform...</span>
       </div>
     </div>
 
     <div class="nav-actions">
-      <!-- Interactive Light / Dark Mode Toggle Button (Icon Only: Sun & Moon) -->
-      <button class="theme-switcher" id="btn-theme-toggle" type="button" title="Switch between Light and Dark mode" aria-label="Toggle Light and Dark Mode">
-        <span class="theme-option theme-light active" id="theme-opt-light" title="Light mode">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      <!-- Utility Group: Light/Dark Theme + Workspace Reset -->
+      <div class="nav-btn-group nav-util-group">
+        <button class="theme-switcher" id="btn-theme-toggle" type="button" title="Switch between Light and Dark mode" aria-label="Toggle Light and Dark Mode">
+          <span class="theme-option theme-light active" id="theme-opt-light" title="Light mode">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </span>
+          <span class="theme-option theme-dark" id="theme-opt-dark" title="Dark mode">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </span>
+          <!-- Compatibility elements for existing DOM selectors -->
+          <svg id="theme-icon-sun" class="hidden" width="0" height="0" aria-hidden="true"></svg>
+          <svg id="theme-icon-moon" class="hidden" width="0" height="0" aria-hidden="true"></svg>
+          <span id="theme-text" class="hidden">Light Theme</span>
+        </button>
+        <button class="btn btn-outline-danger btn-nav-danger" id="btn-clear-all-data" title="Clear all previous test runs, defect history, and reset dashboard for fresh runs">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
           </svg>
-        </span>
-        <span class="theme-option theme-dark" id="theme-opt-dark" title="Dark mode">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          <span>Clear Data</span>
+        </button>
+      </div>
+
+      <div class="nav-divider" aria-hidden="true"></div>
+
+      <!-- Testing Workflows Group -->
+      <div class="nav-btn-group nav-workflow-group">
+        <button class="btn btn-secondary btn-nav-secondary" id="btn-quick-fixture" title="Run fast automated test cycle on local fixture website (port 4000)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="10 8 16 12 10 16 10 8"></polygon>
           </svg>
-        </span>
-        <!-- Compatibility elements for existing DOM selectors -->
-        <svg id="theme-icon-sun" class="hidden" width="0" height="0" aria-hidden="true"></svg>
-        <svg id="theme-icon-moon" class="hidden" width="0" height="0" aria-hidden="true"></svg>
-        <span id="theme-text" class="hidden">Light Theme</span>
-      </button>
-      <button class="btn btn-outline-danger" id="btn-clear-all-data" title="Clear all previous test runs, defects, and reset workspace for testing new URLs">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="3 6 5 6 21 6"></polyline>
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          <line x1="10" y1="11" x2="10" y2="17"></line>
-          <line x1="14" y1="11" x2="14" y2="17"></line>
-        </svg>
-        Clear All Test Data
-      </button>
-      <button class="btn btn-secondary" id="btn-quick-fixture" title="Run test cycle on local fixture website">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <polygon points="10 8 16 12 10 16 10 8"></polygon>
-        </svg>
-        Quick Fixture Test
-      </button>
-      <button class="btn btn-primary" id="btn-new-run">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        New Test Run
-      </button>
+          <span>Quick Fixture</span>
+        </button>
+        <button class="btn btn-outline btn-nav-feature" id="btn-quick-design-compare" title="Compare Adobe Illustrator (.ai) or Figma (.fig) file against given URL for UI issues">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+            <circle cx="11" cy="11" r="2"></circle>
+          </svg>
+          <span>Design vs Code</span>
+          <span class="btn-badge-ai">AI</span>
+        </button>
+        <button class="btn btn-primary btn-nav-primary" id="btn-new-run" title="Create and launch a new test exploration run">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>New Test Run</span>
+        </button>
+      </div>
+
+      <div class="nav-divider" aria-hidden="true"></div>
 
       <!-- User Profile / Session Menu -->
       <div class="user-session-wrapper" id="wrap-user-session">
@@ -190,6 +209,25 @@
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
           </svg>
           Performance & Visual
+        </button>
+        <button class="nav-tab" data-tab="tab-design-compare" id="tab-btn-design-compare">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+            <path d="M2 2l7.586 7.586"></path>
+            <circle cx="11" cy="11" r="2"></circle>
+          </svg>
+          Design vs Code (Figma/AI)
+          <span class="badge badge-accent" id="badge-design-nav-pill" style="margin-left:auto;font-size:10px;">UI Compare</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-mcp-suite" id="tab-btn-mcp-suite">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+          MCP Hub & QA Command
+          <span class="badge badge-success" style="margin-left:auto;font-size:10px;">10 Active</span>
         </button>
       </nav>
 
@@ -1016,6 +1054,676 @@
         </div>
       </section>
 
+      <!-- TAB 7: DESIGN VS CODE (FIGMA & ILLUSTRATOR AI AUDITOR) -->
+      <section class="tab-pane" id="tab-design-compare">
+        <div class="page-header">
+          <div>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+              <h1 class="page-title">Design vs Code UI Comparison</h1>
+              <span class="badge badge-accent" style="font-size:11px; font-weight:700;">Figma &amp; Illustrator .AI</span>
+            </div>
+            <p class="page-subtitle">Upload Figma (.fig) or Adobe Illustrator (.ai) files or provide a Figma design URL to automatically detect layout shifts, color drift, typography discrepancies, and UI defects against live web pages.</p>
+          </div>
+          <div class="header-stat-pills">
+            <span class="stat-pill"><strong id="stat-design-fidelity">—</strong> Avg Parity</span>
+            <span class="stat-pill"><strong id="stat-design-issues-count">0</strong> UI Defects</span>
+          </div>
+        </div>
+
+        <!-- Configuration Card -->
+        <div class="panel" style="margin-bottom: 24px;">
+          <div class="panel-header">
+            <h2 class="panel-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent-cyan);vertical-align:text-bottom;margin-right:6px;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="12 8 8 12 12 16 12 8"></polygon>
+                <line x1="16" y1="12" x2="12" y2="12"></line>
+              </svg>
+              Step 1: Set Target Web URL &amp; Design Reference
+            </h2>
+            <div class="badge badge-info">Multi-Format Supported: .fig, .ai, .svg, .png, Figma URL</div>
+          </div>
+
+          <div style="padding: 24px;">
+            <!-- Target URL Input -->
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label class="form-label" for="input-design-target-url" style="display:flex; justify-content:space-between;">
+                <span>Live Target Website URL</span>
+                <span class="form-hint" style="margin:0;">Playwright will open and capture full-fidelity rendered styles</span>
+              </label>
+              <div style="display:flex; gap:10px;">
+                <input type="url" id="input-design-target-url" class="form-input" placeholder="http://localhost:4000 or https://example.com" value="http://localhost:4000" style="font-family:monospace; font-size:14px; flex:1;">
+                <button type="button" class="btn btn-secondary" id="btn-design-preset-fixture" title="Use Local Benchmark Fixture URL">Use Local Fixture</button>
+              </div>
+              <!-- Quick preset pills for URLs -->
+              <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+                <span style="font-size:12px; color:var(--text-muted); align-self:center;">Quick Select:</span>
+                <button type="button" class="preset-chip active" data-url="http://localhost:4000">Homepage (4000)</button>
+                <button type="button" class="preset-chip" data-url="http://localhost:4000/accessibility.html">Accessibility Page</button>
+                <button type="button" class="preset-chip" data-url="http://localhost:4000/broken-links.html">Broken Links Page</button>
+              </div>
+            </div>
+
+            <!-- Design Source Modes Tabs -->
+            <div class="design-source-section">
+              <label class="form-label" style="margin-bottom:10px;">Step 2: Choose Design Source Format</label>
+              <div class="design-source-tabs">
+                <button type="button" class="design-src-tab active" data-source-type="file" id="tab-src-file">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                  Upload File (.fig / .ai / Image)
+                </button>
+                <button type="button" class="design-src-tab" data-source-type="figma-url" id="tab-src-figma-url">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                  Figma URL &amp; API
+                </button>
+                <button type="button" class="design-src-tab" data-source-type="preset" id="tab-src-preset">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  Sample Benchmark Specs (1-Click)
+                </button>
+              </div>
+
+              <!-- Content A: File Upload Dropzone -->
+              <div class="design-src-content" id="panel-src-file">
+                <div class="file-dropzone" id="design-dropzone">
+                  <input type="file" id="input-design-file" class="hidden" accept=".fig,.ai,.png,.jpg,.jpeg,.svg,.webp,.pdf">
+                  <div class="dropzone-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                  </div>
+                  <div class="dropzone-title">Drag &amp; drop your <strong>Figma (.fig)</strong> or <strong>Adobe Illustrator (.ai)</strong> file here</div>
+                  <div class="dropzone-subtitle">or click to browse from your computer (also accepts .svg, .png, .jpg, .webp, .pdf)</div>
+                  <div class="supported-badges">
+                    <span class="filetype-badge badge-fig">.FIG Figma</span>
+                    <span class="filetype-badge badge-ai">.AI Illustrator</span>
+                    <span class="filetype-badge">.SVG Vector</span>
+                    <span class="filetype-badge">.PNG / .JPG</span>
+                  </div>
+                </div>
+
+                <!-- Selected File Display Card -->
+                <div class="selected-file-card hidden" id="card-selected-file">
+                  <div class="file-info-col">
+                    <div class="file-ext-icon" id="label-selected-ext">FIG</div>
+                    <div>
+                      <div class="file-name-text" id="label-selected-name">homepage-design.fig</div>
+                      <div class="file-size-text" id="label-selected-size">2.4 MB &bull; Ready for comparison</div>
+                    </div>
+                  </div>
+                  <button type="button" class="btn-remove-file" id="btn-remove-file" title="Remove selected file">&times;</button>
+                </div>
+              </div>
+
+              <!-- Content B: Figma URL & Token -->
+              <div class="design-src-content hidden" id="panel-src-figma-url">
+                <div class="form-group" style="margin-bottom:12px;">
+                  <label class="form-label" for="input-figma-url">Figma Design File / Frame URL</label>
+                  <input type="url" id="input-figma-url" class="form-input" placeholder="https://www.figma.com/design/:fileKey/:title?node-id=0:1">
+                  <span class="form-hint">Paste any Figma browser link containing fileKey and optional node-id.</span>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" for="input-figma-token">Figma Personal Access Token (Optional)</label>
+                  <input type="password" id="input-figma-token" class="form-input" placeholder="figd_... (optional, leave empty for automated simulation)">
+                  <span class="form-hint">Used to query Figma REST API images endpoint for live renders.</span>
+                </div>
+              </div>
+
+              <!-- Content C: Preset Benchmark Specs -->
+              <div class="design-src-content hidden" id="panel-src-preset">
+                <div class="preset-grid" id="design-presets-cards">
+                  <!-- Populated dynamically via /api/design-compare/presets -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Viewport & Tolerance Settings -->
+            <div class="settings-strip" style="margin-top:20px; display:flex; gap:20px; flex-wrap:wrap; align-items:center; justify-content:space-between; padding-top:16px; border-top:1px solid var(--border-color);">
+              <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+                <div>
+                  <span class="form-label" style="margin-bottom:6px; font-size:12px;">Device Viewport</span>
+                  <div class="segmented-control" id="control-viewport">
+                    <button type="button" class="segment-btn active" data-viewport="desktop">Desktop 1440&times;900</button>
+                    <button type="button" class="segment-btn" data-viewport="laptop">Laptop 1280&times;800</button>
+                    <button type="button" class="segment-btn" data-viewport="tablet">Tablet 768&times;1024</button>
+                    <button type="button" class="segment-btn" data-viewport="mobile">Mobile 375&times;812</button>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
+                    <span class="form-label" style="margin:0;">Diff Sensitivity</span>
+                    <span id="label-tolerance-val" style="color:var(--accent-cyan); font-weight:600;">Balanced (0.10)</span>
+                  </div>
+                  <input type="range" id="input-tolerance" min="0.05" max="0.30" step="0.05" value="0.10" class="range-slider" style="width:180px;">
+                </div>
+              </div>
+
+              <!-- Primary Action Button -->
+              <div>
+                <button type="button" class="btn btn-primary btn-lg" id="btn-run-design-compare">
+                  <span id="btn-design-spinner" class="spinner-sm hidden" style="margin-right:8px;"></span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="icon-design-run">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <span>Compare Design with Live URL</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- In-flight Progress Banner -->
+        <div class="panel hidden" id="panel-design-progress" style="margin-bottom: 24px; border-left: 4px solid var(--accent-cyan);">
+          <div style="padding: 20px; display:flex; align-items:center; gap:16px;">
+            <div class="spinner-lg"></div>
+            <div style="flex:1;">
+              <div style="font-weight:700; color:var(--text-primary); font-size:15px;" id="design-progress-title">Analyzing Design vs Code Parity...</div>
+              <div style="font-size:13px; color:var(--text-muted); margin-top:4px;" id="design-progress-subtitle">Booting Playwright browser, capturing candidate DOM layout, and performing pixel differential comparison...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Dashboard Panel (Hidden until comparison is run) -->
+        <div class="hidden" id="panel-design-results">
+          <!-- KPI Metrics Row -->
+          <div class="metrics-grid" style="margin-bottom: 24px;">
+            <div class="metric-card">
+              <div class="metric-icon icon-cyan">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+              </div>
+              <div class="metric-info">
+                <div class="metric-label">Design Fidelity</div>
+                <div class="metric-value" id="kpi-fidelity-score" style="color:var(--accent-cyan);">94.2%</div>
+                <div class="metric-sub" id="kpi-fidelity-grade">Grade A- &bull; High Parity</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon icon-rose">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              </div>
+              <div class="metric-info">
+                <div class="metric-label">UI Issues Detected</div>
+                <div class="metric-value" id="kpi-issues-total" style="color:var(--accent-rose);">3</div>
+                <div class="metric-sub" id="kpi-issues-breakdown">1 Critical &bull; 2 Moderate</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon icon-blue">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              </div>
+              <div class="metric-info">
+                <div class="metric-label">Color Accuracy</div>
+                <div class="metric-value" id="kpi-color-accuracy">98.5%</div>
+                <div class="metric-sub">Hex &amp; Contrast Fidelity</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon icon-indigo">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+              </div>
+              <div class="metric-info">
+                <div class="metric-label">Typography &amp; Layout</div>
+                <div class="metric-value" id="kpi-layout-accuracy">92.0%</div>
+                <div class="metric-sub">Font family &amp; Grid bounds</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Visual Comparison Inspector -->
+          <div class="panel" style="margin-bottom: 24px;">
+            <div class="panel-header">
+              <h2 class="panel-title">Interactive Visual Comparison Inspector</h2>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <!-- Mode Switcher -->
+                <div class="segmented-control" id="control-view-mode">
+                  <button type="button" class="segment-btn active" data-mode="split">🎚️ Split-Slider Wipe</button>
+                  <button type="button" class="segment-btn" data-mode="side">🖼️ Side-by-Side</button>
+                  <button type="button" class="segment-btn" data-mode="diff">🟣 Diff Heatmap</button>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-fullscreen-inspector" title="Toggle Fullscreen">⛶ Expand</button>
+              </div>
+            </div>
+
+            <div style="padding: 20px;">
+              <!-- Split Slider Wipe Container -->
+              <div class="split-slider-wrapper" id="view-mode-split">
+                <div class="split-slider-instructions">
+                  <span>💡 <strong>Interactive Wipe:</strong> Drag the vertical handle left/right to reveal live code over the design spec.</span>
+                </div>
+                <div class="split-container" id="split-container">
+                  <!-- Bottom Layer: Design Spec -->
+                  <img id="img-design-split" class="split-img-bottom" alt="Design Reference">
+                  <!-- Top Layer: Live Website (Clipped) -->
+                  <div class="split-overlay-layer" id="split-overlay">
+                    <img id="img-live-split" class="split-img-top" alt="Live Website">
+                  </div>
+                  <!-- Split Handle -->
+                  <div class="split-handle" id="split-handle" style="left: 50%;">
+                    <div class="split-handle-line"></div>
+                    <div class="split-handle-btn">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                  </div>
+                  <!-- Badges on image -->
+                  <div class="split-label split-label-left">Live Website</div>
+                  <div class="split-label split-label-right">Design Spec</div>
+                </div>
+              </div>
+
+              <!-- Side-by-Side Container -->
+              <div class="side-by-side-grid hidden" id="view-mode-side">
+                <div class="side-col">
+                  <div class="side-col-header">
+                    <span class="side-col-title">📐 Design Spec Reference</span>
+                    <a id="link-download-design" href="#" target="_blank" class="btn-link-action">Open Original</a>
+                  </div>
+                  <div class="side-img-wrapper">
+                    <img id="img-design-side" alt="Design Reference" class="side-img">
+                  </div>
+                </div>
+                <div class="side-col">
+                  <div class="side-col-header">
+                    <span class="side-col-title">🌐 Live Rendered Web Page</span>
+                    <a id="link-download-live" href="#" target="_blank" class="btn-link-action">Open Original</a>
+                  </div>
+                  <div class="side-img-wrapper">
+                    <img id="img-live-side" alt="Live Website" class="side-img">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Diff Heatmap Container -->
+              <div class="diff-heatmap-wrapper hidden" id="view-mode-diff">
+                <div class="diff-header-bar">
+                  <span>Highlighted discrepancies: Glowing Magenta (<code style="color:#ff0055;">#ff0055</code>) &bull; Orange Anti-Aliasing &bull; Outlined Bounding Boxes</span>
+                  <a id="link-download-diff" href="#" target="_blank" class="btn-link-action">Download High-Res Diff</a>
+                </div>
+                <div class="side-img-wrapper" style="max-height:650px;">
+                  <img id="img-diff-overlay" alt="Visual Diff Overlay" class="side-img">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- UI Issues & Actionable CSS Fixes Section -->
+          <div class="panel" style="margin-bottom: 24px;">
+            <div class="panel-header">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <h2 class="panel-title">Detected UI Discrepancies &amp; Auto-Triage Fixes</h2>
+                <span class="badge badge-danger" id="badge-issues-count-tab">0</span>
+              </div>
+              <!-- Issue Category Filter Buttons -->
+              <div class="category-filter-pills" id="issues-category-filters">
+                <button type="button" class="cat-pill active" data-category="ALL">All Issues</button>
+                <button type="button" class="cat-pill" data-category="LAYOUT_ALIGNMENT">Layout</button>
+                <button type="button" class="cat-pill" data-category="COLOR_THEME">Color &amp; Theme</button>
+                <button type="button" class="cat-pill" data-category="TYPOGRAPHY">Typography</button>
+                <button type="button" class="cat-pill" data-category="SPACING_PADDING">Spacing</button>
+                <button type="button" class="cat-pill" data-category="VISUAL_PIXEL_DRIFT">Pixel Drift</button>
+              </div>
+            </div>
+
+            <div style="padding: 20px;">
+              <!-- Issues List Container -->
+              <div class="issues-list" id="design-issues-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- History of Previous Comparisons -->
+        <div class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Previous Design vs Code Audits</h2>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-refresh-design-history">↻ Refresh History</button>
+          </div>
+          <div class="table-container">
+            <table class="data-table" id="table-design-history">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Target URL</th>
+                  <th>Source Type</th>
+                  <th>Viewport</th>
+                  <th>Design Parity</th>
+                  <th>UI Issues</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="design-history-tbody">
+                <tr>
+                  <td colspan="7" class="text-center text-muted py-4">No previous design audits yet. Run your first comparison above!</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 8: MCP HUB & QA COMMAND CENTER -->
+      <section class="tab-pane" id="tab-mcp-suite">
+        <div class="page-header" style="margin-bottom:24px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+            <div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <h1 style="font-size:24px; font-weight:800; margin:0; letter-spacing:-0.5px;">MCP Hub & QA Command Center</h1>
+                <span class="badge badge-success" style="font-size:12px; font-weight:700; padding:4px 10px;">10 MCPs OPERATIONAL</span>
+                <span class="badge badge-accent" style="font-size:12px; font-weight:700; padding:4px 10px;">JSON-RPC 2.0 (stdio)</span>
+              </div>
+              <p class="text-muted" style="margin-top:6px; font-size:14px; max-width:850px;">
+                Rigid, unbreakable Model Context Protocol suite connecting agentic pair-programmers and test runners to 10 enterprise automation, mobile, performance, accessibility, and reporting tools.
+              </p>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-secondary" id="btn-refresh-mcp-status" style="display:flex; align-items:center; gap:8px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                Ping MCPs
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MCP Metrics Grid -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:24px;">
+          <div class="card" style="padding:18px; border-left:4px solid var(--accent-cyan);">
+            <div style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px;">Active MCP Servers</div>
+            <div style="font-size:28px; font-weight:800; color:var(--text-main); margin-top:4px;" id="mcp-server-count">10</div>
+            <div style="font-size:12px; color:var(--accent-emerald); font-weight:600; margin-top:4px;">● Zero Crashes / Unbreakable</div>
+          </div>
+          <div class="card" style="padding:18px; border-left:4px solid var(--accent-indigo);">
+            <div style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px;">Registered Tools</div>
+            <div style="font-size:28px; font-weight:800; color:var(--text-main); margin-top:4px;" id="mcp-tool-count">28</div>
+            <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Strict JSON Schemas</div>
+          </div>
+          <div class="card" style="padding:18px; border-left:4px solid var(--accent-emerald);">
+            <div style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px;">Circuit Breakers</div>
+            <div style="font-size:28px; font-weight:800; color:var(--text-main); margin-top:4px;">ENABLED</div>
+            <div style="font-size:12px; color:var(--accent-emerald); font-weight:600; margin-top:4px;">Auto-Cooldown & Fallback</div>
+          </div>
+          <div class="card" style="padding:18px; border-left:4px solid var(--accent-amber);">
+            <div style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px;">Credential Guard</div>
+            <div style="font-size:28px; font-weight:800; color:var(--text-main); margin-top:4px;">ACTIVE</div>
+            <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Automated Secret Redaction</div>
+          </div>
+        </div>
+
+        <!-- 10 MCP Servers Grid -->
+        <h2 style="font-size:18px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+          Enterprise MCP Tool Integrations
+        </h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(360px, 1fr)); gap:18px; margin-bottom:32px;">
+
+          <!-- 1. Playwright MCP -->
+          <div class="card" style="padding:20px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="font-weight:700; font-size:16px; color:var(--accent-cyan); display:flex; align-items:center; gap:8px;">
+                  🌐 Playwright MCP (Microsoft)
+                </div>
+                <span class="badge badge-success">READY</span>
+              </div>
+              <p style="font-size:13px; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">
+                Automates browser interactions and parses semantic Accessibility Trees (AX-tree) so AI agents can reason over DOM nodes without token bloat.
+              </p>
+              <div style="font-size:11px; color:var(--text-muted); font-family:monospace; margin-bottom:16px;">
+                Tools: playwright_navigate, playwright_inspect_dom, playwright_click, playwright_type, playwright_screenshot
+              </div>
+            </div>
+            <button class="btn btn-outline-primary btn-sm mcp-quick-run" data-tool="playwright_inspect_dom" data-args='{"includeInteractivity":true}'>
+              ⚡ Inspect Accessibility Tree
+            </button>
+          </div>
+
+          <!-- 2. Maestro MCP -->
+          <div class="card" style="padding:20px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="font-weight:700; font-size:16px; color:var(--accent-indigo); display:flex; align-items:center; gap:8px;">
+                  📱 Maestro MCP
+                </div>
+                <span class="badge badge-success">READY</span>
+              </div>
+              <p style="font-size:13px; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">
+                Writes, validates, runs, and debugs mobile tests against live iOS Simulators and Android Emulators without fragile Appium setup.
+              </p>
+              <div style="font-size:11px; color:var(--text-muted); font-family:monospace; margin-bottom:16px;">
+                Tools: maestro_author_flow, maestro_run_flow, maestro_inspect_hierarchy
+              </div>
+            </div>
+            <button class="btn btn-outline-primary btn-sm mcp-quick-run" data-tool="maestro_author_flow" data-args='{"appId":"com.testpilot.app","steps":["tap Login","type user@testpilot.ai into Email","assert Dashboard visible"]}'>
+              ⚡ Author Mobile Flow
+            </button>
+          </div>
+
+          <!-- 3. Cypress Cloud MCP -->
+          <div class="card" style="padding:20px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="font-weight:700; font-size:16px; color:var(--accent-emerald); display:flex; align-items:center; gap:8px;">
+                  🌲 Cypress Cloud MCP
+                </div>
+                <span class="badge badge-success">READY</span>
+              </div>
+              <p style="font-size:13px; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">
+                Direct agent access to CI runs, stack traces, and status. Pinpoints and clusters flaky tests with instability rankings and remedies.
+              </p>
+              <div style="font-size:11px; color:var(--text-muted); font-family:monospace; margin-bottom:16px;">
+                Tools: cypress_get_latest_runs, cypress_get_flaky_tests, cypress_diagnose_failure
+              </div>
+            </div>
+            <button class="btn btn-outline-primary btn-sm mcp-quick-run" data-tool="cypress_get_flaky_tests" data-args='{"lookbackDays":14}'>
+              ⚡ Scan Flaky Tests
+            </button>
+          </div>
+
+          <!-- 4. BrowserStack & Kobiton MCP -->
+          <div class="card" style="padding:20px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="font-weight:700; font-size:16px; color:var(--accent-rose); display:flex; align-items:center; gap:8px;">
+                  ☁️ BrowserStack / Kobiton MCP
+                </div>
+                <span class="badge badge-success">READY</span>
+              </div>
+              <p style="font-size:13px; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">
+                Rent and drive real iOS and Android physical hardware from the editor. Dispatches test sessions and reads battery/thermal telemetry.
+              </p>
+              <div style="font-size:11px; color:var(--text-muted); font-family:monospace; margin-bottom:16px;">
+                Tools: cloud_devices_catalog, cloud_devices_run_session, cloud_devices_get_telemetry
+              </div>
+            </div>
+            <button class="btn btn-outline-primary btn-sm mcp-quick-run" data-tool="cloud_devices_catalog" data-args='{"provider":"all"}'>
+              ⚡ Query Real Cloud Hardware
+            </button>
+          </div>
+
+          <!-- 5. Grafana k6 & OctoPerf MCP -->
+          <div class="card" style="padding:20px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="font-weight:700; font-size:16px; color:var(--accent-amber); display:flex; align-items:center; gap:8px;">
+                  ⚡ Grafana k6 / OctoPerf MCP
+                </div>
+                <span class="badge badge-success">READY</span>
+              </div>
+              <p style="font-size:13px; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">
+                Write, validate, and execute load tests without leaving the editor. Measures requests/sec, p95/p99 latency, and threshold violations.
+              </p>
+              <div style="font-size:11px; color:var(--text-muted); font-family:monospace; margin-bottom:16px;">
+                Tools: k6_run_load_test, k6_validate_script, octoperf_generate_scenario
+              </div>
+            </div>
+            <button class="btn btn-outline-primary btn-sm mcp-quick-run" data-tool="k6_run_load_test" data-args='{"targetUrl":"http://localhost:3000","scenario":"smoke","durationSec":3}'>
+              ⚡ Execute Smoke Load Test
+            </button>
+          </div>
+
+          <!-- 6. Report Portal MCP -->
+          <div class="card" style="padding:20px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="font-weight:700; font-size:16px; color:#a855f7; display:flex; align-items:center; gap:8px;">
+                  📊 Report Portal MCP
+                </div>
+                <span class="badge badge-success">READY</span>
+              </div>
+              <p style="font-size:13px; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">
+                Agents pull launches, logs, and ML auto-analysis from test reports to instantly distinguish Product Bugs from Automation defects.
+              </p>
+              <div style="font-size:11px; color:var(--text-muted); font-family:monospace; margin-bottom:16px;">
+                Tools: reportportal_get_launches, reportportal_auto_analysis, reportportal_get_logs
+              </div>
+            </div>
+            <button class="btn btn-outline-primary btn-sm mcp-quick-run" data-tool="reportportal_auto_analysis" data-args='{"launchId":"rp-launch-1082"}'>
+              ⚡ Auto-Analyze Failures
+            </button>
+          </div>
+
+          <!-- 7. Vibium MCP -->
+          <div class="card" style="padding:20px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="font-weight:700; font-size:16px; color:#ec4899; display:flex; align-items:center; gap:8px;">
+                  🤖 Vibium BiDi MCP
+                </div>
+                <span class="badge badge-success">READY</span>
+              </div>
+              <p style="font-size:13px; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">
+                AI-native successor to Selenium. Plain-English browser control and real-time DOM event streams built on standard WebDriver BiDi.
+              </p>
+              <div style="font-size:11px; color:var(--text-muted); font-family:monospace; margin-bottom:16px;">
+                Tools: vibium_execute_action, vibium_query_bidi_state, vibium_assert_semantic_state
+              </div>
+            </div>
+            <button class="btn btn-outline-primary btn-sm mcp-quick-run" data-tool="vibium_execute_action" data-args='{"instruction":"click navigation menu and verify response","targetUrl":"http://localhost:3000"}'>
+              ⚡ Run Natural Language Action
+            </button>
+          </div>
+
+          <!-- 8. Thunder MCP -->
+          <div class="card" style="padding:20px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="font-weight:700; font-size:16px; color:#eab308; display:flex; align-items:center; gap:8px;">
+                  ⚡ Thunder MCP
+                </div>
+                <span class="badge badge-success">READY</span>
+              </div>
+              <p style="font-size:13px; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">
+                Author and manage tests in natural language for non-devs. Migrates legacy Selenium/Cypress suites into resilient intent declarations.
+              </p>
+              <div style="font-size:11px; color:var(--text-muted); font-family:monospace; margin-bottom:16px;">
+                Tools: thunder_author_from_intent, thunder_migrate_legacy, thunder_execute_intent
+              </div>
+            </div>
+            <button class="btn btn-outline-primary btn-sm mcp-quick-run" data-tool="thunder_author_from_intent" data-args='{"storyTitle":"User Checkout","intentDescription":"Navigate to cart. Apply discount code. Verify zero shipping."}'>
+              ⚡ Generate Intent Spec
+            </button>
+          </div>
+
+          <!-- 9. MCP Accessibility Scanner -->
+          <div class="card" style="padding:20px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="font-weight:700; font-size:16px; color:#14b8a6; display:flex; align-items:center; gap:8px;">
+                  ♿ axe-core Accessibility Scanner
+                </div>
+                <span class="badge badge-success">READY</span>
+              </div>
+              <p style="font-size:13px; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">
+                axe-core checks an agent can call mid-workflow. Flags WCAG 2.1 Level AA/AAA violations, calculates contrast ratios, and generates fixes.
+              </p>
+              <div style="font-size:11px; color:var(--text-muted); font-family:monospace; margin-bottom:16px;">
+                Tools: axe_audit_url, axe_check_contrast, axe_remediate_violation
+              </div>
+            </div>
+            <button class="btn btn-outline-primary btn-sm mcp-quick-run" data-tool="axe_check_contrast" data-args='{"foregroundHex":"#333333","backgroundHex":"#FFFFFF","fontSizePt":14,"isBold":false}'>
+              ⚡ Check Color Contrast
+            </button>
+          </div>
+
+          <!-- 10. TestGuild Tool Matcher MCP -->
+          <div class="card" style="padding:20px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="font-weight:700; font-size:16px; color:#3b82f6; display:flex; align-items:center; gap:8px;">
+                  🎯 TestGuild Tool Matcher MCP
+                </div>
+                <span class="badge badge-success">READY</span>
+              </div>
+              <p style="font-size:13px; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">
+                Figure out which tool to use. Queries a curated database of 300+ QA tools to recommend the ideal automation and testing stack.
+              </p>
+              <div style="font-size:11px; color:var(--text-muted); font-family:monospace; margin-bottom:16px;">
+                Tools: testguild_recommend_stack, testguild_search_tools, testguild_compare_tools
+              </div>
+            </div>
+            <button class="btn btn-outline-primary btn-sm mcp-quick-run" data-tool="testguild_recommend_stack" data-args='{"platform":"web","teamSkill":"mixed","budget":"enterprise","focusArea":"full_coverage"}'>
+              ⚡ Recommend Ideal QA Stack
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Live MCP Execution Console -->
+        <div class="card" style="padding:24px; margin-bottom:32px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:10px; height:10px; border-radius:50%; background:var(--accent-emerald);"></div>
+              <h3 style="font-size:16px; font-weight:700; margin:0;">Interactive MCP Tool Execution Terminal</h3>
+            </div>
+            <div style="font-size:12px; color:var(--text-muted);">
+              Direct JSON-RPC 2.0 Agent Bridge
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+            <div>
+              <div class="form-group" style="margin-bottom:12px;">
+                <label style="font-size:12px; font-weight:600; margin-bottom:6px; display:block;">Select MCP Tool</label>
+                <select class="form-control" id="mcp-tool-select" style="font-family:monospace; font-size:13px;">
+                  <option value="playwright_inspect_dom">playwright_inspect_dom (Playwright MCP)</option>
+                  <option value="maestro_author_flow">maestro_author_flow (Maestro MCP)</option>
+                  <option value="cypress_get_flaky_tests">cypress_get_flaky_tests (Cypress Cloud MCP)</option>
+                  <option value="cloud_devices_catalog">cloud_devices_catalog (BrowserStack & Kobiton)</option>
+                  <option value="k6_run_load_test">k6_run_load_test (Grafana k6 MCP)</option>
+                  <option value="reportportal_auto_analysis">reportportal_auto_analysis (Report Portal MCP)</option>
+                  <option value="vibium_execute_action">vibium_execute_action (Vibium BiDi MCP)</option>
+                  <option value="thunder_author_from_intent">thunder_author_from_intent (Thunder MCP)</option>
+                  <option value="axe_check_contrast">axe_check_contrast (axe-core Scanner MCP)</option>
+                  <option value="testguild_recommend_stack">testguild_recommend_stack (TestGuild MCP)</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="margin-bottom:14px;">
+                <label style="font-size:12px; font-weight:600; margin-bottom:6px; display:block;">Input Arguments (JSON)</label>
+                <textarea class="form-control" id="mcp-args-input" rows="7" style="font-family:monospace; font-size:12px; resize:vertical;">{
+  "includeInteractivity": true
+}</textarea>
+              </div>
+
+              <button class="btn btn-primary" id="btn-execute-mcp-terminal" style="width:100%; display:flex; justify-content:center; align-items:center; gap:8px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                Execute MCP Tool
+              </button>
+            </div>
+
+            <div>
+              <label style="font-size:12px; font-weight:600; margin-bottom:6px; display:block;">Output Stream (JSON-RPC Result)</label>
+              <pre id="mcp-output-terminal" style="background:var(--bg-primary); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:14px; font-size:12px; font-family:monospace; height:230px; overflow-y:auto; margin:0; color:var(--text-main);">// Select a tool or click any '⚡ Quick Run' above to test MCP response...</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
     </main>
   </div>
 
@@ -1101,10 +1809,10 @@
 
   <!-- Modal: Reset / Clear All Test Data Confirmation -->
   <div class="modal-backdrop hidden" id="modal-clear-data">
-    <div class="modal-card" style="max-width: 480px;">
+    <div class="modal-card" style="max-width: 520px;">
       <div class="modal-header">
         <div style="display:flex; align-items:center; gap:12px;">
-          <div style="width:38px; height:38px; border-radius:50%; background:rgba(244,63,94,0.15); display:flex; align-items:center; justify-content:center; color:var(--accent-rose); flex-shrink:0;">
+          <div style="width:40px; height:40px; border-radius:50%; background:rgba(244,63,94,0.15); display:flex; align-items:center; justify-content:center; color:var(--accent-rose); flex-shrink:0;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -1113,28 +1821,31 @@
             </svg>
           </div>
           <div>
-            <h2 class="modal-title" style="margin:0; font-size:17px;">Clear All Test Data?</h2>
-            <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Reset platform to clean state for new URL testing</div>
+            <h2 class="modal-title" style="margin:0; font-size:18px; font-weight:700;">Clear All Test Data?</h2>
+            <div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">Reset platform to clean state for new URL testing</div>
           </div>
         </div>
         <button class="modal-close" id="modal-clear-close-btn">&times;</button>
       </div>
 
-      <div style="padding: 16px 0; color:var(--text-secondary); font-size:13.5px; line-height:1.6;">
-        <p style="margin-bottom: 12px;">This will completely reset and purge all recorded data from previously tested websites:</p>
-        <ul style="padding-left: 20px; margin-bottom: 16px; color:var(--text-main); font-size:13px; line-height:1.8;">
+      <div class="modal-body">
+        <p style="margin-bottom: 12px; color:var(--text-main); font-weight:500;">
+          This will completely reset and purge all recorded data from previously tested websites:
+        </p>
+        <ul style="padding-left: 20px; margin-bottom: 16px; color:var(--text-secondary); font-size:13px; line-height:1.8;">
           <li>All test runs and journey execution steps</li>
           <li>All discovered defects and security violations</li>
           <li>All crawled pages and DOM topographical maps</li>
           <li>Core Web Vitals metrics and visual regression screenshots</li>
           <li>Active target application configurations</li>
         </ul>
-        <div style="padding:10px 14px; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.25); border-radius:var(--radius-sm); font-size:12px; color:#fbbf24;">
-          💡 <strong>Tip:</strong> Use this whenever you want to test a completely new website URL without old defect or test run contamination.
+        <div style="padding:12px 16px; background:var(--bg-surface); border:1px solid var(--border-subtle); border-left:4px solid var(--accent-amber); border-radius:var(--radius-sm); font-size:12.5px; color:var(--text-main); line-height:1.5; display:flex; gap:10px; align-items:flex-start;">
+          <span style="font-size:16px; line-height:1;">💡</span>
+          <div><strong style="color:var(--accent-amber);">Tip:</strong> Use this whenever you want to test a completely new website URL without old defect or test run contamination.</div>
         </div>
       </div>
 
-      <div class="modal-actions" style="margin-top: 10px;">
+      <div class="modal-actions">
         <button type="button" class="btn btn-secondary" id="modal-clear-cancel-btn">Cancel</button>
         <button type="button" class="btn btn-danger" id="btn-confirm-clear-data" style="background:var(--accent-rose); border-color:var(--accent-rose); color:#fff; display:inline-flex; align-items:center; gap:6px;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1361,12 +2072,6 @@
           <div class="auth-switch-prompt">
             <span>Don't have an account?</span>
             <button type="button" class="btn-link-strong" id="btn-goto-signup">Sign up</button>
-          </div>
-
-          <!-- Quick Demo Credentials Helper -->
-          <div class="login-demo-helper">
-            <span class="login-demo-text">Quick Demo: <code>admin@testpilot.ai</code></span>
-            <button type="button" class="btn-autofill-demo" id="btn-autofill-demo">Auto-Fill</button>
           </div>
         </form>
       </div>

@@ -20,3 +20,12 @@ Thumbs.db
 
 # Playwright temporary browser session data
 .playwright-mcp/
+
+# Local data & persistence
+data/
+**/data/
+*.sqlite
+*.tsbuildinfo
+
+# Temporary root test screenshots
+/*.png

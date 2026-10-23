@@ -4,3 +4,4 @@ export * from './performance.js';
 export * from './visual.js';
 export * from './security.js';
 export * from './ai-exploratory-agent.js';
+export * from './design-comparator.js';
