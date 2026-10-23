@@ -323,16 +323,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('/api/status');
       if (!res.ok) throw new Error('Status error');
       const data = await res.json();
-      systemStatusText.innerText = `Platform Ready | Ground Truth Benchmark Active`;
-      systemStatusDot.style.backgroundColor = '#10b981';
+      if (systemStatusText) systemStatusText.innerText = `Platform Ready | Ground Truth Benchmark Active`;
+      if (systemStatusDot) systemStatusDot.style.backgroundColor = '#10b981';
       document.getElementById('stat-env').innerText = data.environment;
       if (data.activeTarget && data.activeTarget !== 'http://localhost:4000') {
         updateSidebarTarget(data.activeTarget);
       }
       return data;
     } catch {
-      systemStatusText.innerText = 'Platform Offline / Disconnected';
-      systemStatusDot.style.backgroundColor = '#f43f5e';
+      if (systemStatusText) systemStatusText.innerText = 'Platform Offline / Disconnected';
+      if (systemStatusDot) systemStatusDot.style.backgroundColor = '#f43f5e';
     }
   }
 
