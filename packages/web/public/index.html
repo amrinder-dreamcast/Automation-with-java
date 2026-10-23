@@ -311,72 +311,7 @@
           </div>
         </div>
 
-        <!-- Engines & Architecture Status Grid -->
-        <div class="dashboard-grid">
-          <div class="panel">
-            <div class="panel-header">
-              <h2 class="panel-title">Integrated Testing Engines</h2>
-              <span class="badge badge-success" id="engines-ready-badge">5 ENGINES READY</span>
-            </div>
-            <div class="engine-list">
-              <div class="engine-item">
-                <div class="engine-icon bg-blue">AI</div>
-                <div class="engine-meta">
-                  <div class="engine-name">Autonomous Exploratory Agent</div>
-                  <div class="engine-desc">Synthesizes user journeys, tests form boundaries, navigates state changes.</div>
-                </div>
-                <span class="engine-badge active">ONLINE</span>
-              </div>
-              <div class="engine-item">
-                <div class="engine-icon bg-indigo">A11y</div>
-                <div class="engine-meta">
-                  <div class="engine-name">Accessibility Engine (axe-core)</div>
-                  <div class="engine-desc">Automated WCAG 2.1 Level A & AA compliance violation audits.</div>
-                </div>
-                <span class="engine-badge active">ONLINE</span>
-              </div>
-              <div class="engine-item">
-                <div class="engine-icon bg-rose">Sec</div>
-                <div class="engine-meta">
-                  <div class="engine-name">Passive Security Engine</div>
-                  <div class="engine-desc">CSP, HSTS, X-Frame-Options, HttpOnly cookies, and mixed content audits.</div>
-                </div>
-                <span class="engine-badge active">ONLINE</span>
-              </div>
-              <div class="engine-item">
-                <div class="engine-icon bg-amber">Perf</div>
-                <div class="engine-meta">
-                  <div class="engine-name">Performance Diagnostic Engine</div>
-                  <div class="engine-desc">FCP, LCP, Navigation timing, and DOM Content Loaded profiling.</div>
-                </div>
-                <span class="engine-badge active">ONLINE</span>
-              </div>
-              <div class="engine-item">
-                <div class="engine-icon bg-emerald">Vis</div>
-                <div class="engine-meta">
-                  <div class="engine-name">Visual Regression Engine (Pixelmatch)</div>
-                  <div class="engine-desc">Pixel-perfect screenshot differential analysis with artifact isolation.</div>
-                </div>
-                <span class="engine-badge active">ONLINE</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="panel">
-            <div class="panel-header">
-              <h2 class="panel-title">Recent Defect Stream</h2>
-              <button class="btn btn-sm btn-outline" id="btn-view-all-defects">View All</button>
-            </div>
-            <div class="defect-stream" id="overview-defect-stream">
-              <div class="empty-state">
-                <div class="empty-icon">✓</div>
-                <p>No defects recorded yet. Launch a test run to inspect the ground-truth application.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Dedicated Single-Line Action Toolbar Bar (Separated from Testing Engines & Defect Stream) -->
+        <!-- Dedicated Single-Line Action Toolbar Bar (Separated from Defect Stream) -->
         <div class="standalone-actions-bar" id="overview-actions-bar">
           <div class="actions-bar-left">
             <button class="btn btn-outline-danger btn-nav-danger" id="btn-clear-all-data" title="Clear all previous test runs, defect history, and reset dashboard for fresh runs">
@@ -416,6 +351,20 @@
               </svg>
               <span>New Test Run</span>
             </button>
+          </div>
+        </div>
+
+        <!-- Recent Defect Stream Panel -->
+        <div class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Recent Defect Stream</h2>
+            <button class="btn btn-sm btn-outline" id="btn-view-all-defects">View All</button>
+          </div>
+          <div class="defect-stream" id="overview-defect-stream">
+            <div class="empty-state">
+              <div class="empty-icon">✓</div>
+              <p>No defects recorded yet. Launch a test run to inspect the ground-truth application.</p>
+            </div>
           </div>
         </div>
       </section>
