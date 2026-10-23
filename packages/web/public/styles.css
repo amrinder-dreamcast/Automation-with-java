@@ -307,20 +307,6 @@ body {
   white-space: nowrap;
 }
 
-.nav-left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
-  flex: 1;
-}
-
-.nav-left-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .nav-actions {
   display: flex;
   align-items: center;
@@ -790,6 +776,73 @@ body {
   border-radius: 9999px;
   background: rgba(16, 185, 129, 0.15);
   color: var(--accent-emerald);
+}
+
+/* Dedicated Standalone Action Toolbar Bar (Separated, Single Line) */
+.standalone-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 14px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  gap: 16px;
+  margin-top: 4px;
+  margin-bottom: 24px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow-x: auto;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] .standalone-actions-bar {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .standalone-actions-bar {
+  background: rgba(17, 30, 56, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.actions-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+
+.actions-bar-divider {
+  width: 1px;
+  height: 26px;
+  background: var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.actions-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+
+/* Ensure buttons in actions bar don't wrap and look crisp */
+.standalone-actions-bar .btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .standalone-actions-bar {
+    padding: 12px 14px;
+    gap: 10px;
+  }
 }
 
 /* Defect Stream */
@@ -3802,12 +3855,6 @@ body {
     gap: 8px;
     padding-top: 8px;
     padding-bottom: 8px;
-  }
-  .nav-left {
-    width: 100%;
-    justify-content: space-between;
-    overflow-x: auto;
-    padding-bottom: 4px;
   }
   .nav-actions {
     width: 100%;
