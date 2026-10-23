@@ -325,7 +325,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       if (systemStatusText) systemStatusText.innerText = `Platform Ready | Ground Truth Benchmark Active`;
       if (systemStatusDot) systemStatusDot.style.backgroundColor = '#10b981';
-      document.getElementById('stat-env').innerText = data.environment;
+      const elStatEnv = document.getElementById('stat-env');
+      if (elStatEnv) elStatEnv.innerText = data.environment;
       if (data.activeTarget && data.activeTarget !== 'http://localhost:4000') {
         updateSidebarTarget(data.activeTarget);
       }
@@ -340,13 +341,14 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const res = await fetch('/api/projects');
       const projects = await res.json();
+      const elStatProjects = document.getElementById('stat-project-count');
       if (projects.length > 0) {
         currentProject = projects[0];
-        document.getElementById('stat-project-count').innerText = projects.length;
+        if (elStatProjects) elStatProjects.innerText = projects.length;
         updateSidebarTarget(currentProject.primaryUrl);
       } else {
         currentProject = null;
-        document.getElementById('stat-project-count').innerText = '0';
+        if (elStatProjects) elStatProjects.innerText = '0';
         updateSidebarTarget(null);
       }
     } catch (e) {
