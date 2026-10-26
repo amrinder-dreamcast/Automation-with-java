@@ -801,6 +801,8 @@ async function startServer(customPort) {
                     fileBuffer,
                     figmaUrl: body.figmaUrl,
                     figmaToken: body.figmaToken,
+                    adobeUrl: body.adobeUrl,
+                    designUrl: body.designUrl,
                     presetId: body.presetId,
                     viewportWidth,
                     viewportHeight,

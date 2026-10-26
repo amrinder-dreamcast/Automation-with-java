@@ -13,6 +13,8 @@ export interface RunDesignCompareParams {
     fileBuffer?: Buffer;
     figmaUrl?: string;
     figmaToken?: string;
+    adobeUrl?: string;
+    designUrl?: string;
     presetId?: string;
     viewportWidth?: number;
     viewportHeight?: number;
@@ -22,7 +24,7 @@ export interface RunDesignCompareParams {
 export interface DesignPreset {
     id: string;
     title: string;
-    category: 'FIGMA' | 'AI' | 'SKETCH';
+    category: 'FIGMA' | 'AI' | 'SKETCH' | 'XD' | 'PHOTOSHOP';
     description: string;
     defaultUrl: string;
     viewport: {
@@ -63,10 +65,28 @@ export declare class DesignComparator {
      */
     private ingestDesignSource;
     /**
+     * Captures live public Adobe XD prototype or spec canvas via Playwright.
+     */
+    private captureAdobeXdUrl;
+    /**
      * Extracts embedded PNG/JPEG raster stream from an Adobe Illustrator (.ai) file,
      * or renders a high-fidelity vector representation.
      */
     private extractOrRenderAiFile;
+    /**
+     * Extracts embedded PNG/JPEG preview or artboard from an Adobe XD (.xd) zip package,
+     * or renders the interactive Adobe XD benchmark frame.
+     */
+    private extractOrRenderXdFile;
+    /**
+     * Extracts embedded composite or preview from an Adobe Photoshop (.psd/.psb) file,
+     * or renders the high-impact Photoshop benchmark frame.
+     */
+    private extractOrRenderPsdFile;
+    /**
+     * Renders Adobe PDF specification page using Playwright.
+     */
+    private renderPdfBuffer;
     /**
      * Extracts embedded thumbnail or preview from a Figma (.fig) archive file.
      */

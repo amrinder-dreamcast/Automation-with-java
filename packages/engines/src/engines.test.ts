@@ -29,9 +29,11 @@ describe('TestPilot Engines Suite', () => {
     assert.ok(comparator);
 
     const presets = comparator.getPresets();
-    assert.ok(presets.length >= 3, 'Should provide at least 3 benchmark design presets');
+    assert.ok(presets.length >= 5, 'Should provide at least 5 benchmark design presets');
     assert.ok(presets.some((p) => p.category === 'FIGMA'));
     assert.ok(presets.some((p) => p.category === 'AI'));
+    assert.ok(presets.some((p) => p.category === 'XD'));
+    assert.ok(presets.some((p) => p.category === 'PHOTOSHOP'));
   });
 
   it('generates synthetic test cases from discovered pages using AIExploratoryAgent', () => {

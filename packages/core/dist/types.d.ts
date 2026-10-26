@@ -234,7 +234,7 @@ export interface Project {
     updatedAt: string;
     scope: TargetScope;
 }
-export type DesignSourceType = 'FIGMA_FILE' | 'FIGMA_URL' | 'AI_FILE' | 'IMAGE_UPLOAD' | 'BENCHMARK_PRESET';
+export type DesignSourceType = 'FIGMA_FILE' | 'FIGMA_URL' | 'AI_FILE' | 'ADOBE_XD_FILE' | 'ADOBE_XD_URL' | 'PHOTOSHOP_FILE' | 'IMAGE_UPLOAD' | 'BENCHMARK_PRESET';
 export type DesignUiIssueCategory = 'LAYOUT_ALIGNMENT' | 'COLOR_THEME' | 'TYPOGRAPHY' | 'SPACING_PADDING' | 'MISSING_ELEMENT' | 'EXTRA_ELEMENT' | 'VISUAL_PIXEL_DRIFT';
 export interface DesignUiIssue {
     id: string;

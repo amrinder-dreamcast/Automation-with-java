@@ -272,14 +272,16 @@ const server_js_1 = require("./server.js");
         assert.strictEqual(data.success, true);
         assert.ok(data.message.includes('Recovery instructions'));
     });
-    (0, node_test_1.it)('serves design compare presets including Figma and Illustrator AI specs', async () => {
+    (0, node_test_1.it)('serves design compare presets including Figma, Illustrator AI, and Adobe XD specs', async () => {
         const res = await fetch(`${BASE}/api/design-compare/presets`);
         assert.strictEqual(res.status, 200);
         const presets = await res.json();
         assert.ok(Array.isArray(presets));
-        assert.ok(presets.length >= 2);
+        assert.ok(presets.length >= 4);
         assert.ok(presets.some((p) => p.category === 'FIGMA'));
         assert.ok(presets.some((p) => p.category === 'AI'));
+        assert.ok(presets.some((p) => p.category === 'XD'));
+        assert.ok(presets.some((p) => p.category === 'PHOTOSHOP'));
     });
     (0, node_test_1.it)('executes design vs code comparison on given URL and returns UI issues, snapshots and fidelity score', async () => {
         const res = await fetch(`${BASE}/api/design-compare`, {

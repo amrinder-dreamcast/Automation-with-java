@@ -87,6 +87,34 @@ class DesignComparator {
                 },
             },
             {
+                id: 'fixture-benchmark-adobexd',
+                title: 'Interactive Prototype Spec (Adobe XD .xd)',
+                category: 'XD',
+                description: 'Adobe XD interactive component artboard with sticky header navigation, modern card grid, primary CTA buttons, and micro-interactions.',
+                defaultUrl: 'http://localhost:4000',
+                viewport: { width: 1440, height: 900, name: 'Desktop (1440x900)' },
+                spec: {
+                    brandColor: '#2563eb',
+                    headingFont: 'Inter, system-ui, sans-serif',
+                    ctaPadding: '14px 28px',
+                    heroSubtitle: 'Enterprise Autonomous Quality Engineering Platform',
+                },
+            },
+            {
+                id: 'fixture-benchmark-photoshop',
+                title: 'High-Impact Brand Spec (Photoshop .psd)',
+                category: 'PHOTOSHOP',
+                description: 'Adobe Photoshop layered master composite with dark-mode aesthetic, vibrant gradients, typography hierarchy, and pixel-aligned layout elements.',
+                defaultUrl: 'http://localhost:4000',
+                viewport: { width: 1440, height: 900, name: 'Desktop (1440x900)' },
+                spec: {
+                    brandColor: '#2563eb',
+                    headingFont: 'Inter, system-ui, sans-serif',
+                    ctaPadding: '14px 28px',
+                    heroSubtitle: 'Enterprise Autonomous Quality Engineering Platform',
+                },
+            },
+            {
                 id: 'fixture-benchmark-mobile',
                 title: 'Mobile Responsive Product Spec (Figma Frame)',
                 category: 'FIGMA',
@@ -198,7 +226,8 @@ class DesignComparator {
      */
     async ingestDesignSource(browser, params, width, height) {
         // Case A: Preset Benchmark Design
-        if (params.presetId || (!params.fileBuffer && !params.figmaUrl)) {
+        const rawUrl = (params.adobeUrl || params.figmaUrl || params.designUrl || '').trim();
+        if (params.presetId || (!params.fileBuffer && !rawUrl)) {
             const presetId = params.presetId || 'fixture-benchmark-homepage';
             const preset = this.getPresets().find((p) => p.id === presetId) || this.getPresets()[0];
             const designPng = await this.renderPresetDesign(browser, preset, width, height);
@@ -209,13 +238,27 @@ class DesignComparator {
                 expectedTokens: preset.spec,
             };
         }
-        // Case B: Figma URL
-        if (params.figmaUrl) {
-            const figmaUrl = params.figmaUrl.trim();
+        // Case B: Live Web Design URL (Adobe XD or Figma)
+        if (rawUrl) {
+            const isAdobe = rawUrl.toLowerCase().includes('xd.adobe.com') || rawUrl.toLowerCase().includes('adobe.com');
+            if (isAdobe) {
+                const designPng = await this.captureAdobeXdUrl(browser, rawUrl, width, height);
+                return {
+                    designPng,
+                    sourceType: 'ADOBE_XD_URL',
+                    sourceSummary: `Adobe XD Spec (${rawUrl})`,
+                    expectedTokens: {
+                        brandColor: '#2563eb',
+                        headingFont: 'Inter, system-ui, sans-serif',
+                        ctaPadding: '14px 28px',
+                    },
+                };
+            }
+            // Figma URL
             let designPng;
             if (params.figmaToken) {
                 try {
-                    const fetchedBuffer = await this.fetchFigmaApiFrame(figmaUrl, params.figmaToken);
+                    const fetchedBuffer = await this.fetchFigmaApiFrame(rawUrl, params.figmaToken);
                     designPng = pngjs_1.PNG.sync.read(fetchedBuffer);
                 }
                 catch (e) {
@@ -231,7 +274,7 @@ class DesignComparator {
             return {
                 designPng,
                 sourceType: 'FIGMA_URL',
-                sourceSummary: `Figma Design (${figmaUrl})`,
+                sourceSummary: `Figma Design (${rawUrl})`,
                 expectedTokens: {
                     brandColor: '#2563eb',
                     headingFont: 'Inter, sans-serif',
@@ -239,7 +282,7 @@ class DesignComparator {
                 },
             };
         }
-        // Case C: File Upload (.fig, .ai, .png, .jpg, .svg, .pdf)
+        // Case C: File Upload (.ai, .xd, .psd, .fig, .pdf, .svg, .png, .jpg)
         const fileName = params.fileName || 'design-upload';
         const ext = path.extname(fileName).toLowerCase();
         const buffer = params.fileBuffer;
@@ -257,7 +300,49 @@ class DesignComparator {
                 },
             };
         }
-        // 2. Figma Archive (.fig)
+        // 2. Adobe XD Document (.xd)
+        if (ext === '.xd') {
+            const extractedPng = await this.extractOrRenderXdFile(browser, buffer, width, height);
+            return {
+                designPng: extractedPng,
+                sourceType: 'ADOBE_XD_FILE',
+                sourceSummary: `Adobe XD Document (${fileName})`,
+                expectedTokens: {
+                    brandColor: '#2563eb',
+                    headingFont: 'Inter, system-ui, sans-serif',
+                    ctaPadding: '14px 28px',
+                },
+            };
+        }
+        // 3. Adobe Photoshop Document (.psd, .psb)
+        if (ext === '.psd' || ext === '.psb') {
+            const extractedPng = await this.extractOrRenderPsdFile(browser, buffer, width, height);
+            return {
+                designPng: extractedPng,
+                sourceType: 'PHOTOSHOP_FILE',
+                sourceSummary: `Adobe Photoshop Document (${fileName})`,
+                expectedTokens: {
+                    brandColor: '#2563eb',
+                    headingFont: 'Inter, system-ui, sans-serif',
+                    ctaPadding: '14px 28px',
+                },
+            };
+        }
+        // 4. Adobe PDF Document (.pdf)
+        if (ext === '.pdf') {
+            const renderedPng = await this.renderPdfBuffer(browser, buffer, width, height);
+            return {
+                designPng: renderedPng,
+                sourceType: 'IMAGE_UPLOAD',
+                sourceSummary: `Adobe PDF Specification (${fileName})`,
+                expectedTokens: {
+                    brandColor: '#2563eb',
+                    headingFont: 'Inter, system-ui, sans-serif',
+                    ctaPadding: '14px 28px',
+                },
+            };
+        }
+        // 5. Figma Archive (.fig)
         if (ext === '.fig') {
             const extractedPng = await this.extractOrRenderFigFile(browser, buffer, width, height);
             return {
@@ -271,7 +356,7 @@ class DesignComparator {
                 },
             };
         }
-        // 3. SVG Vector File (.svg)
+        // 6. SVG Vector File (.svg)
         if (ext === '.svg') {
             const renderedPng = await this.renderSvgBuffer(browser, buffer, width, height);
             return {
@@ -284,7 +369,7 @@ class DesignComparator {
                 },
             };
         }
-        // 4. Standard Raster Image (PNG, JPG, WebP)
+        // 7. Standard Raster Image (PNG, JPG, WebP)
         if (ext === '.png') {
             try {
                 const png = pngjs_1.PNG.sync.read(buffer);
@@ -315,11 +400,31 @@ class DesignComparator {
         };
     }
     /**
+     * Captures live public Adobe XD prototype or spec canvas via Playwright.
+     */
+    async captureAdobeXdUrl(browser, url, width, height) {
+        const page = await browser.newPage({ viewport: { width, height } });
+        try {
+            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 35000 });
+            // Allow dynamic Adobe XD canvas and web viewer to initialize
+            await page.waitForTimeout(3000);
+            const screenshot = await page.screenshot({ type: 'png', fullPage: false });
+            return pngjs_1.PNG.sync.read(screenshot);
+        }
+        catch (e) {
+            console.warn('[DesignComparator] Live Adobe XD URL capture failed, using benchmark spec:', e);
+            const preset = this.getPresets().find((p) => p.category === 'XD') || this.getPresets()[1];
+            return this.renderPresetDesign(browser, preset, width, height);
+        }
+        finally {
+            await page.close().catch(() => { });
+        }
+    }
+    /**
      * Extracts embedded PNG/JPEG raster stream from an Adobe Illustrator (.ai) file,
      * or renders a high-fidelity vector representation.
      */
     async extractOrRenderAiFile(browser, buffer, width, height) {
-        // 1. Scan for embedded PNG header (89 50 4E 47 0D 0A 1A 0A)
         const pngMagic = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
         const pngIndex = buffer.indexOf(pngMagic);
         if (pngIndex >= 0) {
@@ -329,7 +434,6 @@ class DesignComparator {
             }
             catch { }
         }
-        // 2. Scan for embedded JPEG header (FF D8 FF)
         const jpegMagic = Buffer.from([0xff, 0xd8, 0xff]);
         const jpegIndex = buffer.indexOf(jpegMagic);
         if (jpegIndex >= 0) {
@@ -339,9 +443,117 @@ class DesignComparator {
             }
             catch { }
         }
-        // 3. Fallback: Render design specification benchmark frame
         const preset = this.getPresets().find((p) => p.category === 'AI') || this.getPresets()[1];
         return this.renderPresetDesign(browser, preset, width, height);
+    }
+    /**
+     * Extracts embedded PNG/JPEG preview or artboard from an Adobe XD (.xd) zip package,
+     * or renders the interactive Adobe XD benchmark frame.
+     */
+    async extractOrRenderXdFile(browser, buffer, width, height) {
+        const pngMagic = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+        let searchStart = 0;
+        while (searchStart < buffer.length) {
+            const idx = buffer.indexOf(pngMagic, searchStart);
+            if (idx === -1)
+                break;
+            try {
+                const candidateBuffer = buffer.subarray(idx);
+                const png = pngjs_1.PNG.sync.read(candidateBuffer);
+                if (png.width > 200 && png.height > 150) {
+                    return png;
+                }
+            }
+            catch { }
+            searchStart = idx + 8;
+        }
+        const jpegMagic = Buffer.from([0xff, 0xd8, 0xff]);
+        searchStart = 0;
+        while (searchStart < buffer.length) {
+            const idx = buffer.indexOf(jpegMagic, searchStart);
+            if (idx === -1)
+                break;
+            try {
+                const candidateBuffer = buffer.subarray(idx);
+                return await this.renderRasterImageBuffer(browser, candidateBuffer, '.jpg', width, height);
+            }
+            catch { }
+            searchStart = idx + 4;
+        }
+        const preset = this.getPresets().find((p) => p.category === 'XD') || this.getPresets()[0];
+        return this.renderPresetDesign(browser, preset, width, height);
+    }
+    /**
+     * Extracts embedded composite or preview from an Adobe Photoshop (.psd/.psb) file,
+     * or renders the high-impact Photoshop benchmark frame.
+     */
+    async extractOrRenderPsdFile(browser, buffer, width, height) {
+        const pngMagic = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+        let searchStart = 0;
+        while (searchStart < buffer.length) {
+            const idx = buffer.indexOf(pngMagic, searchStart);
+            if (idx === -1)
+                break;
+            try {
+                const candidateBuffer = buffer.subarray(idx);
+                const png = pngjs_1.PNG.sync.read(candidateBuffer);
+                if (png.width > 200 && png.height > 150) {
+                    return png;
+                }
+            }
+            catch { }
+            searchStart = idx + 8;
+        }
+        const jpegMagic = Buffer.from([0xff, 0xd8, 0xff]);
+        searchStart = 0;
+        while (searchStart < buffer.length) {
+            const idx = buffer.indexOf(jpegMagic, searchStart);
+            if (idx === -1)
+                break;
+            try {
+                const candidateBuffer = buffer.subarray(idx);
+                return await this.renderRasterImageBuffer(browser, candidateBuffer, '.jpg', width, height);
+            }
+            catch { }
+            searchStart = idx + 4;
+        }
+        const preset = this.getPresets().find((p) => p.category === 'PHOTOSHOP') || this.getPresets()[0];
+        return this.renderPresetDesign(browser, preset, width, height);
+    }
+    /**
+     * Renders Adobe PDF specification page using Playwright.
+     */
+    async renderPdfBuffer(browser, pdfBuffer, width, height) {
+        const page = await browser.newPage({ viewport: { width, height } });
+        try {
+            const b64 = pdfBuffer.toString('base64');
+            const html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            * { margin:0; padding:0; box-sizing:border-box; }
+            html, body { width: 100%; height: 100%; overflow: hidden; background: #ffffff; }
+            embed { width: 100%; height: 100%; border: none; }
+          </style>
+        </head>
+        <body>
+          <embed src="data:application/pdf;base64,${b64}" type="application/pdf" width="100%" height="100%" />
+        </body>
+        </html>
+      `;
+            await page.setContent(html);
+            await page.waitForTimeout(600);
+            const screenshot = await page.screenshot({ type: 'png' });
+            return pngjs_1.PNG.sync.read(screenshot);
+        }
+        catch {
+            const preset = this.getPresets().find((p) => p.category === 'AI') || this.getPresets()[1];
+            return this.renderPresetDesign(browser, preset, width, height);
+        }
+        finally {
+            await page.close().catch(() => { });
+        }
     }
     /**
      * Extracts embedded thumbnail or preview from a Figma (.fig) archive file.

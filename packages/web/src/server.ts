@@ -831,6 +831,8 @@ export async function startServer(customPort?: number): Promise<{ server: http.S
           fileBuffer,
           figmaUrl: body.figmaUrl,
           figmaToken: body.figmaToken,
+          adobeUrl: body.adobeUrl,
+          designUrl: body.designUrl,
           presetId: body.presetId,
           viewportWidth,
           viewportHeight,

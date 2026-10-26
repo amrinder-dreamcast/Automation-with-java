@@ -3379,9 +3379,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleSelectedFile(file) {
       const ext = '.' + file.name.split('.').pop().toLowerCase();
-      const validExts = ['.fig', '.ai', '.png', '.jpg', '.jpeg', '.svg', '.webp', '.pdf'];
+      const validExts = ['.fig', '.ai', '.xd', '.psd', '.psb', '.pdf', '.png', '.jpg', '.jpeg', '.svg', '.webp'];
       if (!validExts.includes(ext)) {
-        showToast('Please upload a valid design file (.fig, .ai, .svg, .png, .jpg)', 'danger');
+        showToast('Please upload a valid design file (.fig, .ai, .xd, .psd, .pdf, .svg, .png)', 'danger');
         return;
       }
 
@@ -3405,6 +3405,12 @@ document.addEventListener('DOMContentLoaded', () => {
           labelSelectedExt.innerText = ext.replace('.', '').toUpperCase().substring(0, 4);
           if (ext === '.ai') {
             labelSelectedExt.style.background = 'linear-gradient(135deg, #f97316, #ea580c)';
+          } else if (ext === '.xd') {
+            labelSelectedExt.style.background = 'linear-gradient(135deg, #ec4899, #be185d)';
+          } else if (ext === '.psd' || ext === '.psb') {
+            labelSelectedExt.style.background = 'linear-gradient(135deg, #0ea5e9, #0369a1)';
+          } else if (ext === '.pdf') {
+            labelSelectedExt.style.background = 'linear-gradient(135deg, #ef4444, #b91c1c)';
           } else if (ext === '.fig') {
             labelSelectedExt.style.background = 'linear-gradient(135deg, #a855f7, #6366f1)';
           } else {
@@ -3564,8 +3570,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       container.innerHTML = cachedPresets.map((preset, idx) => `
         <div class="preset-card ${idx === 0 ? 'active' : ''}" data-preset-id="${preset.id}">
-          <span class="preset-card-badge ${preset.category === 'FIGMA' ? 'badge-fig' : 'badge-ai'}">
-            ${preset.category === 'FIGMA' ? 'FIGMA MASTER' : 'ILLUSTRATOR .AI'}
+          <span class="preset-card-badge ${preset.category === 'FIGMA' ? 'badge-fig' : preset.category === 'XD' ? 'badge-xd' : preset.category === 'PHOTOSHOP' ? 'badge-psd' : 'badge-ai'}">
+            ${preset.category === 'FIGMA' ? 'FIGMA MASTER' : preset.category === 'XD' ? 'ADOBE XD .XD' : preset.category === 'PHOTOSHOP' ? 'PHOTOSHOP .PSD' : 'ILLUSTRATOR .AI'}
           </span>
           <div class="preset-card-title">${preset.title}</div>
           <div class="preset-card-desc">${preset.description}</div>
@@ -3623,17 +3629,29 @@ document.addEventListener('DOMContentLoaded', () => {
           ? 'Figma (.fig)'
           : item.sourceType === 'AI_FILE'
           ? 'Illustrator (.ai)'
+          : item.sourceType === 'ADOBE_XD_FILE'
+          ? 'Adobe XD (.xd)'
+          : item.sourceType === 'PHOTOSHOP_FILE'
+          ? 'Photoshop (.psd)'
+          : item.sourceType === 'ADOBE_XD_URL'
+          ? 'Adobe XD URL'
           : item.sourceType === 'FIGMA_URL'
           ? 'Figma URL'
           : item.sourceType === 'BENCHMARK_PRESET'
           ? 'Benchmark Spec'
-          : 'Image Upload';
+          : 'Image / PDF';
+
+        const badgeClass = item.sourceType === 'FIGMA_FILE' ? 'badge-fig'
+          : item.sourceType === 'AI_FILE' ? 'badge-ai'
+          : (item.sourceType === 'ADOBE_XD_FILE' || item.sourceType === 'ADOBE_XD_URL') ? 'badge-xd'
+          : item.sourceType === 'PHOTOSHOP_FILE' ? 'badge-psd'
+          : 'badge-info';
 
         return `
           <tr>
             <td style="font-size:12px; color:var(--text-muted);">${dateStr}</td>
             <td><code style="font-size:12px; color:var(--text-primary);">${item.targetUrl}</code></td>
-            <td><span class="badge ${item.sourceType === 'FIGMA_FILE' ? 'badge-fig' : item.sourceType === 'AI_FILE' ? 'badge-ai' : 'badge-info'}">${sourceLabel}</span></td>
+            <td><span class="badge ${badgeClass}">${sourceLabel}</span></td>
             <td><span style="font-size:12px;">${item.viewport?.name || 'Desktop'}</span></td>
             <td><span class="badge ${scoreClass}" style="font-weight:700;">${score}% Parity</span></td>
             <td><span class="badge ${item.issues?.length > 0 ? 'badge-danger' : 'badge-success'}">${item.issues?.length || 0} issues</span></td>
@@ -3680,6 +3698,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fileName: undefined,
       fileBase64: undefined,
       figmaUrl: undefined,
+      adobeUrl: undefined,
       figmaToken: undefined,
       presetId: undefined,
       viewport: activeViewport,
@@ -3688,23 +3707,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (activeDesignSourceType === 'file') {
       if (!selectedDesignFile) {
-        showToast('Please upload a Figma (.fig), Adobe Illustrator (.ai), or design image file', 'warning');
+        showToast('Please upload a Figma (.fig), Adobe (.ai, .xd, .psd, .pdf), or design image file', 'warning');
         return;
       }
-      payload.sourceType = selectedDesignFile.ext === '.fig' ? 'FIGMA_FILE' : selectedDesignFile.ext === '.ai' ? 'AI_FILE' : 'IMAGE_UPLOAD';
+      payload.sourceType = selectedDesignFile.ext === '.fig' ? 'FIGMA_FILE'
+        : selectedDesignFile.ext === '.ai' ? 'AI_FILE'
+        : selectedDesignFile.ext === '.xd' ? 'ADOBE_XD_FILE'
+        : (selectedDesignFile.ext === '.psd' || selectedDesignFile.ext === '.psb') ? 'PHOTOSHOP_FILE'
+        : 'IMAGE_UPLOAD';
       payload.fileName = selectedDesignFile.name;
       payload.fileBase64 = selectedDesignFile.base64;
     } else if (activeDesignSourceType === 'figma-url') {
       const inputFigma = document.getElementById('input-figma-url');
       const inputToken = document.getElementById('input-figma-token');
-      const figmaUrl = (inputFigma?.value || '').trim();
-      if (!figmaUrl) {
-        showToast('Please enter a valid Figma file or frame URL', 'warning');
+      const designUrl = (inputFigma?.value || '').trim();
+      if (!designUrl) {
+        showToast('Please enter a valid Figma or Adobe XD URL', 'warning');
         inputFigma?.focus();
         return;
       }
-      payload.sourceType = 'FIGMA_URL';
-      payload.figmaUrl = figmaUrl;
+      const isAdobe = designUrl.toLowerCase().includes('xd.adobe.com') || designUrl.toLowerCase().includes('adobe.com');
+      payload.sourceType = isAdobe ? 'ADOBE_XD_URL' : 'FIGMA_URL';
+      payload.figmaUrl = designUrl;
+      payload.adobeUrl = isAdobe ? designUrl : undefined;
       payload.figmaToken = (inputToken?.value || '').trim() || undefined;
     } else {
       payload.sourceType = 'BENCHMARK_PRESET';

@@ -156,7 +156,7 @@
             <path d="M2 2l7.586 7.586"></path>
             <circle cx="11" cy="11" r="2"></circle>
           </svg>
-          Design vs Code (Figma/AI)
+          Design vs Code (Figma/Adobe)
           <span class="badge badge-accent" id="badge-design-nav-pill" style="margin-left:auto;font-size:10px;">UI Compare</span>
         </button>
         <button class="nav-tab" data-tab="tab-performance" id="tab-btn-performance">
@@ -997,15 +997,15 @@
         </div>
       </section>
 
-      <!-- TAB 7: DESIGN VS CODE (FIGMA & ILLUSTRATOR AI AUDITOR) -->
+      <!-- TAB 7: DESIGN VS CODE (FIGMA & ADOBE CREATIVE CLOUD AUDITOR) -->
       <section class="tab-pane" id="tab-design-compare">
         <div class="page-header">
           <div>
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
               <h1 class="page-title">Design vs Code UI Comparison</h1>
-              <span class="badge badge-accent" style="font-size:11px; font-weight:700;">Figma &amp; Illustrator .AI</span>
+              <span class="badge badge-accent" style="font-size:11px; font-weight:700;">Figma &amp; Adobe (.AI, .XD, .PSD, .PDF)</span>
             </div>
-            <p class="page-subtitle">Upload Figma (.fig) or Adobe Illustrator (.ai) files or provide a Figma design URL to automatically detect layout shifts, color drift, typography discrepancies, and UI defects against live web pages.</p>
+            <p class="page-subtitle">Upload Figma (.fig) or Adobe (.ai, .xd, .psd, .pdf) files or provide a Figma / Adobe XD design URL to automatically detect layout shifts, color drift, typography discrepancies, and UI defects against live web pages.</p>
           </div>
           <div class="header-stat-pills">
             <span class="stat-pill"><strong id="stat-design-fidelity">—</strong> Avg Parity</span>
@@ -1024,7 +1024,7 @@
               </svg>
               Step 1: Set Target Web URL &amp; Design Reference
             </h2>
-            <div class="badge badge-info">Multi-Format Supported: .fig, .ai, .svg, .png, Figma URL</div>
+            <div class="badge badge-info">Multi-Format Supported: .fig, .ai, .xd, .psd, .pdf, .svg, .png, Figma &amp; Adobe XD URLs</div>
           </div>
 
           <div style="padding: 24px;">
@@ -1053,11 +1053,11 @@
               <div class="design-source-tabs">
                 <button type="button" class="design-src-tab active" data-source-type="file" id="tab-src-file">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                  Upload File (.fig / .ai / Image)
+                  Upload File (.fig / .ai / .xd / .psd / Image)
                 </button>
                 <button type="button" class="design-src-tab" data-source-type="figma-url" id="tab-src-figma-url">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                  Figma URL &amp; API
+                  Figma &amp; Adobe XD URL
                 </button>
                 <button type="button" class="design-src-tab" data-source-type="preset" id="tab-src-preset">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
@@ -1068,7 +1068,7 @@
               <!-- Content A: File Upload Dropzone -->
               <div class="design-src-content" id="panel-src-file">
                 <div class="file-dropzone" id="design-dropzone">
-                  <input type="file" id="input-design-file" class="hidden" accept=".fig,.ai,.png,.jpg,.jpeg,.svg,.webp,.pdf">
+                  <input type="file" id="input-design-file" class="hidden" accept=".fig,.ai,.xd,.psd,.psb,.pdf,.png,.jpg,.jpeg,.svg,.webp">
                   <div class="dropzone-icon">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1076,13 +1076,15 @@
                       <line x1="12" y1="3" x2="12" y2="15"></line>
                     </svg>
                   </div>
-                  <div class="dropzone-title">Drag &amp; drop your <strong>Figma (.fig)</strong> or <strong>Adobe Illustrator (.ai)</strong> file here</div>
-                  <div class="dropzone-subtitle">or click to browse from your computer (also accepts .svg, .png, .jpg, .webp, .pdf)</div>
+                  <div class="dropzone-title">Drag &amp; drop your <strong>Figma (.fig)</strong> or <strong>Adobe (.ai / .xd / .psd)</strong> file here</div>
+                  <div class="dropzone-subtitle">or click to browse from your computer (also accepts .pdf, .svg, .png, .jpg, .webp)</div>
                   <div class="supported-badges">
                     <span class="filetype-badge badge-fig">.FIG Figma</span>
                     <span class="filetype-badge badge-ai">.AI Illustrator</span>
-                    <span class="filetype-badge">.SVG Vector</span>
-                    <span class="filetype-badge">.PNG / .JPG</span>
+                    <span class="filetype-badge badge-xd">.XD Adobe XD</span>
+                    <span class="filetype-badge badge-psd">.PSD Photoshop</span>
+                    <span class="filetype-badge badge-pdf">.PDF Vector</span>
+                    <span class="filetype-badge">.PNG / .SVG</span>
                   </div>
                 </div>
 
@@ -1099,17 +1101,17 @@
                 </div>
               </div>
 
-              <!-- Content B: Figma URL & Token -->
+              <!-- Content B: Figma / Adobe XD URL & Token -->
               <div class="design-src-content hidden" id="panel-src-figma-url">
                 <div class="form-group" style="margin-bottom:12px;">
-                  <label class="form-label" for="input-figma-url">Figma Design File / Frame URL</label>
-                  <input type="url" id="input-figma-url" class="form-input" placeholder="https://www.figma.com/design/:fileKey/:title?node-id=0:1">
-                  <span class="form-hint">Paste any Figma browser link containing fileKey and optional node-id.</span>
+                  <label class="form-label" for="input-figma-url">Figma Design or Adobe XD Share URL</label>
+                  <input type="url" id="input-figma-url" class="form-input" placeholder="https://www.figma.com/design/... or https://xd.adobe.com/view/...">
+                  <span class="form-hint">Paste any Figma link or public Adobe XD prototype link (xd.adobe.com/view/...) to capture live design specs.</span>
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" for="input-figma-token">Figma Personal Access Token (Optional)</label>
-                  <input type="password" id="input-figma-token" class="form-input" placeholder="figd_... (optional, leave empty for automated simulation)">
-                  <span class="form-hint">Used to query Figma REST API images endpoint for live renders.</span>
+                  <label class="form-label" for="input-figma-token">Figma Personal Access Token (Optional for Figma REST API)</label>
+                  <input type="password" id="input-figma-token" class="form-input" placeholder="figd_... (optional, leave empty for automated simulation or Adobe XD)">
+                  <span class="form-hint">Used for private Figma workspaces. Not required for Adobe XD public links or simulations.</span>
                 </div>
               </div>
 

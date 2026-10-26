@@ -266,14 +266,16 @@ describe('@testpilot/web Service Suite', () => {
     assert.ok(data.message.includes('Recovery instructions'));
   });
 
-  it('serves design compare presets including Figma and Illustrator AI specs', async () => {
+  it('serves design compare presets including Figma, Illustrator AI, and Adobe XD specs', async () => {
     const res = await fetch(`${BASE}/api/design-compare/presets`);
     assert.strictEqual(res.status, 200);
     const presets = await res.json();
     assert.ok(Array.isArray(presets));
-    assert.ok(presets.length >= 2);
+    assert.ok(presets.length >= 4);
     assert.ok(presets.some((p: any) => p.category === 'FIGMA'));
     assert.ok(presets.some((p: any) => p.category === 'AI'));
+    assert.ok(presets.some((p: any) => p.category === 'XD'));
+    assert.ok(presets.some((p: any) => p.category === 'PHOTOSHOP'));
   });
 
   it('executes design vs code comparison on given URL and returns UI issues, snapshots and fidelity score', async () => {

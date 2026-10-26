@@ -268,6 +268,9 @@ export type DesignSourceType =
   | 'FIGMA_FILE'
   | 'FIGMA_URL'
   | 'AI_FILE'
+  | 'ADOBE_XD_FILE'
+  | 'ADOBE_XD_URL'
+  | 'PHOTOSHOP_FILE'
   | 'IMAGE_UPLOAD'
   | 'BENCHMARK_PRESET';
 
