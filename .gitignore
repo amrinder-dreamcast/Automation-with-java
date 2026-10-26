@@ -5,6 +5,8 @@ target/
 # Screenshots and debug files
 *.png
 *.txt
+*.html
+*.csv
 
 # IDEs
 .classpath

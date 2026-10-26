@@ -20,7 +20,7 @@ public class gr {
 		driver.manage().window().maximize();
 
 		// Open website
-		driver.get("https://staging.twagateway.com/jlf2027/");
+		driver.get("https://staging-registration.dreamcast.in/jlf2027/");
 
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 		JavascriptExecutor js = (JavascriptExecutor) driver;
@@ -30,12 +30,17 @@ public class gr {
 				ExpectedConditions.presenceOfElementLocated(
 						By.xpath("//div[contains(@class,'GeneralRegistration')]//input[@type='radio']")));
 
-		// Scroll to element
+		// Scroll to element and click radio button
 		js.executeScript("arguments[0].scrollIntoView({block:'center'});", genRadio);
-
-		// Wait until clickable and click
-		wait.until(ExpectedConditions.elementToBeClickable(genRadio));
-		genRadio.click();
+		try {
+			genRadio.click();
+		} catch (Exception e) {
+			System.out.println("Standard click on general radio intercepted, using JavaScript click fallback: " + e.getMessage());
+			js.executeScript("arguments[0].click();", genRadio);
+		}
+		if (!genRadio.isSelected()) {
+			js.executeScript("arguments[0].checked = true; $(arguments[0]).trigger('change');", genRadio);
+		}
 		System.out.println("General Registration radio button selected.");
 
 		// Locate Book Now button
@@ -83,7 +88,11 @@ public class gr {
 		// Scroll and click Continue button
 		js.executeScript("arguments[0].scrollIntoView({block:'center'});", continueBtn);
 		wait.until(ExpectedConditions.elementToBeClickable(continueBtn));
-		continueBtn.click();
+		try {
+			continueBtn.click();
+		} catch (Exception e) {
+			js.executeScript("arguments[0].click();", continueBtn);
+		}
 		System.out.println("Continue button clicked successfully.");
 
 		// Wait for the attendee registration page to load and find the 15 Jan checkbox
@@ -207,8 +216,7 @@ public class gr {
 		System.out.println("Profile photo uploaded.");
 
 		// Wait for crop modal to show
-		WebElement cropModal = wait.until(
-				ExpectedConditions.visibilityOfElementLocated(By.id("modal_profile")));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("modal_profile")));
 		System.out.println("Crop modal is visible.");
 
 		// Click crop button
@@ -225,6 +233,38 @@ public class gr {
 		wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("modal_profile")));
 		System.out.println("Crop modal closed.");
 		Thread.sleep(3000);
+
+		// Locate and select the "I agree" Privacy Policy checkbox
+		try {
+			WebElement privacyCheckbox = wait.until(
+					ExpectedConditions.presenceOfElementLocated(
+							By.cssSelector("input[type='checkbox'][name*='[privacy_check]'], input.dc-checkbox[type='checkbox']")));
+			js.executeScript("arguments[0].scrollIntoView({block:'center'});", privacyCheckbox);
+			if (!privacyCheckbox.isSelected()) {
+				try {
+					privacyCheckbox.click();
+				} catch (Exception ex) {
+					js.executeScript("arguments[0].click();", privacyCheckbox);
+				}
+				System.out.println("Privacy policy 'I agree' checkbox selected successfully.");
+			} else {
+				System.out.println("Privacy policy 'I agree' checkbox was already selected.");
+			}
+		} catch (Exception e) {
+			System.out.println("Standard locator for privacy checkbox failed, trying label fallback: " + e.getMessage());
+			try {
+				WebElement agreeLabel = driver.findElement(By.xpath("//label[contains(., 'I agree')]"));
+				js.executeScript("arguments[0].scrollIntoView({block:'center'});", agreeLabel);
+				try {
+					agreeLabel.click();
+				} catch (Exception exClick) {
+					js.executeScript("arguments[0].click();", agreeLabel);
+				}
+				System.out.println("Privacy policy 'I agree' label clicked.");
+			} catch (Exception ex2) {
+				System.out.println("Could not click 'I agree' checkbox: " + ex2.getMessage());
+			}
+		}
 
 		// Locate and click the Save to continue button
 		WebElement saveBtn = wait.until(

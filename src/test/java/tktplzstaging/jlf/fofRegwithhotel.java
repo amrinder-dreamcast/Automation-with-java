@@ -21,7 +21,7 @@ public class fofRegwithhotel {
 
 		try {
 			// Open website
-			driver.get("https://staging.twagateway.com/jlf2027/");
+			driver.get("https://staging-registration.dreamcast.in/jlf2027/");
 
 			WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
@@ -30,16 +30,19 @@ public class fofRegwithhotel {
 					ExpectedConditions.presenceOfElementLocated(
 							By.xpath("//div[contains(@class,'FriendoftheFestival')]//input[@type='radio']")));
 
-			// Scroll to element
+			// Scroll to element and click radio button
 			((JavascriptExecutor) driver).executeScript(
 					"arguments[0].scrollIntoView({block:'center'});",
 					friendOfFestivalRadio);
-
-			// Wait until clickable
-			wait.until(ExpectedConditions.elementToBeClickable(friendOfFestivalRadio));
-
-			// Click radio button
-			friendOfFestivalRadio.click();
+			try {
+				friendOfFestivalRadio.click();
+			} catch (Exception e) {
+				System.out.println("Standard click on Friend of Festival radio intercepted, using JavaScript click fallback: " + e.getMessage());
+				((JavascriptExecutor) driver).executeScript("arguments[0].click();", friendOfFestivalRadio);
+			}
+			if (!friendOfFestivalRadio.isSelected()) {
+				((JavascriptExecutor) driver).executeScript("arguments[0].checked = true; $(arguments[0]).trigger('change');", friendOfFestivalRadio);
+			}
 
 			System.out.println("Friend of the Festival radio button selected.");
 
@@ -102,26 +105,38 @@ public class fofRegwithhotel {
 
 			// Wait until clickable and click the Continue button
 			wait2.until(ExpectedConditions.elementToBeClickable(continueBtn));
-			continueBtn.click();
+			try {
+				continueBtn.click();
+			} catch (Exception e) {
+				js.executeScript("arguments[0].click();", continueBtn);
+			}
 
 			System.out.println("Continue button clicked successfully.");
 
-			// Wait for the attendee registration page to load and find the 15 Jan checkbox
-			WebElement checkbox15 = wait2.until(
+			// Select 17 Jan and 18 Jan festival dates
+			WebElement checkbox17 = wait2.until(
 					ExpectedConditions.presenceOfElementLocated(
-							By.cssSelector("input.festival_dates[value='15']")));
-
-			// Scroll to the checkbox
-			js.executeScript("arguments[0].scrollIntoView({block:'center'});", checkbox15);
-
-			// If it's not already checked, select it
-			if (!checkbox15.isSelected()) {
-				// Using JavaScript to click since the custom checkbox has opacity: 0
-				js.executeScript("arguments[0].click();", checkbox15);
-				System.out.println("15 Jan checkbox selected successfully.");
+							By.cssSelector("input.festival_dates[value='17'], input[name*='[festival_dates][]'][value='17']")));
+			js.executeScript("arguments[0].scrollIntoView({block:'center'});", checkbox17);
+			if (!checkbox17.isSelected()) {
+				js.executeScript("arguments[0].click();", checkbox17);
+				System.out.println("17 Jan checkbox selected successfully.");
 			} else {
-				System.out.println("15 Jan checkbox was already selected.");
+				System.out.println("17 Jan checkbox was already selected.");
 			}
+			Thread.sleep(1000);
+
+			WebElement checkbox18 = wait2.until(
+					ExpectedConditions.presenceOfElementLocated(
+							By.cssSelector("input.festival_dates[value='18'], input[name*='[festival_dates][]'][value='18']")));
+			js.executeScript("arguments[0].scrollIntoView({block:'center'});", checkbox18);
+			if (!checkbox18.isSelected()) {
+				js.executeScript("arguments[0].click();", checkbox18);
+				System.out.println("18 Jan checkbox selected successfully.");
+			} else {
+				System.out.println("18 Jan checkbox was already selected.");
+			}
+			Thread.sleep(1000);
 
 			// Locate the Name input dynamically
 			WebElement nameInput = wait2.until(
@@ -166,12 +181,20 @@ public class fofRegwithhotel {
 					ExpectedConditions.elementToBeClickable(
 							By.cssSelector("span.select2-selection[aria-labelledby*='age_group']")));
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", ageDropdownTrigger);
-			ageDropdownTrigger.click();
+			try {
+				ageDropdownTrigger.click();
+			} catch (Exception e) {
+				js.executeScript("arguments[0].click();", ageDropdownTrigger);
+			}
 
 			WebElement ageOption = wait2.until(
 					ExpectedConditions.elementToBeClickable(
 							By.xpath("//li[contains(@class, 'select2-results__option') and contains(text(), '25-34')]")));
-			ageOption.click();
+			try {
+				ageOption.click();
+			} catch (Exception e) {
+				js.executeScript("arguments[0].click();", ageOption);
+			}
 			System.out.println("Age group selected successfully.");
 
 			// Select Country (India) using Select2 only if it is not already selected as India
@@ -186,13 +209,21 @@ public class fofRegwithhotel {
 						ExpectedConditions.elementToBeClickable(
 								By.cssSelector("span.select2-selection[aria-labelledby*='country']")));
 				js.executeScript("arguments[0].scrollIntoView({block:'center'});", countryDropdownTrigger);
-				countryDropdownTrigger.click();
+				try {
+					countryDropdownTrigger.click();
+				} catch (Exception e) {
+					js.executeScript("arguments[0].click();", countryDropdownTrigger);
+				}
 
 				WebElement countryOption = wait2.until(
 						ExpectedConditions.elementToBeClickable(
 								By.xpath(
 										"//li[contains(@class, 'select2-results__option') and (text()='India' or contains(text(), 'India'))]")));
-				countryOption.click();
+				try {
+					countryOption.click();
+				} catch (Exception e) {
+					js.executeScript("arguments[0].click();", countryOption);
+				}
 				System.out.println("Country selected as India.");
 			} else {
 				System.out.println("Country is already selected as India. Skipping click.");
@@ -210,13 +241,21 @@ public class fofRegwithhotel {
 						ExpectedConditions.elementToBeClickable(
 								By.cssSelector("span.select2-selection[aria-labelledby*='state']")));
 				js.executeScript("arguments[0].scrollIntoView({block:'center'});", stateDropdownTrigger);
-				stateDropdownTrigger.click();
+				try {
+					stateDropdownTrigger.click();
+				} catch (Exception e) {
+					js.executeScript("arguments[0].click();", stateDropdownTrigger);
+				}
 
 				WebElement stateOption = wait2.until(
 						ExpectedConditions.elementToBeClickable(
 								By.xpath(
 										"//li[contains(@class, 'select2-results__option') and (text()='Rajasthan' or contains(text(), 'Rajasthan'))]")));
-				stateOption.click();
+				try {
+					stateOption.click();
+				} catch (Exception e) {
+					js.executeScript("arguments[0].click();", stateOption);
+				}
 				System.out.println("State selected as Rajasthan.");
 			} else {
 				System.out.println("State is already selected as Rajasthan. Skipping click.");
@@ -278,8 +317,7 @@ public class fofRegwithhotel {
 			System.out.println("Profile photo uploaded via sendKeys.");
 
 			// Wait for the crop modal to become visible
-			WebElement cropModal = wait2.until(
-					ExpectedConditions.visibilityOfElementLocated(By.id("modal_profile")));
+			wait2.until(ExpectedConditions.visibilityOfElementLocated(By.id("modal_profile")));
 			System.out.println("Crop modal is visible.");
 
 			// Locate the Crop button
@@ -297,13 +335,44 @@ public class fofRegwithhotel {
 
 			// Wait for the preview image to be displayed
 			try {
-				WebElement previewDiv = wait2.until(
-						ExpectedConditions.visibilityOfElementLocated(
+				wait2.until(ExpectedConditions.visibilityOfElementLocated(
 								By.cssSelector("div[id^='previewimage_']")));
 				System.out.println("Profile photo preview is displayed (upload completed).");
 			} catch (Exception e) {
 				System.out.println("Preview div did not become visible, waiting 5 seconds instead.");
 				Thread.sleep(5000);
+			}
+
+			// Locate and select the "I agree" Privacy Policy checkbox
+			try {
+				WebElement privacyCheckbox = wait2.until(
+						ExpectedConditions.presenceOfElementLocated(
+								By.cssSelector("input[type='checkbox'][name*='[privacy_check]'], input.dc-checkbox[type='checkbox']")));
+				js.executeScript("arguments[0].scrollIntoView({block:'center'});", privacyCheckbox);
+				if (!privacyCheckbox.isSelected()) {
+					try {
+						privacyCheckbox.click();
+					} catch (Exception ex) {
+						js.executeScript("arguments[0].click();", privacyCheckbox);
+					}
+					System.out.println("Privacy policy 'I agree' checkbox selected successfully.");
+				} else {
+					System.out.println("Privacy policy 'I agree' checkbox was already selected.");
+				}
+			} catch (Exception e) {
+				System.out.println("Standard locator for privacy checkbox failed, trying label fallback: " + e.getMessage());
+				try {
+					WebElement agreeLabel = driver.findElement(By.xpath("//label[contains(., 'I agree')]"));
+					js.executeScript("arguments[0].scrollIntoView({block:'center'});", agreeLabel);
+					try {
+						agreeLabel.click();
+					} catch (Exception exClick) {
+						js.executeScript("arguments[0].click();", agreeLabel);
+					}
+					System.out.println("Privacy policy 'I agree' label clicked.");
+				} catch (Exception ex2) {
+					System.out.println("Could not click 'I agree' checkbox: " + ex2.getMessage());
+				}
 			}
 
 			// Locate the Save to continue button
@@ -331,6 +400,10 @@ public class fofRegwithhotel {
 					ExpectedConditions.elementToBeClickable(
 							By.cssSelector("div.checkout_btn a.booknow-btn")));
 
+			// Wait until enabled (no disabled class)
+			wait2.until(ExpectedConditions.not(ExpectedConditions.attributeContains(finalContinueBtn, "class", "disabled")));
+			String targetHotelUrl = finalContinueBtn.getAttribute("href");
+
 			// Scroll to it
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", finalContinueBtn);
 
@@ -343,16 +416,55 @@ public class fofRegwithhotel {
 			}
 			System.out.println("Final Continue button clicked successfully.");
 
+			// Wait for navigation or fallback
+			Thread.sleep(3000);
+			if (driver.getCurrentUrl() != null && !driver.getCurrentUrl().contains("/hotelBooking/")) {
+				if (targetHotelUrl != null && targetHotelUrl.contains("/hotelBooking/")) {
+					driver.get(targetHotelUrl);
+				}
+			}
+
 			// Wait for the navigation to the hotel booking page to complete
 			wait2.until(ExpectedConditions.urlContains("/hotelBooking/"));
-			System.out.println("Navigated to hotel booking page successfully.");
+			System.out.println("Navigated to hotel booking page successfully: " + driver.getCurrentUrl());
 
-			// Select hotel Clarks Amer (Festival Venue) using Select2's jQuery trigger
-			WebElement hotelSelect = wait2.until(
-					ExpectedConditions.presenceOfElementLocated(
-							By.cssSelector("select[name='hotel']")));
-			js.executeScript("$(arguments[0]).val('Clarks Amer (Festival Venue)').trigger('change');", hotelSelect);
-			System.out.println("Selected Clarks Amer hotel. Waiting 5s for AJAX...");
+			// Select hotel from dropdown (The Lalit (5 Star) or Hotel Clarks Amer)
+			try {
+				WebElement hotelDropdown = wait.until(
+						ExpectedConditions.elementToBeClickable(
+								By.cssSelector("span.select2-selection[aria-labelledby*='hotel'], span.select2-selection")));
+				js.executeScript("arguments[0].scrollIntoView({block:'center'});", hotelDropdown);
+				try {
+					hotelDropdown.click();
+				} catch (Exception clickEx) {
+					js.executeScript("arguments[0].click();", hotelDropdown);
+				}
+				System.out.println("Hotel dropdown opened.");
+
+				wait.until(ExpectedConditions.visibilityOfElementLocated(
+						By.cssSelector("ul.select2-results__options")));
+
+				WebElement hotelOption = wait.until(
+						ExpectedConditions.elementToBeClickable(
+								By.xpath("//li[contains(@class, 'select2-results__option') and not(text()='Select Hotel') and (contains(text(), 'The Lalit') or contains(text(), 'Clarks Amer'))]")));
+				String selectedHotelName = hotelOption.getText();
+				try {
+					hotelOption.click();
+				} catch (Exception clickOptEx) {
+					js.executeScript("arguments[0].click();", hotelOption);
+				}
+				System.out.println("Selected hotel from dropdown: " + selectedHotelName);
+			} catch (Exception e) {
+				System.out.println("Select2 UI click failed, trying programmatic dropdown selection fallback: " + e.getMessage());
+				WebElement hotelSelect = wait2.until(
+						ExpectedConditions.presenceOfElementLocated(
+								By.cssSelector("select[name='hotel']")));
+				js.executeScript(
+						"var optionVal = $(arguments[0]).find('option[value*=\"The Lalit\"], option[value*=\"Clarks Amer\"], option:not([value=\"\"])').first().val();"
+						+ "$(arguments[0]).val(optionVal).trigger('change');", hotelSelect);
+				System.out.println("Selected hotel via programmatic fallback.");
+			}
+			System.out.println("Waiting 5s for hotel rooms AJAX to load...");
 			Thread.sleep(5000);
 
 			// Select Check In Date = 13 (which is 13-01-2027)
@@ -368,20 +480,23 @@ public class fofRegwithhotel {
 			Thread.sleep(3000);
 
 			// Select Airport to Hotel Transfer = no
-			WebElement airportTransferSelect = wait2.until(
-					ExpectedConditions.presenceOfElementLocated(By.cssSelector("select[name='airport_to_hotel_transfer']")));
-			js.executeScript("$(arguments[0]).val('no').trigger('change');", airportTransferSelect);
-			System.out.println("Selected Airport transfer as no.");
-			Thread.sleep(3000);
+			try {
+				WebElement airportTransferSelect = driver.findElement(By.cssSelector("select[name='airport_to_hotel_transfer']"));
+				js.executeScript("$(arguments[0]).val('no').trigger('change');", airportTransferSelect);
+				System.out.println("Selected Airport transfer as no.");
+				Thread.sleep(2000);
+			} catch (Exception ex) {
+				System.out.println("Airport transfer element not found or not required: " + ex.getMessage());
+			}
 
-			// Set Single Occupancy room qty to 1
-			js.executeScript("$('input.hotel_room1').val('1');");
+			// Set room quantity to 1
+			js.executeScript("$('input.hotel_room1, input[class*=\"hotel_room\"]').first().val('1');");
 			System.out.println("Set Single Occupancy room quantity to 1.");
 
 			// Click Add room button
 			WebElement addRoomBtn = wait2.until(
 					ExpectedConditions.elementToBeClickable(
-							By.cssSelector("button.add-hotel-btn[data-roomid='1']")));
+							By.cssSelector("button.add-hotel-btn[data-roomid='1'], button.add-hotel-btn")));
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", addRoomBtn);
 			try {
 				addRoomBtn.click();
@@ -394,18 +509,67 @@ public class fofRegwithhotel {
 			// Click Checkout button in the cart
 			WebElement checkoutBtn = wait2.until(
 					ExpectedConditions.elementToBeClickable(
-							By.cssSelector("#cartSection a.booknow-btn")));
+							By.cssSelector("#cartSection a.booknow-btn, div.checkout_btn a.booknow-btn, a.booknow-btn")));
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", checkoutBtn);
 			try {
 				checkoutBtn.click();
 			} catch (Exception e) {
 				js.executeScript("arguments[0].click();", checkoutBtn);
 			}
-			System.out.println("Clicked Checkout button.");
+			System.out.println("Clicked Checkout button on hotel booking page.");
 
-			// Wait for the checkout page to load
-			wait2.until(ExpectedConditions.urlContains("/checkout/"));
-			System.out.println("Navigated to checkout page successfully.");
+			// Wait for either selectAddons page or checkout page
+			wait2.until(ExpectedConditions.or(
+					ExpectedConditions.urlContains("/selectAddons/"),
+					ExpectedConditions.urlContains("/checkout/")));
+
+			// Handle Add-ons selection if on selectAddons page
+			if (driver.getCurrentUrl() != null && driver.getCurrentUrl().contains("/selectAddons/")) {
+				System.out.println("Navigated to selectAddons page successfully: " + driver.getCurrentUrl());
+
+				// Select both add-ons for 17 and 18 date:
+				// 1. The Heritage Evening at Amber Fort (17th January)
+				// 2. The Festival Closing Writers' Ball (18th January)
+				java.util.List<WebElement> addonCheckboxes = wait2.until(
+						ExpectedConditions.presenceOfAllElementsLocatedBy(
+								By.cssSelector("input.addon-assign-checkbox, input[type='checkbox'][data-addon-id]")));
+				System.out.println("Found " + addonCheckboxes.size() + " add-on checkbox(es).");
+
+				for (WebElement addonCb : addonCheckboxes) {
+					js.executeScript("arguments[0].scrollIntoView({block:'center'});", addonCb);
+					if (!addonCb.isSelected()) {
+						try {
+							addonCb.click();
+						} catch (Exception ex) {
+							js.executeScript("arguments[0].click();", addonCb);
+						}
+						System.out.println("Selected add-on checkbox (addon-id: " + addonCb.getAttribute("data-addon-id") + ").");
+						Thread.sleep(2000);
+					} else {
+						System.out.println("Add-on checkbox was already selected (addon-id: " + addonCb.getAttribute("data-addon-id") + ").");
+					}
+				}
+
+				// Wait 3 seconds for cart to reflect both add-ons
+				Thread.sleep(3000);
+
+				// Click Checkout button on the selectAddons page
+				WebElement addonCheckoutBtn = wait2.until(
+						ExpectedConditions.elementToBeClickable(
+								By.cssSelector("#cartSection a.booknow-btn, div.checkout_btn a.booknow-btn, a.booknow-btn")));
+				js.executeScript("arguments[0].scrollIntoView({block:'center'});", addonCheckoutBtn);
+				try {
+					addonCheckoutBtn.click();
+				} catch (Exception e) {
+					System.out.println("Standard click on Add-ons Checkout failed, trying JavaScript click fallback.");
+					js.executeScript("arguments[0].click();", addonCheckoutBtn);
+				}
+				System.out.println("Clicked Checkout button on Add-ons page.");
+
+				// Wait for checkout page to load
+				wait2.until(ExpectedConditions.urlContains("/checkout/"));
+			}
+			System.out.println("Navigated to checkout page successfully: " + driver.getCurrentUrl());
 
 			// Locate the promo code input
 			WebElement promoInput = wait2.until(

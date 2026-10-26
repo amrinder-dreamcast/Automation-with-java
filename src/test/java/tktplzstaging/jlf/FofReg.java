@@ -16,14 +16,13 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class FofReg {
 
 	public static void main(String[] args) throws InterruptedException {
-		// TODO Auto-generated method stub
 
 		WebDriver driver = new ChromeDriver();
 
 		driver.manage().window().maximize();
 
 		// Open website
-		driver.get("https://staging.twagateway.com/jlf2027/");
+		driver.get("https://staging-registration.dreamcast.in/jlf2027/");
 
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
@@ -32,16 +31,19 @@ public class FofReg {
 				ExpectedConditions.presenceOfElementLocated(
 						By.xpath("//div[contains(@class,'FriendoftheFestival')]//input[@type='radio']")));
 
-		// Scroll to element
+		// Scroll to element and click radio button
 		((JavascriptExecutor) driver).executeScript(
 				"arguments[0].scrollIntoView({block:'center'});",
 				friendOfFestivalRadio);
-
-		// Wait until clickable
-		wait.until(ExpectedConditions.elementToBeClickable(friendOfFestivalRadio));
-
-		// Click radio button
-		friendOfFestivalRadio.click();
+		try {
+			friendOfFestivalRadio.click();
+		} catch (Exception e) {
+			System.out.println("Standard click on Friend of Festival radio intercepted, using JavaScript click fallback: " + e.getMessage());
+			((JavascriptExecutor) driver).executeScript("arguments[0].click();", friendOfFestivalRadio);
+		}
+		if (!friendOfFestivalRadio.isSelected()) {
+			((JavascriptExecutor) driver).executeScript("arguments[0].checked = true; $(arguments[0]).trigger('change');", friendOfFestivalRadio);
+		}
 
 		System.out.println("Friend of the Festival radio button selected.");
 
@@ -107,7 +109,11 @@ public class FofReg {
 
 		// Wait until clickable and click the Continue button
 		wait2.until(ExpectedConditions.elementToBeClickable(continueBtn));
-		continueBtn.click();
+		try {
+			continueBtn.click();
+		} catch (Exception e) {
+			js.executeScript("arguments[0].click();", continueBtn);
+		}
 
 		System.out.println("Continue button clicked successfully.");
 
@@ -174,12 +180,20 @@ public class FofReg {
 				ExpectedConditions.elementToBeClickable(
 						By.cssSelector("span.select2-selection[aria-labelledby*='age_group']")));
 		js.executeScript("arguments[0].scrollIntoView({block:'center'});", ageDropdownTrigger);
-		ageDropdownTrigger.click();
+		try {
+			ageDropdownTrigger.click();
+		} catch (Exception e) {
+			js.executeScript("arguments[0].click();", ageDropdownTrigger);
+		}
 
 		WebElement ageOption = wait2.until(
 				ExpectedConditions.elementToBeClickable(
 						By.xpath("//li[contains(@class, 'select2-results__option') and contains(text(), '25-34')]")));
-		ageOption.click();
+		try {
+			ageOption.click();
+		} catch (Exception e) {
+			js.executeScript("arguments[0].click();", ageOption);
+		}
 		System.out.println("Age group selected successfully.");
 
 		// Select Country (India) using Select2 only if it is not already selected as
@@ -195,13 +209,21 @@ public class FofReg {
 					ExpectedConditions.elementToBeClickable(
 							By.cssSelector("span.select2-selection[aria-labelledby*='country']")));
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", countryDropdownTrigger);
-			countryDropdownTrigger.click();
+			try {
+				countryDropdownTrigger.click();
+			} catch (Exception e) {
+				js.executeScript("arguments[0].click();", countryDropdownTrigger);
+			}
 
 			WebElement countryOption = wait2.until(
 					ExpectedConditions.elementToBeClickable(
 							By.xpath(
 									"//li[contains(@class, 'select2-results__option') and (text()='India' or contains(text(), 'India'))]")));
-			countryOption.click();
+			try {
+				countryOption.click();
+			} catch (Exception e) {
+				js.executeScript("arguments[0].click();", countryOption);
+			}
 			System.out.println("Country selected as India.");
 		} else {
 			System.out.println("Country is already selected as India. Skipping click.");
@@ -220,13 +242,21 @@ public class FofReg {
 					ExpectedConditions.elementToBeClickable(
 							By.cssSelector("span.select2-selection[aria-labelledby*='state']")));
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", stateDropdownTrigger);
-			stateDropdownTrigger.click();
+			try {
+				stateDropdownTrigger.click();
+			} catch (Exception e) {
+				js.executeScript("arguments[0].click();", stateDropdownTrigger);
+			}
 
 			WebElement stateOption = wait2.until(
 					ExpectedConditions.elementToBeClickable(
 							By.xpath(
 									"//li[contains(@class, 'select2-results__option') and (text()='Rajasthan' or contains(text(), 'Rajasthan'))]")));
-			stateOption.click();
+			try {
+				stateOption.click();
+			} catch (Exception e) {
+				js.executeScript("arguments[0].click();", stateOption);
+			}
 			System.out.println("State selected as Rajasthan.");
 		} else {
 			System.out.println("State is already selected as Rajasthan. Skipping click.");
@@ -296,8 +326,7 @@ public class FofReg {
 		System.out.println("Profile photo uploaded via sendKeys.");
 
 		// Wait for the crop modal to become visible
-		WebElement cropModal = wait2.until(
-				ExpectedConditions.visibilityOfElementLocated(By.id("modal_profile")));
+		wait2.until(ExpectedConditions.visibilityOfElementLocated(By.id("modal_profile")));
 		System.out.println("Crop modal is visible.");
 
 		// Locate the Crop button
@@ -316,8 +345,7 @@ public class FofReg {
 		// Wait for the preview image to be displayed (indicating AJAX upload finished
 		// after cropping)
 		try {
-			WebElement previewDiv = wait2.until(
-					ExpectedConditions.visibilityOfElementLocated(
+			wait2.until(ExpectedConditions.visibilityOfElementLocated(
 							By.cssSelector("div[id^='previewimage_']")));
 			System.out.println("Profile photo preview is displayed (upload completed).");
 		} catch (Exception e) {
@@ -334,6 +362,38 @@ public class FofReg {
 				System.out.println("--- Browser Console Logs End ---");
 			} catch (Exception le) {
 				System.out.println("Failed to fetch browser logs: " + le.getMessage());
+			}
+		}
+
+		// Locate and select the "I agree" Privacy Policy checkbox
+		try {
+			WebElement privacyCheckbox = wait2.until(
+					ExpectedConditions.presenceOfElementLocated(
+							By.cssSelector("input[type='checkbox'][name*='[privacy_check]'], input.dc-checkbox[type='checkbox']")));
+			js.executeScript("arguments[0].scrollIntoView({block:'center'});", privacyCheckbox);
+			if (!privacyCheckbox.isSelected()) {
+				try {
+					privacyCheckbox.click();
+				} catch (Exception ex) {
+					js.executeScript("arguments[0].click();", privacyCheckbox);
+				}
+				System.out.println("Privacy policy 'I agree' checkbox selected successfully.");
+			} else {
+				System.out.println("Privacy policy 'I agree' checkbox was already selected.");
+			}
+		} catch (Exception e) {
+			System.out.println("Standard locator for privacy checkbox failed, trying label fallback: " + e.getMessage());
+			try {
+				WebElement agreeLabel = driver.findElement(By.xpath("//label[contains(., 'I agree')]"));
+				js.executeScript("arguments[0].scrollIntoView({block:'center'});", agreeLabel);
+				try {
+					agreeLabel.click();
+				} catch (Exception exClick) {
+					js.executeScript("arguments[0].click();", agreeLabel);
+				}
+				System.out.println("Privacy policy 'I agree' label clicked.");
+			} catch (Exception ex2) {
+				System.out.println("Could not click 'I agree' checkbox: " + ex2.getMessage());
 			}
 		}
 

@@ -16,14 +16,13 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class sr {
 
 	public static void main(String[] args) throws InterruptedException {
-		// TODO Auto-generated method stub
 
 		WebDriver driver = new ChromeDriver();
 
 		driver.manage().window().maximize();
 
 		// Open website
-		driver.get("https://staging.twagateway.com/jlf2027/");
+		driver.get("https://staging-registration.dreamcast.in/jlf2027/");
 
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
@@ -32,16 +31,19 @@ public class sr {
 				ExpectedConditions.presenceOfElementLocated(
 						By.xpath("//div[contains(@class,'StudentRegistration')]//input[@type='radio']")));
 
-		// Scroll to element
+		// Scroll to element and click radio button
 		((JavascriptExecutor) driver).executeScript(
 				"arguments[0].scrollIntoView({block:'center'});",
 				studentRadio);
-
-		// Wait until clickable
-		wait.until(ExpectedConditions.elementToBeClickable(studentRadio));
-
-		// Click radio button
-		studentRadio.click();
+		try {
+			studentRadio.click();
+		} catch (Exception e) {
+			System.out.println("Standard click on student radio intercepted, using JavaScript click fallback: " + e.getMessage());
+			((JavascriptExecutor) driver).executeScript("arguments[0].click();", studentRadio);
+		}
+		if (!studentRadio.isSelected()) {
+			((JavascriptExecutor) driver).executeScript("arguments[0].checked = true; $(arguments[0]).trigger('change');", studentRadio);
+		}
 
 		System.out.println("Student Registration radio button selected.");
 
@@ -104,7 +106,11 @@ public class sr {
 
 		// Wait until clickable and click the Continue button
 		wait2.until(ExpectedConditions.elementToBeClickable(continueBtn));
-		continueBtn.click();
+		try {
+			continueBtn.click();
+		} catch (Exception e) {
+			js.executeScript("arguments[0].click();", continueBtn);
+		}
 
 		System.out.println("Continue button clicked successfully.");
 
@@ -158,13 +164,21 @@ public class sr {
 					ExpectedConditions.elementToBeClickable(
 							By.cssSelector("span.select2-selection[aria-labelledby*='country']")));
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", countryDropdownTrigger);
-			countryDropdownTrigger.click();
+			try {
+				countryDropdownTrigger.click();
+			} catch (Exception e) {
+				js.executeScript("arguments[0].click();", countryDropdownTrigger);
+			}
 
 			WebElement countryOption = wait2.until(
 					ExpectedConditions.elementToBeClickable(
 							By.xpath(
 									"//li[contains(@class, 'select2-results__option') and (text()='India' or contains(text(), 'India'))]")));
-			countryOption.click();
+			try {
+				countryOption.click();
+			} catch (Exception e) {
+				js.executeScript("arguments[0].click();", countryOption);
+			}
 			System.out.println("Country selected as India.");
 		} else {
 			System.out.println("Country is already selected as India. Skipping click.");
@@ -212,8 +226,7 @@ public class sr {
 		System.out.println("Student ID uploaded.");
 
 		// Wait for crop modal to show for Student ID
-		WebElement cropModal = wait2.until(
-				ExpectedConditions.visibilityOfElementLocated(By.id("modal_profile")));
+		wait2.until(ExpectedConditions.visibilityOfElementLocated(By.id("modal_profile")));
 		System.out.println("Crop modal is visible for Student ID.");
 
 		// Click crop button
@@ -240,8 +253,7 @@ public class sr {
 		System.out.println("Profile photo uploaded.");
 
 		// Wait for crop modal to show for Profile Photo
-		cropModal = wait2.until(
-				ExpectedConditions.visibilityOfElementLocated(By.id("modal_profile")));
+		wait2.until(ExpectedConditions.visibilityOfElementLocated(By.id("modal_profile")));
 		System.out.println("Crop modal is visible for Profile Photo.");
 
 		// Click crop button
@@ -258,6 +270,38 @@ public class sr {
 		wait2.until(ExpectedConditions.invisibilityOfElementLocated(By.id("modal_profile")));
 		System.out.println("Crop modal closed for Profile Photo.");
 		Thread.sleep(3000);
+
+		// Locate and select the "I agree" Privacy Policy checkbox
+		try {
+			WebElement privacyCheckbox = wait2.until(
+					ExpectedConditions.presenceOfElementLocated(
+							By.cssSelector("input[type='checkbox'][name*='[privacy_check]'], input.dc-checkbox[type='checkbox']")));
+			js.executeScript("arguments[0].scrollIntoView({block:'center'});", privacyCheckbox);
+			if (!privacyCheckbox.isSelected()) {
+				try {
+					privacyCheckbox.click();
+				} catch (Exception ex) {
+					js.executeScript("arguments[0].click();", privacyCheckbox);
+				}
+				System.out.println("Privacy policy 'I agree' checkbox selected successfully.");
+			} else {
+				System.out.println("Privacy policy 'I agree' checkbox was already selected.");
+			}
+		} catch (Exception e) {
+			System.out.println("Standard locator for privacy checkbox failed, trying label fallback: " + e.getMessage());
+			try {
+				WebElement agreeLabel = driver.findElement(By.xpath("//label[contains(., 'I agree')]"));
+				js.executeScript("arguments[0].scrollIntoView({block:'center'});", agreeLabel);
+				try {
+					agreeLabel.click();
+				} catch (Exception exClick) {
+					js.executeScript("arguments[0].click();", agreeLabel);
+				}
+				System.out.println("Privacy policy 'I agree' label clicked.");
+			} catch (Exception ex2) {
+				System.out.println("Could not click 'I agree' checkbox: " + ex2.getMessage());
+			}
+		}
 
 		// Locate the Save to continue button
 		WebElement saveBtn = wait2.until(

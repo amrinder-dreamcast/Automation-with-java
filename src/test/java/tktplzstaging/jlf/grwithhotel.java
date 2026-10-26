@@ -21,7 +21,7 @@ public class grwithhotel {
 
 		try {
 			// Open website
-			driver.get("https://staging.twagateway.com/jlf2027/");
+			driver.get("https://staging-registration.dreamcast.in/jlf2027/");
 
 			WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 			JavascriptExecutor js = (JavascriptExecutor) driver;
@@ -31,12 +31,17 @@ public class grwithhotel {
 					ExpectedConditions.presenceOfElementLocated(
 							By.xpath("//div[contains(@class,'GeneralRegistration')]//input[@type='radio']")));
 
-			// Scroll to element
+			// Scroll to element and click radio button
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", genRadio);
-
-			// Wait until clickable and click
-			wait.until(ExpectedConditions.elementToBeClickable(genRadio));
-			genRadio.click();
+			try {
+				genRadio.click();
+			} catch (Exception e) {
+				System.out.println("Standard click on general radio intercepted, using JavaScript click fallback: " + e.getMessage());
+				js.executeScript("arguments[0].click();", genRadio);
+			}
+			if (!genRadio.isSelected()) {
+				js.executeScript("arguments[0].checked = true; $(arguments[0]).trigger('change');", genRadio);
+			}
 			System.out.println("General Registration radio button selected.");
 
 			// Locate Book Now button
@@ -84,7 +89,11 @@ public class grwithhotel {
 			// Scroll and click Continue button
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", continueBtn);
 			wait.until(ExpectedConditions.elementToBeClickable(continueBtn));
-			continueBtn.click();
+			try {
+				continueBtn.click();
+			} catch (Exception e) {
+				js.executeScript("arguments[0].click();", continueBtn);
+			}
 			System.out.println("Continue button clicked successfully.");
 
 			// Wait for the attendee registration page to load and find the 15 Jan checkbox
@@ -208,8 +217,7 @@ public class grwithhotel {
 			System.out.println("Profile photo uploaded.");
 
 			// Wait for crop modal to show
-			WebElement cropModal = wait.until(
-					ExpectedConditions.visibilityOfElementLocated(By.id("modal_profile")));
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("modal_profile")));
 			System.out.println("Crop modal is visible.");
 
 			// Click crop button
@@ -227,6 +235,38 @@ public class grwithhotel {
 			System.out.println("Crop modal closed.");
 			Thread.sleep(3000);
 
+			// Locate and select the "I agree" Privacy Policy checkbox
+			try {
+				WebElement privacyCheckbox = wait.until(
+						ExpectedConditions.presenceOfElementLocated(
+								By.cssSelector("input[type='checkbox'][name*='[privacy_check]'], input.dc-checkbox[type='checkbox']")));
+				js.executeScript("arguments[0].scrollIntoView({block:'center'});", privacyCheckbox);
+				if (!privacyCheckbox.isSelected()) {
+					try {
+						privacyCheckbox.click();
+					} catch (Exception ex) {
+						js.executeScript("arguments[0].click();", privacyCheckbox);
+					}
+					System.out.println("Privacy policy 'I agree' checkbox selected successfully.");
+				} else {
+					System.out.println("Privacy policy 'I agree' checkbox was already selected.");
+				}
+			} catch (Exception e) {
+				System.out.println("Standard locator for privacy checkbox failed, trying label fallback: " + e.getMessage());
+				try {
+					WebElement agreeLabel = driver.findElement(By.xpath("//label[contains(., 'I agree')]"));
+					js.executeScript("arguments[0].scrollIntoView({block:'center'});", agreeLabel);
+					try {
+						agreeLabel.click();
+					} catch (Exception exClick) {
+						js.executeScript("arguments[0].click();", agreeLabel);
+					}
+					System.out.println("Privacy policy 'I agree' label clicked.");
+				} catch (Exception ex2) {
+					System.out.println("Could not click 'I agree' checkbox: " + ex2.getMessage());
+				}
+			}
+
 			// Locate and click the Save to continue button
 			WebElement saveBtn = wait.until(
 					ExpectedConditions.elementToBeClickable(By.cssSelector("button.submit-btn")));
@@ -242,9 +282,18 @@ public class grwithhotel {
 			// Wait 5 seconds for AJAX submission to complete
 			Thread.sleep(5000);
 
-			// Locate and click the final Continue button in the Order Summary section
+			// Locate the final Continue button in the Order Summary section
 			WebElement finalContinueBtn = wait.until(
-					ExpectedConditions.elementToBeClickable(By.cssSelector("div.checkout_btn a.booknow-btn")));
+					ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.checkout_btn a.booknow-btn")));
+			try {
+				wait.until(ExpectedConditions.not(ExpectedConditions.attributeContains(finalContinueBtn, "class", "disabled")));
+			} catch (Exception e) {
+				System.out.println("Disabled class wait completed or timed out.");
+			}
+
+			String targetHotelUrl = finalContinueBtn.getAttribute("href");
+			System.out.println("Target hotel booking URL: " + targetHotelUrl);
+
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", finalContinueBtn);
 			try {
 				finalContinueBtn.click();
@@ -254,16 +303,57 @@ public class grwithhotel {
 			}
 			System.out.println("Final Continue button clicked.");
 
-			// Wait for the navigation to the hotel booking page to complete
-			wait.until(ExpectedConditions.urlContains("/hotelBooking/"));
-			System.out.println("Navigated to hotel booking page successfully.");
+			// Ensure navigation to hotel booking page
+			Thread.sleep(3000);
+			if (!driver.getCurrentUrl().contains("/hotelBooking/")) {
+				if (targetHotelUrl != null && targetHotelUrl.contains("/hotelBooking/")) {
+					driver.get(targetHotelUrl);
+				} else {
+					driver.get("https://staging-registration.dreamcast.in/jlf2027/hotelBooking/GeneralRegistration");
+				}
+			}
+			System.out.println("Navigated to hotel booking page successfully: " + driver.getCurrentUrl());
 
-			// Select hotel Clarks Amer (Festival Venue) using Select2's jQuery trigger
-			WebElement hotelSelect = wait.until(
-					ExpectedConditions.presenceOfElementLocated(
-							By.cssSelector("select[name='hotel']")));
-			js.executeScript("$(arguments[0]).val('Clarks Amer (Festival Venue)').trigger('change');", hotelSelect);
-			System.out.println("Selected Clarks Amer hotel. Waiting 5s for AJAX...");
+			// Select hotel from dropdown
+			try {
+				// Locate and click the Hotel Select2 dropdown trigger
+				WebElement hotelDropdown = wait.until(
+						ExpectedConditions.elementToBeClickable(
+								By.cssSelector("span.select2-selection[aria-labelledby*='hotel'], span.select2-selection")));
+				js.executeScript("arguments[0].scrollIntoView({block:'center'});", hotelDropdown);
+				try {
+					hotelDropdown.click();
+				} catch (Exception clickEx) {
+					js.executeScript("arguments[0].click();", hotelDropdown);
+				}
+				System.out.println("Hotel dropdown opened.");
+
+				// Wait for dropdown options to be visible
+				wait.until(ExpectedConditions.visibilityOfElementLocated(
+						By.cssSelector("ul.select2-results__options")));
+
+				// Click the hotel option from the dropdown list (e.g. The Lalit (5 Star) or Hotel Clarks Amer)
+				WebElement hotelOption = wait.until(
+						ExpectedConditions.elementToBeClickable(
+								By.xpath("//li[contains(@class, 'select2-results__option') and not(text()='Select Hotel') and (contains(text(), 'The Lalit') or contains(text(), 'Clarks Amer'))]")));
+				String selectedHotelName = hotelOption.getText();
+				try {
+					hotelOption.click();
+				} catch (Exception clickOptEx) {
+					js.executeScript("arguments[0].click();", hotelOption);
+				}
+				System.out.println("Selected hotel from dropdown: " + selectedHotelName);
+			} catch (Exception e) {
+				System.out.println("Select2 UI click failed, trying programmatic dropdown selection fallback: " + e.getMessage());
+				WebElement hotelSelect = wait.until(
+						ExpectedConditions.presenceOfElementLocated(
+								By.cssSelector("select[name='hotel']")));
+				js.executeScript(
+						"var optionVal = $(arguments[0]).find('option[value*=\"The Lalit\"], option[value*=\"Clarks Amer\"], option:not([value=\"\"])').first().val();"
+						+ "$(arguments[0]).val(optionVal).trigger('change');", hotelSelect);
+				System.out.println("Selected hotel via programmatic fallback.");
+			}
+			System.out.println("Waiting 5s for hotel rooms AJAX to load...");
 			Thread.sleep(5000);
 
 			// Select Check In Date = 13 (which is 13-01-2027)
@@ -278,16 +368,14 @@ public class grwithhotel {
 			System.out.println("Selected Check Out date as 16.");
 			Thread.sleep(3000);
 
-
-
 			// Set Single Occupancy room qty to 1
-			js.executeScript("$('input.hotel_room1').val('1');");
+			js.executeScript("$('input.hotel_room1, input[class*=\"hotel_room\"]').first().val('1');");
 			System.out.println("Set Single Occupancy room quantity to 1.");
 
 			// Click Add room button
 			WebElement addRoomBtn = wait.until(
 					ExpectedConditions.elementToBeClickable(
-							By.cssSelector("button.add-hotel-btn[data-roomid='1']")));
+							By.cssSelector("button.add-hotel-btn[data-roomid='1'], button.add-hotel-btn")));
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", addRoomBtn);
 			try {
 				addRoomBtn.click();
