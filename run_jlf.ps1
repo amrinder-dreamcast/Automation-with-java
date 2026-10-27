@@ -35,39 +35,58 @@ $env:JAVA_HOME = "C:\Program Files\Java\jdk-25"
 $env:PATH = "$mavenHome\bin;" + $env:PATH
 
 # Navigate to jlf project directory
-cd "C:\Users\Amrinder Singh\Desktop\EclipseFolder\jlf"
+$projectDir = "C:\Users\Amrinder Singh\Desktop\EclipseFolder\jlf"
+Set-Location -Path $projectDir
 
-# Compile and Run the Selenium Project
-Add-Content -Path $logFile -Value "Compiling project..."
-& mvn test-compile 2>&1 | Tee-Object -FilePath $logFile -Append
+# Clean up any leftover orphaned chromedriver processes before running
+Get-Process chromedriver -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
 
-# Run FofReg class
-Add-Content -Path $logFile -Value "Running FofReg..."
-& mvn exec:java "-Dexec.classpathScope=test" "-Dexec.mainClass=tktplzstaging.jlf.FofReg" 2>&1 | Tee-Object -FilePath $logFile -Append
+# Ensure we have the latest updated code from origin/jlf
+Add-Content -Path $logFile -Value "Updating repository with latest code from git origin/jlf..."
+try {
+    $currentBranch = (& git rev-parse --abbrev-ref HEAD 2>$null).Trim()
+    if ($currentBranch -eq "jlf") {
+        $gitPullOut = & git pull origin jlf 2>&1 | Out-String
+        Add-Content -Path $logFile -Value $gitPullOut
+    } else {
+        Add-Content -Path $logFile -Value "Current branch is '$currentBranch' (expected 'jlf'). Skipping auto git-pull to avoid conflict."
+    }
+} catch {
+    Add-Content -Path $logFile -Value "Warning: Git pull failed: $_"
+}
 
-# Run fofRegwithhotel class
-Add-Content -Path $logFile -Value "Running fofRegwithhotel (Friend of the Festival with Hotel)..."
-& mvn exec:java "-Dexec.classpathScope=test" "-Dexec.mainClass=tktplzstaging.jlf.fofRegwithhotel" 2>&1 | Tee-Object -FilePath $logFile -Append
+# Compile and update the project classes with the latest code
+Add-Content -Path $logFile -Value "Compiling project with updated code..."
+$compileOutput = & cmd.exe /c "mvn test-compile" 2>&1 | Out-String
+Add-Content -Path $logFile -Value $compileOutput
 
-# Run gr class
-Add-Content -Path $logFile -Value "Running gr (General Registration)..."
-& mvn exec:java "-Dexec.classpathScope=test" "-Dexec.mainClass=tktplzstaging.jlf.gr" 2>&1 | Tee-Object -FilePath $logFile -Append
+# Function to execute each JLF test class in isolation so failure of one does not prevent others from running
+function Invoke-JlfClass {
+    param(
+        [string]$ClassName,
+        [string]$DisplayName
+    )
+    Add-Content -Path $logFile -Value "`n------------------------------------------"
+    Add-Content -Path $logFile -Value "Running $DisplayName ($ClassName)... [$(Get-Date -Format 'HH:mm:ss')]"
+    try {
+        $runOutput = & cmd.exe /c "mvn exec:java -Dexec.classpathScope=test -Dexec.mainClass=$ClassName" 2>&1 | Out-String
+        Add-Content -Path $logFile -Value $runOutput
+        Add-Content -Path $logFile -Value "Finished $DisplayName at $(Get-Date -Format 'HH:mm:ss') (Exit Code: $LASTEXITCODE)."
+    } catch {
+        Add-Content -Path $logFile -Value "ERROR during $DisplayName : $_"
+    }
+    # Clean up any orphaned chromedriver between test classes
+    Get-Process chromedriver -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+}
 
-# Run grwithhotel class
-Add-Content -Path $logFile -Value "Running grwithhotel (General Registration with Hotel)..."
-& mvn exec:java "-Dexec.classpathScope=test" "-Dexec.mainClass=tktplzstaging.jlf.grwithhotel" 2>&1 | Tee-Object -FilePath $logFile -Append
-
-# Run bookfestivehotel class
-Add-Content -Path $logFile -Value "Running bookfestivehotel (Book Festival Hotel Only)..."
-& mvn exec:java "-Dexec.classpathScope=test" "-Dexec.mainClass=tktplzstaging.jlf.bookfestivehotel" 2>&1 | Tee-Object -FilePath $logFile -Append
-
-# Run bookfestivehotelwithfof class
-Add-Content -Path $logFile -Value "Running bookfestivehotelwithfof (Book Festival Hotel with FOF Ticket)..."
-& mvn exec:java "-Dexec.classpathScope=test" "-Dexec.mainClass=tktplzstaging.jlf.bookfestivehotelwithfof" 2>&1 | Tee-Object -FilePath $logFile -Append
-
-# Run sr class
-Add-Content -Path $logFile -Value "Running sr (Student Registration)..."
-& mvn exec:java "-Dexec.classpathScope=test" "-Dexec.mainClass=tktplzstaging.jlf.sr" 2>&1 | Tee-Object -FilePath $logFile -Append
+# Only run JLF .java test classes
+Invoke-JlfClass -ClassName "tktplzstaging.jlf.FofReg" -DisplayName "FofReg"
+Invoke-JlfClass -ClassName "tktplzstaging.jlf.fofRegwithhotel" -DisplayName "fofRegwithhotel (Friend of the Festival with Hotel)"
+Invoke-JlfClass -ClassName "tktplzstaging.jlf.gr" -DisplayName "gr (General Registration)"
+Invoke-JlfClass -ClassName "tktplzstaging.jlf.grwithhotel" -DisplayName "grwithhotel (General Registration with Hotel)"
+Invoke-JlfClass -ClassName "tktplzstaging.jlf.bookfestivehotel" -DisplayName "bookfestivehotel (Book Festival Hotel Only)"
+Invoke-JlfClass -ClassName "tktplzstaging.jlf.bookfestivehotelwithfof" -DisplayName "bookfestivehotelwithfof (Book Festival Hotel with FOF Ticket)"
+Invoke-JlfClass -ClassName "tktplzstaging.jlf.sr" -DisplayName "sr (Student Registration)"
 
 Add-Content -Path $logFile -Value "Execution finished at: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
 Add-Content -Path $logFile -Value "=========================================="
