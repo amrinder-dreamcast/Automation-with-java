@@ -351,5 +351,25 @@ describe('@testpilot/web Service Suite', () => {
     assert.ok(!result.isError);
     assert.ok(result.content[0].text.includes('COMPLIANT'));
   });
+
+  it('deletes a specific URL and clears all data cleanly', async () => {
+    // 1. Delete single URL
+    const delRes = await fetch(`${BASE}/api/urls?url=http://localhost:4000`, {
+      method: 'DELETE',
+    });
+    assert.strictEqual(delRes.status, 200);
+    const delData = await delRes.json();
+    assert.strictEqual(delData.success, true);
+    assert.ok(delData.details);
+
+    // 2. Clear all test data
+    const resetRes = await fetch(`${BASE}/api/reset`, {
+      method: 'POST',
+    });
+    assert.strictEqual(resetRes.status, 200);
+    const resetData = await resetRes.json();
+    assert.strictEqual(resetData.success, true);
+  });
 });
+
 

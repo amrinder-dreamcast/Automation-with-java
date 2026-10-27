@@ -42,7 +42,7 @@ class DefectClassifier {
     /**
      * Triages a failed functional test execution.
      */
-    classifyFunctionalFailure(execution, reproducible = true) {
+    classifyFunctionalFailure(execution, reproducible = true, targetUrlFallback) {
         const failedStep = execution.stepResults.find((s) => s.status === 'FAILED') || execution.stepResults[execution.stepResults.length - 1];
         const isAuth = execution.testCaseTitle.toLowerCase().includes('auth') || execution.testCaseTitle.toLowerCase().includes('login');
         const is500Error = execution.networkFailures.some((n) => n.status >= 500) || (failedStep?.actualResult || '').includes('500');
@@ -74,6 +74,14 @@ class DefectClassifier {
             execution.networkFailures.length > 0 ? `4. Network request failed: ${execution.networkFailures.map((n) => `${n.method} ${n.url} (${n.status})`).join(', ')}` : '',
         ].filter(Boolean).join('\n');
         const reproductionSteps = execution.stepResults.map((s) => `Step ${s.stepNumber}: ${s.action} - ${s.actualResult}`);
+        const navStepUrl = execution.stepResults
+            ?.find((s) => s.action === 'NAVIGATE' && s.actualResult)
+            ?.actualResult?.match(/https?:\/\/[^\s"'<>)]+/)?.[0];
+        const affectedUrl = execution.targetUrl ||
+            targetUrlFallback ||
+            navStepUrl ||
+            execution.networkFailures[0]?.url ||
+            'Target page';
         return {
             id: `def-${Math.random().toString(36).substring(2, 10)}`,
             testRunId: execution.testRunId,
@@ -83,7 +91,7 @@ class DefectClassifier {
             severity,
             classification,
             confidenceScore,
-            affectedUrl: execution.networkFailures[0]?.url || 'Target page',
+            affectedUrl,
             browser: 'Chromium',
             reproductionStatus: reproducible ? 'REPRODUCIBLE' : 'INTERMITTENT',
             reproductionSteps,

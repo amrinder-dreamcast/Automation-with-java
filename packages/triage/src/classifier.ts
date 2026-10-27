@@ -20,7 +20,8 @@ export class DefectClassifier {
    */
   public classifyFunctionalFailure(
     execution: TestExecution,
-    reproducible = true
+    reproducible = true,
+    targetUrlFallback?: string
   ): Defect {
     const failedStep = execution.stepResults.find((s) => s.status === 'FAILED') || execution.stepResults[execution.stepResults.length - 1];
     const isAuth = execution.testCaseTitle.toLowerCase().includes('auth') || execution.testCaseTitle.toLowerCase().includes('login');
@@ -61,6 +62,17 @@ export class DefectClassifier {
       (s) => `Step ${s.stepNumber}: ${s.action} - ${s.actualResult}`
     );
 
+    const navStepUrl = execution.stepResults
+      ?.find((s) => s.action === 'NAVIGATE' && s.actualResult)
+      ?.actualResult?.match(/https?:\/\/[^\s"'<>)]+/)?.[0];
+
+    const affectedUrl =
+      execution.targetUrl ||
+      targetUrlFallback ||
+      navStepUrl ||
+      execution.networkFailures[0]?.url ||
+      'Target page';
+
     return {
       id: `def-${Math.random().toString(36).substring(2, 10)}`,
       testRunId: execution.testRunId,
@@ -70,7 +82,7 @@ export class DefectClassifier {
       severity,
       classification,
       confidenceScore,
-      affectedUrl: execution.networkFailures[0]?.url || 'Target page',
+      affectedUrl,
       browser: 'Chromium',
       reproductionStatus: reproducible ? 'REPRODUCIBLE' : 'INTERMITTENT',
       reproductionSteps,

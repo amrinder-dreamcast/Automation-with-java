@@ -121,6 +121,7 @@ export interface TestExecution {
     }>;
     tracePath?: string;
     screenshotPath?: string;
+    targetUrl?: string;
 }
 export interface DefectEvidence {
     id: string;

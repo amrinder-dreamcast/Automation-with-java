@@ -836,11 +836,30 @@ document.addEventListener('DOMContentLoaded', () => {
         ? 'P3 Medium'
         : 'P4 Low';
 
-    const targetUrl =
+    // Resolve associated test run and target base URL
+    const associatedRun = allRuns.find((r) => r.id === defect.testRunId);
+    const runTargetUrl = associatedRun?.primaryUrl || (associatedRun && associatedRun.scope && associatedRun.scope.primaryUrl);
+    const projectTargetUrl = currentProject?.primaryUrl;
+    const activeTarget = getActiveTargetUrl();
+    const baseTargetUrl =
+      (runTargetUrl && runTargetUrl.startsWith('http') ? runTargetUrl : null) ||
+      (projectTargetUrl && projectTargetUrl.startsWith('http') ? projectTargetUrl : null) ||
+      (activeTarget && activeTarget.startsWith('http') ? activeTarget : null) ||
+      'http://localhost:4000';
+
+    const rawTargetUrl =
       defect.affectedUrl ||
       defect.route ||
       defect.url ||
       (defect.context && (defect.context.url || defect.context.route));
+
+    const isPlaceholderUrl =
+      !rawTargetUrl ||
+      rawTargetUrl.trim().toLowerCase() === 'target page' ||
+      rawTargetUrl.trim().toLowerCase() === 'target' ||
+      rawTargetUrl.trim().toLowerCase() === 'n/a';
+
+    const targetUrl = isPlaceholderUrl ? null : rawTargetUrl;
 
     let desc = defect.description;
     if (!desc && defect.summary) {
@@ -911,7 +930,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const rawReproList = Array.isArray(defect.reproductionSteps) && defect.reproductionSteps.length > 0
       ? defect.reproductionSteps
       : [
-          `1. Navigate to ${targetUrl || 'the target endpoint'} in a clean browser session.`,
+          `1. Navigate to ${targetUrl || baseTargetUrl || 'the target endpoint'} in a clean browser session.`,
           `2. Inspect UI controls and network response headers.`,
           `3. Observe failure or assertion mismatch: ${defect.title}`,
         ];
@@ -1022,19 +1041,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let primaryTargetUrl = targetUrl;
     const isTrackingOrCollect = targetUrl && /google\.com\/ccm|google-analytics|doubleclick|googletagmanager|analytics|collector/i.test(targetUrl);
-    if ((isTrackingOrCollect || !primaryTargetUrl) && navStepUrl) {
-      primaryTargetUrl = navStepUrl;
-    } else if ((isTrackingOrCollect || !primaryTargetUrl) && defect.route) {
-      primaryTargetUrl = defect.route;
+    if (isTrackingOrCollect || !primaryTargetUrl) {
+      if (navStepUrl) {
+        primaryTargetUrl = navStepUrl;
+      } else if (defect.route) {
+        primaryTargetUrl = defect.route;
+      } else {
+        primaryTargetUrl = baseTargetUrl;
+      }
     }
-    if (!primaryTargetUrl) {
-      primaryTargetUrl = navStepUrl || defect.route || 'http://localhost:3000';
-    }
-    if (primaryTargetUrl.startsWith('/')) {
-      const origin = (navStepUrl && navStepUrl.startsWith('http'))
+
+    if (primaryTargetUrl && primaryTargetUrl.startsWith('/')) {
+      const baseOrigin = (navStepUrl && navStepUrl.startsWith('http'))
         ? new URL(navStepUrl).origin
-        : (currentProject?.primaryUrl || window.location.origin);
-      primaryTargetUrl = `${origin}${primaryTargetUrl}`;
+        : (baseTargetUrl.startsWith('http') ? new URL(baseTargetUrl).origin : window.location.origin);
+      primaryTargetUrl = `${baseOrigin.replace(/\/$/, '')}${primaryTargetUrl}`;
+    }
+
+    if (primaryTargetUrl && !primaryTargetUrl.startsWith('http://') && !primaryTargetUrl.startsWith('https://')) {
+      if (primaryTargetUrl.toLowerCase() === 'target page') {
+        primaryTargetUrl = baseTargetUrl;
+      } else {
+        primaryTargetUrl = `http://${primaryTargetUrl}`;
+      }
+    }
+
+    if (!primaryTargetUrl) {
+      primaryTargetUrl = baseTargetUrl;
     }
 
     // Playwright CLI command
@@ -1292,8 +1325,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="defect-meta-item" style="grid-column: 1 / -1;">
             <span class="defect-meta-item-label">Affected Target Endpoint</span>
             <div class="defect-meta-item-val">
-              <a href="${escapeHtml(primaryTargetUrl)}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-                ${escapeHtml(primaryTargetUrl)}
+              <a href="${escapeHtml(primaryTargetUrl)}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;" title="Open target page (${escapeHtml(primaryTargetUrl)})" onclick="window.open(this.href, '_blank'); return false;">
+                <span>${escapeHtml(isPlaceholderUrl ? 'Target page' : primaryTargetUrl)}</span>
+                ${isPlaceholderUrl ? `<span style="opacity: 0.75; font-size: 11.5px; font-weight: normal;">(${escapeHtml(primaryTargetUrl)})</span>` : ''}
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                   <polyline points="15 3 21 3 21 9"></polyline>
@@ -1775,57 +1809,168 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- Reset & Clear All Test Data Handlers ---
-  function openClearModal() {
-    if (modalClearData) modalClearData.classList.remove('hidden');
+  let pendingTargetUrlToDelete = null;
+
+  const btnConfirmClearText = document.getElementById('btn-confirm-clear-text');
+  const modalClearTitle = document.getElementById('modal-clear-title');
+  const modalClearSubtitle = document.getElementById('modal-clear-subtitle');
+  const radioClearAll = document.getElementById('radio-clear-all');
+  const radioClearSingle = document.getElementById('radio-clear-single');
+  const labelScopeAll = document.getElementById('label-scope-all');
+  const labelScopeSingle = document.getElementById('label-scope-single');
+  const modalClearUrlTargetBadge = document.getElementById('modal-clear-url-target-badge');
+
+  const btnClearVaultData = document.getElementById('btn-clear-vault-data');
+  const btnQuickClearVault = document.getElementById('btn-quick-clear-vault');
+  const btnDossierDeleteUrl = document.getElementById('btn-dossier-delete-url');
+  const itemGlobalClearData = document.getElementById('item-global-clear-data');
+
+  function openClearModal(targetUrlToPreselect) {
+    if (!modalClearData) return;
+
+    if (targetUrlToPreselect) {
+      pendingTargetUrlToDelete = targetUrlToPreselect;
+      if (modalClearUrlTargetBadge) modalClearUrlTargetBadge.innerText = targetUrlToPreselect;
+      if (labelScopeSingle) labelScopeSingle.style.display = 'flex';
+      if (radioClearSingle) radioClearSingle.checked = true;
+      labelScopeSingle?.classList.add('active');
+      labelScopeAll?.classList.remove('active');
+      if (btnConfirmClearText) btnConfirmClearText.innerText = 'Delete This URL';
+      if (modalClearTitle) modalClearTitle.innerText = 'Delete Tested URL';
+      if (modalClearSubtitle) modalClearSubtitle.innerText = `Remove ${targetUrlToPreselect} and its findings from the vault`;
+    } else {
+      pendingTargetUrlToDelete = selectedTargetUrl || (currentProject?.primaryUrl) || null;
+      if (pendingTargetUrlToDelete) {
+        if (modalClearUrlTargetBadge) modalClearUrlTargetBadge.innerText = pendingTargetUrlToDelete;
+        if (labelScopeSingle) labelScopeSingle.style.display = 'flex';
+      } else {
+        if (labelScopeSingle) labelScopeSingle.style.display = 'none';
+      }
+      if (radioClearAll) radioClearAll.checked = true;
+      labelScopeAll?.classList.add('active');
+      labelScopeSingle?.classList.remove('active');
+      if (btnConfirmClearText) btnConfirmClearText.innerText = 'Yes, Reset All Data';
+      if (modalClearTitle) modalClearTitle.innerText = 'Clear Tested Data & Vault';
+      if (modalClearSubtitle) modalClearSubtitle.innerText = 'Permanently delete historical tests, crawl records, or specific URLs';
+    }
+
+    modalClearData.classList.remove('hidden');
   }
 
   function closeClearModal() {
     if (modalClearData) modalClearData.classList.add('hidden');
   }
 
-  btnClearAllData?.addEventListener('click', openClearModal);
+  labelScopeAll?.addEventListener('click', () => {
+    if (radioClearAll) radioClearAll.checked = true;
+    labelScopeAll.classList.add('active');
+    labelScopeSingle?.classList.remove('active');
+    if (btnConfirmClearText) btnConfirmClearText.innerText = 'Yes, Reset All Data';
+  });
+
+  labelScopeSingle?.addEventListener('click', () => {
+    if (radioClearSingle) radioClearSingle.checked = true;
+    labelScopeSingle.classList.add('active');
+    labelScopeAll?.classList.remove('active');
+    if (btnConfirmClearText) btnConfirmClearText.innerText = 'Delete This URL';
+  });
+
+  btnClearAllData?.addEventListener('click', () => openClearModal());
+  btnClearVaultData?.addEventListener('click', () => openClearModal());
+  btnQuickClearVault?.addEventListener('click', () => openClearModal());
+  btnDossierDeleteUrl?.addEventListener('click', () => openClearModal(selectedTargetUrl));
   btnResetTarget?.addEventListener('click', (e) => {
     e.stopPropagation();
     openClearModal();
   });
+  itemGlobalClearData?.addEventListener('click', () => {
+    const menuUserProfile = document.getElementById('menu-user-profile');
+    if (menuUserProfile) menuUserProfile.classList.add('hidden');
+    openClearModal();
+  });
+
   modalClearCloseBtn?.addEventListener('click', closeClearModal);
   modalClearCancelBtn?.addEventListener('click', closeClearModal);
 
   btnConfirmClearData?.addEventListener('click', async () => {
     btnConfirmClearData.disabled = true;
-    btnConfirmClearData.innerText = 'Resetting platform...';
+    const isSingleDelete = radioClearSingle?.checked && pendingTargetUrlToDelete;
+
     try {
-      const res = await fetch('/api/reset', { method: 'POST' });
-      if (!res.ok) throw new Error('Failed to reset data');
+      if (isSingleDelete) {
+        if (btnConfirmClearText) btnConfirmClearText.innerText = 'Deleting URL...';
+        const res = await fetch(`/api/urls?url=${encodeURIComponent(pendingTargetUrlToDelete)}`, {
+          method: 'DELETE',
+        });
+        if (!res.ok) throw new Error('Failed to delete URL from vault');
 
-      closeClearModal();
-      showToast('All previous test data, defects, and targets cleared! Ready for new URL.');
+        const deletedUrl = pendingTargetUrlToDelete;
+        closeClearModal();
+        showToast(`✓ Removed URL '${deletedUrl}' from vault.`);
 
-      // Reset state and views
-      currentProject = null;
-      allRuns = [];
-      allDefects = [];
-      allAuditLogs = [];
+        // In-memory prune
+        const norm = (u) => (u || '').trim().replace(/\/$/, '').toLowerCase();
+        const targetNorm = norm(deletedUrl);
 
-      updateSidebarTarget(null);
-      loadProjects();
-      loadTestRuns();
-      loadDefects();
-      loadAuditLogs();
-      loadPerformanceData();
-      fetchStatus();
+        allRuns = allRuns.filter((r) => norm(r.primaryUrl || r.scope?.primaryUrl) !== targetNorm);
+        allDefects = allDefects.filter((d) => norm(d.affectedUrl) !== targetNorm);
+        allCrawlSessions = allCrawlSessions.filter((s) => {
+          if (norm(s.primaryUrl || s.startUrl) === targetNorm) return false;
+          if (s.pages) {
+            s.pages = s.pages.filter((p) => norm(p.url) !== targetNorm);
+          }
+          return true;
+        });
+
+        if (selectedTargetUrl && norm(selectedTargetUrl) === targetNorm) {
+          selectedTargetUrl = null;
+        }
+
+        if (currentProject && norm(currentProject.primaryUrl) === targetNorm) {
+          currentProject = null;
+          updateSidebarTarget(null);
+        }
+
+        await loadProjects();
+        await loadTestRuns();
+        await loadDefects();
+        await loadCrawlSessions();
+        fetchStatus();
+        renderTestedUrlsHistory();
+      } else {
+        if (btnConfirmClearText) btnConfirmClearText.innerText = 'Resetting platform...';
+        const res = await fetch('/api/reset', { method: 'POST' });
+        if (!res.ok) throw new Error('Failed to reset data');
+
+        closeClearModal();
+        showToast('✓ All previous test data, defects, and targets cleared! Ready for new URL.');
+
+        // Reset state and views
+        currentProject = null;
+        allRuns = [];
+        allDefects = [];
+        allAuditLogs = [];
+        allCrawlSessions = [];
+        selectedTargetUrl = null;
+
+        updateSidebarTarget(null);
+        await loadProjects();
+        await loadTestRuns();
+        await loadDefects();
+        await loadAuditLogs();
+        await loadCrawlSessions();
+        await loadPerformanceData();
+        fetchStatus();
+        renderTestedUrlsHistory();
+      }
     } catch (err) {
       console.error('Error clearing data:', err);
       showToast(err.message || 'Error clearing data', 'danger');
     } finally {
       btnConfirmClearData.disabled = false;
-      btnConfirmClearData.innerHTML = `
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="3 6 5 6 21 6"></polyline>
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-        </svg>
-        Yes, Reset All Data
-      `;
+      if (btnConfirmClearText) {
+        btnConfirmClearText.innerText = isSingleDelete ? 'Delete This URL' : 'Yes, Reset All Data';
+      }
     }
   });
 
@@ -2073,7 +2218,15 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="url-card ${isActive ? 'active-card' : ''}" data-url="${escapeHtml(it.url)}">
             <div class="url-card-header">
               <span class="url-card-name">${escapeHtml(it.url)}</span>
-              ${typeBadge}
+              <div style="display:inline-flex; align-items:center; gap:4px; margin-left:auto;">
+                ${typeBadge}
+                <button class="btn-card-delete" title="Delete this URL from vault" data-delete-url="${escapeHtml(it.url)}" type="button">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
             </div>
             <div class="url-card-meta">
               ${healthBadge}
@@ -2093,6 +2246,15 @@ document.addEventListener('DOMContentLoaded', () => {
       card.addEventListener('click', () => {
         const url = card.getAttribute('data-url');
         selectUrlDossier(url);
+      });
+    });
+
+    // Attach delete button click events on cards
+    container.querySelectorAll('.btn-card-delete').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const url = btn.getAttribute('data-delete-url');
+        if (url) openClearModal(url);
       });
     });
 
@@ -2186,6 +2348,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const inputUrl = document.getElementById('input-target-url');
         if (inputUrl) inputUrl.value = item.url;
         modalNewRun.classList.remove('hidden');
+      };
+    }
+
+    const dossierDeleteBtn = document.getElementById('btn-dossier-delete-url');
+    if (dossierDeleteBtn) {
+      dossierDeleteBtn.onclick = () => {
+        openClearModal(item.url);
       };
     }
 

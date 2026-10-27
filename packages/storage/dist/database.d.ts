@@ -27,6 +27,14 @@ export declare class TestPilotDatabase {
      * Resets all stored data: projects, test runs, defects, crawl sessions, and audit logs.
      */
     resetAllData(): Promise<void>;
+    /**
+     * Deletes a specific URL and all its associated findings, crawl pages, test runs, and defects.
+     */
+    deleteUrlData(targetUrl: string): Promise<{
+        deletedRuns: number;
+        deletedDefects: number;
+        deletedPages: number;
+    }>;
     getCrawlSessions(projectId?: string): Promise<CrawlSession[]>;
     saveCrawlSession(session: CrawlSession): Promise<CrawlSession>;
     private persist;

@@ -3881,3 +3881,86 @@ body {
     padding-bottom: 4px;
   }
 }
+
+/* Clear Data Modal Scope Cards */
+.clear-scope-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 14px 0 16px 0;
+}
+
+.clear-scope-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-scope-card input[type="radio"] {
+  accent-color: var(--accent-rose);
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.clear-scope-card:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-surface-hover);
+}
+
+.clear-scope-card.active {
+  border-color: var(--accent-rose);
+  background: rgba(244, 63, 94, 0.08);
+  box-shadow: 0 0 0 1px var(--accent-rose), 0 2px 10px rgba(244, 63, 94, 0.12);
+}
+
+[data-theme="light"] .clear-scope-card.active {
+  background: #fff1f2;
+  border-color: #f43f5e;
+}
+
+.clear-scope-title {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.clear-scope-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.btn-card-delete {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: all 0.2s ease;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+
+.btn-card-delete:hover {
+  background: rgba(244, 63, 94, 0.15);
+  color: var(--accent-rose);
+  opacity: 1;
+}

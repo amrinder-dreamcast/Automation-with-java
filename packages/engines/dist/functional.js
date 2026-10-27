@@ -170,6 +170,7 @@ class FunctionalEngine {
             consoleLogs,
             networkFailures,
             screenshotPath: failureScreenshotPath,
+            targetUrl: testCase.targetUrl || (page && page.url() !== 'about:blank' ? page.url() : undefined),
         };
     }
 }

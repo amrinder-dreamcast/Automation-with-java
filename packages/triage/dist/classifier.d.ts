@@ -4,7 +4,7 @@ export declare class DefectClassifier {
     /**
      * Triages a failed functional test execution.
      */
-    classifyFunctionalFailure(execution: TestExecution, reproducible?: boolean): Defect;
+    classifyFunctionalFailure(execution: TestExecution, reproducible?: boolean, targetUrlFallback?: string): Defect;
     /**
      * Triages an accessibility violation.
      */

@@ -324,6 +324,16 @@ async function startServer(customPort) {
         if (pathname === '/api/test-runs' && method === 'GET') {
             const projectId = parsedUrl.searchParams.get('projectId') || undefined;
             const runs = await db.getTestRuns(projectId);
+            runs.forEach((r) => {
+                const prim = r.primaryUrl || r.scope?.primaryUrl;
+                if (r.defects && prim) {
+                    r.defects.forEach((d) => {
+                        if (!d.affectedUrl || d.affectedUrl === 'Target page') {
+                            d.affectedUrl = prim;
+                        }
+                    });
+                }
+            });
             return sendJson(200, runs);
         }
         // 4. Test Run Detail
@@ -332,6 +342,14 @@ async function startServer(customPort) {
             const run = await db.getTestRunById(id);
             if (!run)
                 return sendJson(404, { error: 'Test run not found' });
+            const prim = run.primaryUrl || run.scope?.primaryUrl;
+            if (run.defects && prim) {
+                run.defects.forEach((d) => {
+                    if (!d.affectedUrl || d.affectedUrl === 'Target page') {
+                        d.affectedUrl = prim;
+                    }
+                });
+            }
             return sendJson(200, run);
         }
         // 5. Start Test Run
@@ -419,6 +437,13 @@ async function startServer(customPort) {
         if (pathname === '/api/defects' && method === 'GET') {
             const testRunId = parsedUrl.searchParams.get('testRunId') || undefined;
             const defects = await db.getDefects(testRunId);
+            const runs = await db.getTestRuns();
+            const runMap = new Map(runs.map((r) => [r.id, r.primaryUrl || r.scope?.primaryUrl]));
+            defects.forEach((d) => {
+                if ((!d.affectedUrl || d.affectedUrl === 'Target page') && d.testRunId && runMap.get(d.testRunId)) {
+                    d.affectedUrl = runMap.get(d.testRunId);
+                }
+            });
             return sendJson(200, defects);
         }
         if (pathname.startsWith('/api/defects/') && method === 'PATCH') {
@@ -734,12 +759,26 @@ async function startServer(customPort) {
             return sendJson(200, { count: items.length, items });
         }
         // 10. Reset & Clear All Test Data (for testing multiple URLs cleanly)
-        if ((pathname === '/api/reset' || pathname === '/api/clear') && method === 'POST') {
+        if ((pathname === '/api/reset' || pathname === '/api/clear') && (method === 'POST' || method === 'DELETE')) {
             await db.resetAllData();
             await vault.clearAll();
             return sendJson(200, {
                 success: true,
                 message: 'All test runs, defects, projects, and artifacts have been completely cleared and reset.',
+            });
+        }
+        // 10b. Delete Specific Tested URL Data
+        if ((pathname === '/api/urls' || pathname === '/api/urls/delete') && (method === 'DELETE' || method === 'POST')) {
+            const body = method === 'POST' ? await getBody() : {};
+            const targetUrl = parsedUrl.searchParams.get('url') || body.url;
+            if (!targetUrl) {
+                return sendJson(400, { error: 'Target URL is required for deletion' });
+            }
+            const result = await db.deleteUrlData(targetUrl);
+            return sendJson(200, {
+                success: true,
+                message: `URL '${targetUrl}' and associated data have been removed from the vault.`,
+                details: result,
             });
         }
         // 11. Design vs Code Comparison Routes (AI / Figma files & URLs)

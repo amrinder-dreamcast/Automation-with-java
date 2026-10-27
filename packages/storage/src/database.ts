@@ -1,4 +1,5 @@
 import * as fs from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import * as path from 'node:path';
 import { Project, TestRun, Defect, CrawlSession, DesignComparisonResult } from '@testpilot/core';
 
@@ -27,7 +28,26 @@ export class TestPilotDatabase {
   private writeLock: Promise<void> = Promise.resolve();
 
   constructor(filePath?: string) {
-    this.filePath = filePath || process.env.TESTPILOT_DB_PATH || path.resolve(process.cwd(), 'data', 'testpilot-db.json');
+    if (filePath) {
+      this.filePath = filePath;
+    } else if (process.env.TESTPILOT_DB_PATH) {
+      this.filePath = process.env.TESTPILOT_DB_PATH;
+    } else {
+      // Intelligently find existing database in current or parent repo directory
+      const cwdCandidate = path.resolve(process.cwd(), 'data', 'testpilot-db.json');
+      const parentCandidate = path.resolve(process.cwd(), '..', '..', 'data', 'testpilot-db.json');
+      const singleParentCandidate = path.resolve(process.cwd(), '..', 'data', 'testpilot-db.json');
+
+      if (existsSync(cwdCandidate)) {
+        this.filePath = cwdCandidate;
+      } else if (existsSync(parentCandidate)) {
+        this.filePath = parentCandidate;
+      } else if (existsSync(singleParentCandidate)) {
+        this.filePath = singleParentCandidate;
+      } else {
+        this.filePath = cwdCandidate;
+      }
+    }
   }
 
   private async ensureLoaded(): Promise<DatabaseState> {
@@ -62,6 +82,91 @@ export class TestPilotDatabase {
   public async resetAllData(): Promise<void> {
     this.state = this.getInitialSeedState();
     await this.persist();
+
+    // Synchronize and clean other possible database file paths
+    const alternatePaths = [
+      path.resolve(process.cwd(), 'data', 'testpilot-db.json'),
+      path.resolve(process.cwd(), '..', '..', 'data', 'testpilot-db.json'),
+      path.resolve(process.cwd(), 'packages', 'web', 'data', 'testpilot-db.json'),
+    ];
+    for (const altPath of alternatePaths) {
+      if (altPath !== this.filePath && existsSync(altPath)) {
+        try {
+          await fs.writeFile(altPath, JSON.stringify(this.getInitialSeedState(), null, 2), 'utf-8');
+        } catch {
+          // ignore cleanup errors on secondary paths
+        }
+      }
+    }
+  }
+
+  /**
+   * Deletes a specific URL and all its associated findings, crawl pages, test runs, and defects.
+   */
+  public async deleteUrlData(targetUrl: string): Promise<{ deletedRuns: number; deletedDefects: number; deletedPages: number }> {
+    const state = await this.ensureLoaded();
+    const norm = (u?: string) => (u || '').trim().replace(/\/$/, '').toLowerCase();
+    const targetNorm = norm(targetUrl);
+    if (!targetNorm) return { deletedRuns: 0, deletedDefects: 0, deletedPages: 0 };
+
+    let deletedRuns = 0;
+    let deletedDefects = 0;
+    let deletedPages = 0;
+
+    // 1. Identify and remove matching test runs
+    const removedRunIds = new Set<string>();
+    state.testRuns = state.testRuns.filter((run) => {
+      const prim = norm(run.primaryUrl || (run as any).scope?.primaryUrl);
+      if (prim === targetNorm) {
+        removedRunIds.add(run.id);
+        deletedRuns++;
+        return false;
+      }
+      return true;
+    });
+
+    // 2. Remove matching defects
+    state.defects = state.defects.filter((d) => {
+      const aff = norm(d.affectedUrl);
+      if (aff === targetNorm || (d.testRunId && removedRunIds.has(d.testRunId))) {
+        deletedDefects++;
+        return false;
+      }
+      return true;
+    });
+
+    // 3. Remove from crawl sessions
+    state.crawlSessions = state.crawlSessions.filter((session) => {
+      const sessionPrim = norm((session as any).primaryUrl || (session as any).startUrl);
+      if (sessionPrim === targetNorm) {
+        deletedPages += (session.pages || []).length;
+        return false;
+      }
+      // If target matches a subpage inside this session
+      const originalPageCount = (session.pages || []).length;
+      session.pages = (session.pages || []).filter((p) => norm(p.url) !== targetNorm);
+      deletedPages += originalPageCount - session.pages.length;
+      return true;
+    });
+
+    // 4. Remove project if primaryUrl matches
+    state.projects = state.projects.filter((proj) => norm(proj.primaryUrl) !== targetNorm);
+
+    // 5. Add audit log
+    state.auditLogs.unshift({
+      id: `audit-${Math.random().toString(36).substring(2, 9)}`,
+      timestamp: new Date().toISOString(),
+      action: 'URL_DATA_DELETED',
+      entityType: 'SYSTEM',
+      entityId: targetUrl,
+      details: `Purged URL ${targetUrl} (${deletedRuns} runs, ${deletedDefects} defects, ${deletedPages} pages removed)`,
+    });
+    if (state.auditLogs.length > 200) {
+      state.auditLogs = state.auditLogs.slice(0, 200);
+    }
+
+    await this.persist();
+    return { deletedRuns, deletedDefects, deletedPages };
   }
 
   // --- Crawl Session Operations ---

@@ -135,6 +135,7 @@ export interface TestExecution {
   networkFailures: Array<{ url: string; method: string; status: number; errorText?: string }>;
   tracePath?: string;
   screenshotPath?: string;
+  targetUrl?: string;
 }
 
 export interface DefectEvidence {
