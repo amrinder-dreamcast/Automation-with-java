@@ -1,9 +1,255 @@
 {
   "version": 1,
-  "projects": [],
-  "testRuns": [],
-  "defects": [],
-  "crawlSessions": [],
-  "auditLogs": [],
+  "projects": [
+    {
+      "id": "proj-1793345041002",
+      "name": "librechat-stag.webcontxt.co.in Suite",
+      "description": "Automated test project targeting https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456",
+      "primaryUrl": "https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456",
+      "createdAt": "2026-10-30T07:24:01.002Z",
+      "updatedAt": "2026-10-30T07:24:01.002Z",
+      "scope": {
+        "id": "scope-proj-1793345041002",
+        "projectId": "proj-1793345041002",
+        "primaryUrl": "https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456",
+        "allowedDomains": [
+          "librechat-stag.webcontxt.co.in",
+          "librechat-stag.webcontxt.co.in"
+        ],
+        "allowSubdomains": true,
+        "allowExternalLinks": false,
+        "maxCrawlDepth": 3,
+        "maxPages": 20,
+        "crawlTimeoutMs": 30000,
+        "allowLocalTargets": false
+      }
+    }
+  ],
+  "testRuns": [
+    {
+      "id": "run-1793345041035-x0ujv",
+      "projectId": "proj-1793345041002",
+      "status": "COMPLETED",
+      "primaryUrl": "https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456",
+      "startedAt": "2026-10-30T07:24:01.038Z",
+      "progressPercent": 100,
+      "currentPhase": "TRIAGING_FINALIZATION",
+      "stats": {
+        "totalTests": 0,
+        "passed": 0,
+        "failed": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "defectsCount": 2,
+        "pagesCrawled": 1
+      },
+      "defects": [
+        {
+          "id": "def-rpktvky0",
+          "testRunId": "run-1793345041035-x0ujv",
+          "title": "[Security] Missing Content Security Policy (CSP)",
+          "summary": "No Content-Security-Policy header is present. Without a CSP, the browser will execute any injected scripts, making the site highly vulnerable to Cross-Site Scripting (XSS) attacks.",
+          "category": "SECURITY",
+          "severity": "P2",
+          "classification": "CONFIRMED",
+          "confidenceScore": 0.99,
+          "affectedUrl": "https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456",
+          "browser": "Chromium",
+          "reproductionStatus": "REPRODUCIBLE",
+          "reproductionSteps": [
+            "1. Request https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456 via HTTP client.",
+            "2. Inspect response headers and payload.",
+            "3. Verify evidence: Header \"content-security-policy\" absent from all response headers."
+          ],
+          "expectedBehavior": "HTTP headers and cookies should adhere to security hardening best practices.",
+          "actualBehavior": "Header \"content-security-policy\" absent from all response headers.",
+          "rootCauseAnalysis": "No Content-Security-Policy header is present. Without a CSP, the browser will execute any injected scripts, making the site highly vulnerable to Cross-Site Scripting (XSS) attacks.",
+          "likelyCauseExplanation": "Web server or reverse proxy is configured with missing security headers or unflagged session cookies.",
+          "suggestedFix": "Implement a strict CSP: default-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none';",
+          "fingerprint": "0d9faab505cb4a64",
+          "evidence": [],
+          "firstSeenAt": "2026-10-30T07:24:17.934Z",
+          "lastSeenAt": "2026-10-30T07:24:17.934Z",
+          "status": "OPEN"
+        },
+        {
+          "id": "def-z4kn50t0",
+          "testRunId": "run-1793345041035-x0ujv",
+          "title": "[Security] Missing Permissions-Policy Header",
+          "summary": "No Permissions-Policy header is set. This grants third-party embedded content unrestricted access to browser APIs like camera, microphone, geolocation, and USB.",
+          "category": "SECURITY",
+          "severity": "P4",
+          "classification": "CONFIRMED",
+          "confidenceScore": 0.99,
+          "affectedUrl": "https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456",
+          "browser": "Chromium",
+          "reproductionStatus": "REPRODUCIBLE",
+          "reproductionSteps": [
+            "1. Request https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456 via HTTP client.",
+            "2. Inspect response headers and payload.",
+            "3. Verify evidence: Header \"permissions-policy\" not present."
+          ],
+          "expectedBehavior": "HTTP headers and cookies should adhere to security hardening best practices.",
+          "actualBehavior": "Header \"permissions-policy\" not present.",
+          "rootCauseAnalysis": "No Permissions-Policy header is set. This grants third-party embedded content unrestricted access to browser APIs like camera, microphone, geolocation, and USB.",
+          "likelyCauseExplanation": "Web server or reverse proxy is configured with missing security headers or unflagged session cookies.",
+          "suggestedFix": "Add: Permissions-Policy: geolocation=(), camera=(), microphone=(), usb=()",
+          "fingerprint": "d0f35c371f319124",
+          "evidence": [],
+          "firstSeenAt": "2026-10-30T07:24:17.938Z",
+          "lastSeenAt": "2026-10-30T07:24:17.938Z",
+          "status": "OPEN"
+        }
+      ],
+      "executions": [],
+      "accessibilityViolations": [],
+      "securityFindings": [
+        {
+          "type": "MISSING_CSP",
+          "severity": "P2",
+          "title": "Missing Content Security Policy (CSP)",
+          "description": "No Content-Security-Policy header is present. Without a CSP, the browser will execute any injected scripts, making the site highly vulnerable to Cross-Site Scripting (XSS) attacks.",
+          "evidence": "Header \"content-security-policy\" absent from all response headers.",
+          "recommendation": "Implement a strict CSP: default-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none';"
+        },
+        {
+          "type": "SENSITIVE_DATA_EXPOSURE",
+          "severity": "P4",
+          "title": "Missing Permissions-Policy Header",
+          "description": "No Permissions-Policy header is set. This grants third-party embedded content unrestricted access to browser APIs like camera, microphone, geolocation, and USB.",
+          "evidence": "Header \"permissions-policy\" not present.",
+          "recommendation": "Add: Permissions-Policy: geolocation=(), camera=(), microphone=(), usb=()"
+        }
+      ],
+      "performanceMetrics": [],
+      "visualResults": [
+        {
+          "pageName": "page-0-c-e4e440c6-f89b-510c-8f71-331ca4ad4456",
+          "pageUrl": "https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456",
+          "capturedAt": "2026-10-30T07:24:30.628Z",
+          "isBaseline": true,
+          "baselinePath": "baselines\\screenshots\\baseline-page-0-c-e4e440c6-f89b-510c-8f71-331ca4ad4456.png",
+          "candidatePath": "/api/artifacts/run-1793345041035-x0ujv/screenshots/candidate-page-0-c-e4e440c6-f89b-510c-8f71-331ca4ad4456-run-1793345041035-x0ujv.png",
+          "diffPixelCount": 0,
+          "totalPixels": 0,
+          "mismatchPercentage": 0,
+          "isMismatch": false,
+          "diffSummary": "New baseline established — no previous reference to compare against."
+        }
+      ],
+      "completedAt": "2026-10-30T07:24:30.660Z"
+    }
+  ],
+  "defects": [
+    {
+      "id": "def-z4kn50t0",
+      "testRunId": "run-1793345041035-x0ujv",
+      "title": "[Security] Missing Permissions-Policy Header",
+      "summary": "No Permissions-Policy header is set. This grants third-party embedded content unrestricted access to browser APIs like camera, microphone, geolocation, and USB.",
+      "category": "SECURITY",
+      "severity": "P4",
+      "classification": "CONFIRMED",
+      "confidenceScore": 0.99,
+      "affectedUrl": "https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456",
+      "browser": "Chromium",
+      "reproductionStatus": "REPRODUCIBLE",
+      "reproductionSteps": [
+        "1. Request https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456 via HTTP client.",
+        "2. Inspect response headers and payload.",
+        "3. Verify evidence: Header \"permissions-policy\" not present."
+      ],
+      "expectedBehavior": "HTTP headers and cookies should adhere to security hardening best practices.",
+      "actualBehavior": "Header \"permissions-policy\" not present.",
+      "rootCauseAnalysis": "No Permissions-Policy header is set. This grants third-party embedded content unrestricted access to browser APIs like camera, microphone, geolocation, and USB.",
+      "likelyCauseExplanation": "Web server or reverse proxy is configured with missing security headers or unflagged session cookies.",
+      "suggestedFix": "Add: Permissions-Policy: geolocation=(), camera=(), microphone=(), usb=()",
+      "fingerprint": "d0f35c371f319124",
+      "evidence": [],
+      "firstSeenAt": "2026-10-30T07:24:17.938Z",
+      "lastSeenAt": "2026-10-30T07:24:17.938Z",
+      "status": "OPEN"
+    },
+    {
+      "id": "def-rpktvky0",
+      "testRunId": "run-1793345041035-x0ujv",
+      "title": "[Security] Missing Content Security Policy (CSP)",
+      "summary": "No Content-Security-Policy header is present. Without a CSP, the browser will execute any injected scripts, making the site highly vulnerable to Cross-Site Scripting (XSS) attacks.",
+      "category": "SECURITY",
+      "severity": "P2",
+      "classification": "CONFIRMED",
+      "confidenceScore": 0.99,
+      "affectedUrl": "https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456",
+      "browser": "Chromium",
+      "reproductionStatus": "REPRODUCIBLE",
+      "reproductionSteps": [
+        "1. Request https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456 via HTTP client.",
+        "2. Inspect response headers and payload.",
+        "3. Verify evidence: Header \"content-security-policy\" absent from all response headers."
+      ],
+      "expectedBehavior": "HTTP headers and cookies should adhere to security hardening best practices.",
+      "actualBehavior": "Header \"content-security-policy\" absent from all response headers.",
+      "rootCauseAnalysis": "No Content-Security-Policy header is present. Without a CSP, the browser will execute any injected scripts, making the site highly vulnerable to Cross-Site Scripting (XSS) attacks.",
+      "likelyCauseExplanation": "Web server or reverse proxy is configured with missing security headers or unflagged session cookies.",
+      "suggestedFix": "Implement a strict CSP: default-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none';",
+      "fingerprint": "0d9faab505cb4a64",
+      "evidence": [],
+      "firstSeenAt": "2026-10-30T07:24:17.934Z",
+      "lastSeenAt": "2026-10-30T07:24:17.934Z",
+      "status": "OPEN"
+    }
+  ],
+  "crawlSessions": [
+    {
+      "id": "session-run-1793345041035-x0ujv",
+      "projectId": "proj-1793345041002",
+      "targetUrl": "https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456",
+      "status": "COMPLETED",
+      "startedAt": "2026-10-30T07:24:04.915Z",
+      "pages": [
+        {
+          "url": "https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456",
+          "title": "LibreChat",
+          "depth": 0,
+          "statusCode": 200,
+          "loadTimeMs": 7292,
+          "links": [],
+          "interactiveElements": [],
+          "hasForms": false,
+          "hasAuthTriggers": false,
+          "screenshotUrl": "/api/artifacts/session-run-1793345041035-x0ujv/screenshots/page-1-_c_e4e440c6-f89b-510c-8f71-331ca4ad4456.png",
+          "domHash": "dom_0"
+        }
+      ],
+      "brokenLinks": [],
+      "errors": [],
+      "completedAt": "2026-10-30T07:24:13.633Z"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "audit-ok6ijon",
+      "timestamp": "2026-10-30T07:24:30.667Z",
+      "action": "RUN_COMPLETED",
+      "entityType": "TEST_RUN",
+      "entityId": "run-1793345041035-x0ujv",
+      "details": "Finished: 0 passed, 0 failed, 2 defects across 1 pages."
+    },
+    {
+      "id": "audit-dc7qh1n",
+      "timestamp": "2026-10-30T07:24:01.059Z",
+      "action": "RUN_STARTED",
+      "entityType": "TEST_RUN",
+      "entityId": "run-1793345041035-x0ujv",
+      "details": "Started automated test run for 'librechat-stag.webcontxt.co.in Suite' at https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456"
+    },
+    {
+      "id": "audit-2ji7b9x",
+      "timestamp": "2026-10-30T07:24:01.018Z",
+      "action": "PROJECT_CREATED",
+      "entityType": "PROJECT",
+      "entityId": "proj-1793345041002",
+      "details": "Auto-created project for target https://librechat-stag.webcontxt.co.in/c/e4e440c6-f89b-510c-8f71-331ca4ad4456"
+    }
+  ],
   "designComparisons": []
 }
