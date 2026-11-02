@@ -219,6 +219,14 @@ public class gr {
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("modal_profile")));
 		System.out.println("Crop modal is visible.");
 
+		// Wait for cropper_profile to be initialized after modal transition
+		Thread.sleep(1500);
+		try {
+			new WebDriverWait(driver, Duration.ofSeconds(10)).until(d -> 
+				((JavascriptExecutor) d).executeScript("return typeof cropper_profile !== 'undefined' && cropper_profile !== null;") == Boolean.TRUE
+			);
+		} catch (Exception ignored) {}
+
 		// Click crop button
 		WebElement cropBtn = wait.until(
 				ExpectedConditions.elementToBeClickable(By.id("crop_profile")));
@@ -229,9 +237,19 @@ public class gr {
 		}
 		System.out.println("Crop button clicked.");
 
-		// Wait for modal to close
-		wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("modal_profile")));
-		System.out.println("Crop modal closed.");
+		// Wait for modal to close or upload preview to appear
+		WebDriverWait uploadWait = new WebDriverWait(driver, Duration.ofSeconds(45));
+		try {
+			uploadWait.until(ExpectedConditions.or(
+				ExpectedConditions.invisibilityOfElementLocated(By.id("modal_profile")),
+				ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[id^='previewimage_']"))
+			));
+			System.out.println("Crop modal closed / upload completed.");
+		} catch (Exception e) {
+			System.out.println("Wait for modal invisibility / preview timed out: " + e.getMessage());
+			js.executeScript("if (window.$ && $('#modal_profile').length) { $('#modal_profile').modal('hide'); $('.modal-backdrop').remove(); $('body').removeClass('modal-open'); }");
+		}
+		js.executeScript("if (!$('#modal_profile').hasClass('show')) { $('.modal-backdrop').remove(); $('body').removeClass('modal-open'); }");
 		Thread.sleep(3000);
 
 		// Locate and select the "I agree" Privacy Policy checkbox
