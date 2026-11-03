@@ -695,6 +695,7 @@ public class FofReg {
 		} catch (Exception e) {
 			System.out.println("Failed to take final screenshot: " + e.getMessage());
 		}
+		driver.quit();
 	}
 
 }

@@ -138,6 +138,7 @@ if ($compileFailed) {
 
 # Results Tracker
 $global:TestResults = [System.Collections.Generic.List[PSCustomObject]]::new()
+$global:AlertEmailsSent = 0
 
 # Function to execute each JLF test class in isolation with real-time display,
 # hang/stuck detection, failure extraction, and automatic email alerting.
@@ -222,6 +223,12 @@ function Invoke-JlfClass {
 
                                 # Log to automation log file
                                 try { Add-Content -Path $logFile -Value $line -Encoding utf8 } catch {}
+
+                                # Ignore harmless WebSocket shutdown / CDP disconnection notices
+                                if ($line -match 'connection closed locally' -or $line -match 'Unable to find CDP') {
+                                    Write-Host "  [SHUTDOWN] $line" -ForegroundColor DarkGray
+                                    continue
+                                }
 
                                 # Process line for display and failure signals
                                 if ($line -match 'BUILD FAILURE' -or $line -match 'Exception in thread' -or $line -match '\[ERROR\]') {
@@ -312,7 +319,9 @@ function Invoke-JlfClass {
         if (-not $isStuck) {
             $proc.WaitForExit()
             $exitCode = $proc.ExitCode
-            if ($exitCode -ne 0) {
+            if ($exitCode -eq 0 -and -not ($hasFailure -and ($failureLocation -or ($failureMessage -match 'BUILD FAILURE|Exception in thread')))) {
+                $hasFailure = $false
+            } elseif ($exitCode -ne 0) {
                 $hasFailure = $true
             }
         }
@@ -345,7 +354,7 @@ function Invoke-JlfClass {
         # Trigger automatic Email and Webhook Alert to amrinder@dreamcast.co
         if (Get-Command "Send-JlfAlert" -ErrorAction SilentlyContinue) {
             Write-Host "`n  [ALERT] Triggering alert email to amrinder@dreamcast.co..." -ForegroundColor Magenta
-            Send-JlfAlert `
+            $emailSent = Send-JlfAlert `
                 -TestName $DisplayName `
                 -ClassName $ClassName `
                 -Status $statusLabel `
@@ -355,6 +364,9 @@ function Invoke-JlfClass {
                 -Duration $elapsedFormatted `
                 -LogSnippet $recentLines `
                 -ScreenshotPath (Join-Path $projectDir "passed.png")
+            if ($emailSent) {
+                $global:AlertEmailsSent++
+            }
         }
 
         $global:TestResults.Add([PSCustomObject]@{
@@ -426,7 +438,13 @@ if ($failedCount -gt 0) {
         }
     }
     Write-Log ""
-    Write-Log "Alert email notification dispatched to amrinder@dreamcast.co" "Magenta"
+    if ($global:AlertEmailsSent -gt 0) {
+        Write-Log "Alert email notification successfully dispatched to amrinder@dreamcast.co ($($global:AlertEmailsSent) sent)" "Green"
+    } else {
+        Write-Log "NOTE: Email alert was NOT sent because 'appPassword' is empty in email_config.json." "Yellow"
+        Write-Log "      To receive email alerts at amrinder@dreamcast.co, add your Google App Password to email_config.json." "Yellow"
+        Write-Log "      An alert report was saved locally to: last_failure_alert.html" "DarkCyan"
+    }
 } else {
     Write-Log ""
     Write-Log "ALL 7 TESTS COMPLETED AND PASSED SUCCESSFULLY!" "Green"

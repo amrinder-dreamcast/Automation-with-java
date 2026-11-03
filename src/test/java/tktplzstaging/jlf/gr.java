@@ -469,6 +469,6 @@ public class gr {
 			System.out.println("Failed to take final screenshot: " + e.getMessage());
 		}
 
-	//	driver.quit();
+		driver.quit();
 	}
 }
