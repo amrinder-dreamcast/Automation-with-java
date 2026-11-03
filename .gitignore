@@ -22,3 +22,8 @@ Thumbs.db
 desktop.ini
 *.log
 .playwright-mcp/
+
+# Email alert config and reports
+email_config.json
+*alert*.html
+
