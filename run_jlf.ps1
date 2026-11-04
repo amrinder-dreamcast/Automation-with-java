@@ -393,7 +393,7 @@ function Invoke-JlfClass {
     Get-Process chromedriver -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
 }
 
-# Run all JLF automation test classes
+# Run all JLF and JBM automation test classes
 Invoke-JlfClass -ClassName "tktplzstaging.jlf.FofReg" -DisplayName "FofReg"
 Invoke-JlfClass -ClassName "tktplzstaging.jlf.fofRegwithhotel" -DisplayName "fofRegwithhotel (Friend of the Festival with Hotel)"
 Invoke-JlfClass -ClassName "tktplzstaging.jlf.gr" -DisplayName "gr (General Registration)"
@@ -401,6 +401,7 @@ Invoke-JlfClass -ClassName "tktplzstaging.jlf.grwithhotel" -DisplayName "grwithh
 Invoke-JlfClass -ClassName "tktplzstaging.jlf.bookfestivehotel" -DisplayName "bookfestivehotel (Book Festival Hotel Only)"
 Invoke-JlfClass -ClassName "tktplzstaging.jlf.bookfestivehotelwithfof" -DisplayName "bookfestivehotelwithfof (Book Festival Hotel with FOF Ticket)"
 Invoke-JlfClass -ClassName "tktplzstaging.jlf.sr" -DisplayName "sr (Student Registration)"
+Invoke-JlfClass -ClassName "tktplzstaging.jlf.jbm" -DisplayName "jbm (JBM Delegate Registration)"
 
 # Final Summary Report
 Write-Header "JLF AUTOMATION EXECUTION SUMMARY"
@@ -447,7 +448,7 @@ if ($failedCount -gt 0) {
     }
 } else {
     Write-Log ""
-    Write-Log "ALL 7 TESTS COMPLETED AND PASSED SUCCESSFULLY!" "Green"
+    Write-Log "ALL $totalTests TESTS COMPLETED AND PASSED SUCCESSFULLY!" "Green"
     Write-Log ""
 }
 
