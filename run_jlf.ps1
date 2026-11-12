@@ -402,6 +402,7 @@ Invoke-JlfClass -ClassName "tktplzstaging.jlf.bookfestivehotel" -DisplayName "bo
 Invoke-JlfClass -ClassName "tktplzstaging.jlf.bookfestivehotelwithfof" -DisplayName "bookfestivehotelwithfof (Book Festival Hotel with FOF Ticket)"
 Invoke-JlfClass -ClassName "tktplzstaging.jlf.sr" -DisplayName "sr (Student Registration)"
 Invoke-JlfClass -ClassName "tktplzstaging.jlf.jbm" -DisplayName "jbm (JBM Delegate Registration)"
+Invoke-JlfClass -ClassName "tktplzstaging.jlf.mediaAccreditation" -DisplayName "mediaAccreditation (Media Accreditation)"
 
 # Final Summary Report
 Write-Header "JLF AUTOMATION EXECUTION SUMMARY"
