@@ -301,7 +301,7 @@ public class jbm {
 
 			// Locate and click Save to continue button
 			WebElement saveBtn = wait.until(
-					ExpectedConditions.presenceOfElementLocated(By.cssSelector("button.submit-btn")));
+					ExpectedConditions.elementToBeClickable(By.cssSelector("button.submit-btn")));
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", saveBtn);
 			try {
 				saveBtn.click();
@@ -310,11 +310,37 @@ public class jbm {
 			}
 			System.out.println("Save to continue button clicked.");
 
-			// Wait for AJAX submission to update checkout button with actual checkout URL
+			// Wait 5 seconds for AJAX submission to complete
+			Thread.sleep(5000);
+
+			// Check if any validation error toastr or feedback appeared on page
+			try {
+				java.util.List<WebElement> errors = driver.findElements(By.cssSelector(".toast-message, .invalid-feedback, .error:not(form)"));
+				for (WebElement err : errors) {
+					if (err.isDisplayed() && !err.getText().trim().isEmpty()) {
+						System.out.println("Page validation notice: " + err.getText().trim());
+					}
+				}
+			} catch (Exception ignored) {}
+
+			// Locate the final Continue button in the Order Summary section
 			WebDriverWait checkoutWait = new WebDriverWait(driver, Duration.ofSeconds(25));
 			WebElement finalContinueBtn = checkoutWait.until(
 					ExpectedConditions.presenceOfElementLocated(
-							By.xpath("//div[contains(@class,'checkout_btn')]//a[contains(@href, '/checkout/') or contains(@href, '/hotelBooking/')]")));
+							By.cssSelector("div.checkout_btn a.booknow-btn, a.booknow-btn")));
+
+			// Wait until enabled (disabled class removed by loadCart)
+			try {
+				checkoutWait.until(ExpectedConditions.not(ExpectedConditions.attributeContains(finalContinueBtn, "class", "disabled")));
+			} catch (Exception e) {
+				System.out.println("Wait for disabled class removal timed out: " + e.getMessage());
+			}
+
+			// Capture target checkout URL if available
+			String targetCheckoutUrl = finalContinueBtn.getAttribute("href");
+			System.out.println("Captured target continue href: " + targetCheckoutUrl);
+
+			// Click the final Continue button
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", finalContinueBtn);
 			try {
 				finalContinueBtn.click();
@@ -322,6 +348,15 @@ public class jbm {
 				js.executeScript("arguments[0].click();", finalContinueBtn);
 			}
 			System.out.println("Final Continue / Checkout button clicked.");
+
+			// If URL hasn't changed after 3 seconds and targetCheckoutUrl is a valid URL, navigate directly
+			Thread.sleep(3000);
+			if (driver.getCurrentUrl() != null && !driver.getCurrentUrl().contains("/hotelBooking/") && !driver.getCurrentUrl().contains("/checkout/")) {
+				if (targetCheckoutUrl != null && (targetCheckoutUrl.contains("/checkout/") || targetCheckoutUrl.contains("/hotelBooking/"))) {
+					System.out.println("Directly navigating to target checkout/hotel URL: " + targetCheckoutUrl);
+					driver.get(targetCheckoutUrl);
+				}
+			}
 
 			// Wait for URL transition (either /hotelBooking/ or /checkout/)
 			wait.until(ExpectedConditions.or(

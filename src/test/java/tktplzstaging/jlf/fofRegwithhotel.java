@@ -113,28 +113,16 @@ public class fofRegwithhotel {
 
 			System.out.println("Continue button clicked successfully.");
 
-			// Select 17 Jan and 18 Jan festival dates
-			WebElement checkbox17 = wait2.until(
+			// Select 15 Jan festival date (matching 1 ticket)
+			WebElement checkbox15 = wait2.until(
 					ExpectedConditions.presenceOfElementLocated(
-							By.cssSelector("input.festival_dates[value='17'], input[name*='[festival_dates][]'][value='17']")));
-			js.executeScript("arguments[0].scrollIntoView({block:'center'});", checkbox17);
-			if (!checkbox17.isSelected()) {
-				js.executeScript("arguments[0].click();", checkbox17);
-				System.out.println("17 Jan checkbox selected successfully.");
+							By.cssSelector("input.festival_dates[value='15'], input[name*='[festival_dates][]'][value='15'], input.festival_dates")));
+			js.executeScript("arguments[0].scrollIntoView({block:'center'});", checkbox15);
+			if (!checkbox15.isSelected()) {
+				js.executeScript("arguments[0].click();", checkbox15);
+				System.out.println("15 Jan festival date checkbox selected successfully.");
 			} else {
-				System.out.println("17 Jan checkbox was already selected.");
-			}
-			Thread.sleep(1000);
-
-			WebElement checkbox18 = wait2.until(
-					ExpectedConditions.presenceOfElementLocated(
-							By.cssSelector("input.festival_dates[value='18'], input[name*='[festival_dates][]'][value='18']")));
-			js.executeScript("arguments[0].scrollIntoView({block:'center'});", checkbox18);
-			if (!checkbox18.isSelected()) {
-				js.executeScript("arguments[0].click();", checkbox18);
-				System.out.println("18 Jan checkbox selected successfully.");
-			} else {
-				System.out.println("18 Jan checkbox was already selected.");
+				System.out.println("15 Jan festival date checkbox was already selected.");
 			}
 			Thread.sleep(1000);
 

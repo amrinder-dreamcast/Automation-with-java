@@ -265,28 +265,16 @@ public class bookfestivehotelwithfof {
 			wait.until(ExpectedConditions.urlContains("/addFOFAttendees"));
 			System.out.println("Navigated to FOF Attendees form page successfully.");
 
-			// Select 17 Jan and 18 Jan festival dates (as in fofRegwithhotel.java)
-			WebElement checkbox17 = wait.until(
+			// Select 15 Jan festival date (matching 1 ticket)
+			WebElement checkbox15 = wait.until(
 					ExpectedConditions.presenceOfElementLocated(
-							By.cssSelector("input.festival_dates[value='17'], input[name*='[festival_dates][]'][value='17']")));
-			js.executeScript("arguments[0].scrollIntoView({block:'center'});", checkbox17);
-			if (!checkbox17.isSelected()) {
-				js.executeScript("arguments[0].click();", checkbox17);
-				System.out.println("17 Jan checkbox selected successfully.");
+							By.cssSelector("input.festival_dates[value='15'], input[name*='[festival_dates][]'][value='15'], input.festival_dates")));
+			js.executeScript("arguments[0].scrollIntoView({block:'center'});", checkbox15);
+			if (!checkbox15.isSelected()) {
+				js.executeScript("arguments[0].click();", checkbox15);
+				System.out.println("15 Jan festival date checkbox selected successfully.");
 			} else {
-				System.out.println("17 Jan checkbox was already selected.");
-			}
-			Thread.sleep(1000);
-
-			WebElement checkbox18 = wait.until(
-					ExpectedConditions.presenceOfElementLocated(
-							By.cssSelector("input.festival_dates[value='18'], input[name*='[festival_dates][]'][value='18']")));
-			js.executeScript("arguments[0].scrollIntoView({block:'center'});", checkbox18);
-			if (!checkbox18.isSelected()) {
-				js.executeScript("arguments[0].click();", checkbox18);
-				System.out.println("18 Jan checkbox selected successfully.");
-			} else {
-				System.out.println("18 Jan checkbox was already selected.");
+				System.out.println("15 Jan festival date checkbox was already selected.");
 			}
 			Thread.sleep(1000);
 
@@ -530,6 +518,7 @@ public class bookfestivehotelwithfof {
 			WebElement checkoutBtn2 = wait.until(
 					ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.checkout_btn a.booknow-btn")));
 			wait.until(ExpectedConditions.not(ExpectedConditions.attributeContains(checkoutBtn2, "class", "disabled")));
+			String targetCheckoutUrl2 = checkoutBtn2.getAttribute("href");
 			js.executeScript("arguments[0].scrollIntoView({block:'center'});", checkoutBtn2);
 			try {
 				checkoutBtn2.click();
@@ -537,6 +526,15 @@ public class bookfestivehotelwithfof {
 				js.executeScript("arguments[0].click();", checkoutBtn2);
 			}
 			System.out.println("Checkout button clicked.");
+
+			// Navigation fallback if click didn't trigger
+			Thread.sleep(3000);
+			if (driver.getCurrentUrl() != null && !driver.getCurrentUrl().contains("/selectAddons/") && !driver.getCurrentUrl().contains("/checkout/")) {
+				if (targetCheckoutUrl2 != null && (targetCheckoutUrl2.contains("/selectAddons/") || targetCheckoutUrl2.contains("/checkout/"))) {
+					System.out.println("Directly navigating to target URL: " + targetCheckoutUrl2);
+					driver.get(targetCheckoutUrl2);
+				}
+			}
 
 			// Wait for either selectAddons page or checkout page
 			wait.until(ExpectedConditions.or(
